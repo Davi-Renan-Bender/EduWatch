@@ -1,0 +1,12 @@
+/* Esse vai ser o CSS do EduWatch */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  color: whitesmoke;
+  background-color: darkslategrey;
+}
