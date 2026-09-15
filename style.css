@@ -1,12 +1,40 @@
-/* Esse vai ser o CSS do EduWatch */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+body {
+    font-family: Arial;
+    background-color: #003b36;
+    text-align: center;
 }
 
-body {
-  color: whitesmoke;
-  background-color: darkslategrey;
+form {
+    background-color: white;
+    width: 300px;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+h1 {
+    color: #003b36;
+}
+
+h2 {
+    color: #ffffff;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+button {
+    width: 97%;
+    padding: 10px;
+    background-color: #003b36;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+a {
+    color: #002b5c;
 }
