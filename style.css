@@ -2,39 +2,71 @@ body {
     font-family: Arial;
     background-color: #003b36;
     text-align: center;
+    margin: 0;
+    padding-top: 60px;
+}
+
+h1 {
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.descricao {
+    color: #ffffff;
+    margin-bottom: 30px;
 }
 
 form {
     background-color: white;
     width: 300px;
-    margin: 50px auto;
+    margin: auto;
     padding: 30px;
     border-radius: 10px;
-}
-
-h1 {
-    color: #003b36;
+    box-shadow: 0 4px 10px #b8c7c2;
 }
 
 h2 {
-    color: #ffffff;
+    color: #002b5c;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin-top: 15px;
+    color: #003b36;
 }
 
 input {
-    width: 90%;
+    width: 93%;
     padding: 10px;
     margin-top: 5px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
 }
 
 button {
-    width: 97%;
-    padding: 10px;
+    width: 100%;
+    padding: 11px;
+    margin-top: 25px;
     background-color: #003b36;
     color: white;
     border: none;
     border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #002b5c;
 }
 
 a {
+    display: block;
+    margin-top: 18px;
     color: #002b5c;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
