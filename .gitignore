@@ -1,0 +1,30 @@
+# Dependências
+
+node_modules/
+
+# Arquivos de ambiente
+
+.env
+.env.local
+
+# Logs
+
+*.log
+
+# Arquivos temporários
+
+*.tmp
+*.temp
+
+# Configurações do VS Code
+
+.vscode/
+
+# Sistema operacional
+
+Thumbs.db
+Desktop.ini
+
+# Arquivos de configuração do sistema
+
+.DS_Store
