@@ -1,72 +1,144 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-    font-family: Arial;
-    background-color: #003b36;
-    text-align: center;
-    margin: 0;
-    padding-top: 60px;
+  font-family: Arial, sans-serif;
+  background-color: #003b36;
+  text-align: center;
+  margin: 0;
+  min-height: 100vh;
 }
 
 h1 {
-    color: #ffffff;
-    margin-bottom: 5px;
+  color: #ffffff;
+  margin: 100px 0 8px;
+  font-size: 42px;
 }
 
 .descricao {
-    color: #ffffff;
-    margin-bottom: 30px;
+  color: #ffffff;
+  margin: 0;
+  font-size: 18px;
 }
 
-form {
-    background-color: white;
-    width: 300px;
-    margin: auto;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px #b8c7c2;
+.tabela-login {
+  background-color: white;
+  height: 440px;
+  width: 720px;
+  max-width: 90%;
+  padding: 40px;
+  border-radius: 12px;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 h2 {
-    color: #002b5c;
-    margin-bottom: 25px;
+  color: #002b5c;
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-size: 30px;
 }
 
 label {
-    display: block;
-    text-align: left;
-    margin-top: 15px;
-    color: #003b36;
+  display: block;
+  text-align: left;
+  margin-top: 20px;
+  color: #003b36;
+  font-size: 17px;
+  font-weight: bold;
 }
 
 input {
-    width: 93%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 7px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
 }
 
-button {
-    width: 100%;
-    padding: 11px;
-    margin-top: 25px;
-    background-color: #003b36;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+input:focus {
+  border-color: #003b36;
 }
 
-button:hover {
-    background-color: #002b5c;
+.campo-senha {
+  position: relative;
+  width: 100%;
 }
 
-a {
-    display: block;
-    margin-top: 18px;
-    color: #002b5c;
-    text-decoration: none;
+.campo-senha input {
+  padding-right: 50px;
 }
 
-a:hover {
-    text-decoration: underline;
+#mostrar-senha {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  font-size: 20px;
+  cursor: pointer;
+
+  padding: 5px;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  margin-top: 35px;
+
+  background-color: #003b36;
+  color: white;
+
+  border: none;
+  border-radius: 6px;
+
+  font-size: 17px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.btn-login:hover {
+  background-color: #002b5c;
+}
+
+#esqueci_senha {
+  display: block;
+  margin-top: 22px;
+
+  color: #002b5c;
+  text-decoration: none;
+
+  font-size: 15px;
+}
+
+#esqueci_senha:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 500px) {
+  body {
+    padding-top: 40px;
+  }
+
+  h1 {
+    font-size: 34px;
+  }
+
+  .descricao {
+    font-size: 16px;
+  }
+
+  .tabela-login {
+    padding: 30px;
+  }
 }
