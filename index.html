@@ -1,46 +1,33 @@
 <!doctype html>
 <html lang="pt-br">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Sistema Acadêmico</title>
+    <title>EduWatch</title>
 
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
+    <h1>EduWatch</h1>
 
-    <h1>Sistema Acadêmico</h1>
-
-    <p class="descricao">Acesse sua área acadêmica</p>
+    <p class="descricao">Faça o login para entar no EduWatch</p>
 
     <form>
+      <h2>Entrar</h2>
 
-        <h2>Entrar</h2>
+      <label for="cpf">CPF</label>
+      <input type="text" id="cpf" placeholder="Digite seu CPF" />
 
-        <label for="cpf">CPF</label>
-        <input 
-            type="text" 
-            id="cpf" 
-            placeholder="Digite seu CPF"
-        >
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="Digite sua senha" />
 
-        <label for="senha">Senha</label>
-        <input 
-            type="password" 
-            id="senha" 
-            placeholder="Digite sua senha"
-        >
+      <button type="submit">Entrar</button>
 
-        <button type="submit">Entrar</button>
-
-        <a href="#">Esqueci minha senha</a>
-
+      <a href="#">Esqueci minha senha</a>
     </form>
 
     <script src="script.js"></script>
-
-</body>
-
+  </body>
 </html>
