@@ -16,9 +16,28 @@ h1 {
   font-size: 42px;
 }
 
+.logo-login {
+  margin-top: 70px;
+  text-align: center;
+}
+
+.logo-login img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.logo-login h1 {
+  margin: 0 0 20px;
+  color: #ffffff;
+  font-size: 42px;
+}
+
 .descricao {
   color: #ffffff;
-  margin: 0;
+  margin: 0 0 30px;
   font-size: 18px;
 }
 
@@ -31,7 +50,7 @@ h1 {
   border-radius: 12px;
 
   position: absolute;
-  top: 50%;
+  top: calc(50% + 60px);
   left: 50%;
   transform: translate(-50%, -50%);
 }
