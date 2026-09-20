@@ -124,22 +124,21 @@
 .admin-area-icon {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 
-  width: 52px;
-  height: 52px;
+  width: 24px;
+  height: 24px;
 
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 
-  border-radius: var(--radius-sm);
-
-  background-color: var(--surface-muted);
   color: var(--primary);
 }
 
 .admin-area-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
+
+  stroke-width: 2;
 }
 
 /* ==========================================================================

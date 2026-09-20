@@ -47,7 +47,10 @@ function obterUsuarioLogado() {
 function exigirPerfil(perfilEsperado) {
   const usuario = obterUsuarioLogado();
 
-  if (!usuario || usuario.nivel !== perfilEsperado) {
+  if (
+    !usuario ||
+    (usuario.nivel !== perfilEsperado && usuario.nivel !== "admin")
+  ) {
     window.location.href = "index.html";
     return null;
   }
@@ -80,8 +83,9 @@ function preencherUsuarioNaSidebar(usuario, rotuloPerfil) {
   }
 
   if (perfilEl) {
-    perfilEl.textContent = rotuloPerfil;
-  }
+    perfilEl.textContent =
+      usuario.nivel === "admin" ? "Administrador" : rotuloPerfil;
+  } 
 
   if (avatarEl) {
     avatarEl.textContent = usuario.nome.charAt(0).toUpperCase();
