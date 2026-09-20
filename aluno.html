@@ -1,0 +1,428 @@
+<!doctype html>
+
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>EduWatch · Área do Aluno</title>
+
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/aluno.css" />
+  </head>
+
+  <body class="dashboard-body">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark" aria-hidden="true">EW</span>
+          <span class="brand-name">EduWatch</span>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Navegação do aluno">
+          <a
+            class="sidebar-link is-active"
+            href="#visao-geral"
+            data-section="visao-geral"
+            data-title="Visão geral"
+            data-subtitle="Como está o seu desempenho neste período"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 11 12 4l8 7"></path>
+              <path d="M6 10v9h12v-9"></path>
+            </svg>
+            <span>Visão geral</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#notas"
+            data-section="notas"
+            data-title="Minhas notas"
+            data-subtitle="Médias e situação por disciplina"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"></path>
+              <path d="M9 8h6"></path>
+              <path d="M9 12h6"></path>
+            </svg>
+            <span>Minhas notas</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#frequencia"
+            data-section="frequencia"
+            data-title="Frequência"
+            data-subtitle="Presença por disciplina no período"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="4" y="5" width="16" height="15" rx="2"></rect>
+              <path d="M4 10h16"></path>
+              <path d="M9 3v4"></path>
+              <path d="M15 3v4"></path>
+            </svg>
+            <span>Frequência</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#evolucao"
+            data-section="evolucao"
+            data-title="Minha evolução"
+            data-subtitle="Como sua média mudou ao longo dos bimestres"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 16l5-5 4 4 7-8"></path>
+              <path d="M15 7h5v5"></path>
+            </svg>
+            <span>Minha evolução</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#dificuldades"
+            data-section="dificuldades"
+            data-title="Dificuldades"
+            data-subtitle="Pontos de atenção identificados pelos professores"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 4 21 19H3Z"></path>
+              <path d="M12 10v4"></path>
+              <path d="M12 16.5h.01"></path>
+            </svg>
+            <span>Dificuldades</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#perfil"
+            data-section="perfil"
+            data-title="Perfil"
+            data-subtitle="Seus dados de cadastro"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"></path>
+            </svg>
+            <span>Perfil</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <span class="avatar" id="sidebar-user-avatar" aria-hidden="true"
+              >A</span
+            >
+            <div class="sidebar-user-info">
+              <strong id="sidebar-user-name">Aluno</strong>
+              <small id="sidebar-user-role">Aluno</small>
+            </div>
+          </div>
+          <button
+            class="btn btn-ghost btn-logout"
+            id="btn-logout"
+            type="button"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"></path>
+              <path d="M15 16l4-4-4-4"></path>
+              <path d="M19 12H9"></path>
+            </svg>
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <div class="app-content">
+        <header class="topbar">
+          <button
+            class="btn-icon sidebar-toggle"
+            id="sidebar-toggle"
+            aria-label="Abrir menu"
+            aria-expanded="false"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 18h16"></path>
+            </svg>
+          </button>
+
+          <div class="topbar-title">
+            <h1 id="page-title">Visão geral</h1>
+            <p class="topbar-subtitle" id="page-subtitle">
+              Como está o seu desempenho neste período
+            </p>
+          </div>
+
+          <div class="topbar-actions">
+            <div class="notification" id="notification">
+              <button
+                class="btn-icon"
+                id="btn-notifications"
+                aria-label="Notificações"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 13 6 9Z"
+                  ></path>
+                  <path d="M10 18a2 2 0 0 0 4 0"></path>
+                </svg>
+                <span
+                  class="notification-dot"
+                  id="notification-dot"
+                  hidden
+                ></span>
+              </button>
+              <div
+                class="notification-panel"
+                id="notification-panel"
+                hidden
+                role="menu"
+              >
+                <h2>Notificações</h2>
+                <div id="notification-list"></div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="main-content" id="main-content">
+          <!-- ============ VISÃO GERAL ============ -->
+          <section
+            class="dashboard-section is-active"
+            id="section-visao-geral"
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block" id="cabecalho-aluno">
+              <!-- Preenchido via JS a partir de DADOS_MOCK_ALUNO (futuro: GET /api/alunos/:id) -->
+            </div>
+
+            <div class="section-block">
+              <h2 class="section-heading">Resumo do período</h2>
+              <p class="section-subheading">
+                Indicadores gerais, atualizados a cada avaliação lançada.
+              </p>
+              <div class="kpi-grid" id="kpi-resumo-aluno">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ MINHAS NOTAS ============ -->
+          <section
+            class="dashboard-section"
+            id="section-notas"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Desempenho por disciplina</h2>
+              </div>
+              <div class="table-wrapper">
+                <table
+                  class="data-table"
+                  aria-label="Notas e situação por disciplina"
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">Disciplina</th>
+                      <th scope="col">Média</th>
+                      <th scope="col">Frequência</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-disciplinas-corpo">
+                    <!-- Preenchido via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ FREQUÊNCIA ============ -->
+          <section
+            class="dashboard-section"
+            id="section-frequencia"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="section-block">
+              <div class="kpi-grid" id="kpi-frequencia-aluno">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Frequência por disciplina</h2>
+              </div>
+              <div class="table-wrapper">
+                <table
+                  class="data-table"
+                  aria-label="Frequência por disciplina"
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">Disciplina</th>
+                      <th scope="col">Frequência</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-frequencia-corpo">
+                    <!-- Preenchido via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ MINHA EVOLUÇÃO ============ -->
+          <section
+            class="dashboard-section"
+            id="section-evolucao"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Evolução da média geral por bimestre</h2>
+              </div>
+              <div
+                class="mini-chart"
+                id="grafico-evolucao"
+                role="img"
+                aria-label="Gráfico de evolução da média por bimestre"
+              >
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ DIFICULDADES ============ -->
+          <section
+            class="dashboard-section"
+            id="section-dificuldades"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Pontos de atenção e observações</h2>
+              </div>
+              <ul class="note-list" id="lista-acompanhamento">
+                <!-- Preenchido via JS -->
+              </ul>
+            </div>
+          </section>
+
+          <!-- ============ PERFIL ============ -->
+          <section
+            class="dashboard-section"
+            id="section-perfil"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Meus dados</h2>
+              </div>
+              <dl class="profile-fields" id="perfil-campos">
+                <!-- Preenchido via JS -->
+              </dl>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/aluno.js"></script>
+  </body>
+</html>

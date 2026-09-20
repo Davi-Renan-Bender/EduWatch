@@ -1,0 +1,308 @@
+<!doctype html>
+
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>EduWatch · Coordenação</title>
+
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/coordenacao.css" />
+  </head>
+
+  <body class="dashboard-body">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark" aria-hidden="true">EW</span>
+          <span class="brand-name">EduWatch</span>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Navegação da coordenação">
+          <a class="sidebar-link is-active" href="#visao-geral" data-section="visao-geral"
+             data-title="Visão geral" data-subtitle="Indicadores gerais da escola">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 11 12 4l8 7"></path><path d="M6 10v9h12v-9"></path>
+            </svg>
+            <span>Visão geral</span>
+          </a>
+
+          <a class="sidebar-link" href="#alunos" data-section="alunos"
+             data-title="Alunos" data-subtitle="Todos os alunos da escola">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="8" r="3"></circle><path d="M3 20c1-3 3.5-5 6-5s5 2 6 5"></path>
+              <circle cx="17" cy="9" r="2.5"></circle><path d="M15.5 13c2 .3 3.6 1.8 4.5 4"></path>
+            </svg>
+            <span>Alunos</span>
+          </a>
+
+          <a class="sidebar-link" href="#professores" data-section="professores"
+             data-title="Professores" data-subtitle="Corpo docente e turmas sob responsabilidade">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"></path>
+            </svg>
+            <span>Professores</span>
+          </a>
+
+          <a class="sidebar-link" href="#turmas" data-section="turmas"
+             data-title="Turmas" data-subtitle="Todas as turmas da escola">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3 3 8l9 5 9-5-9-5Z"></path><path d="M3 13l9 5 9-5"></path>
+            </svg>
+            <span>Turmas</span>
+          </a>
+
+          <a class="sidebar-link" href="#indicadores" data-section="indicadores"
+             data-title="Indicadores" data-subtitle="Padrões e situações relevantes da escola">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 20V10"></path><path d="M12 20V4"></path><path d="M20 20v-7"></path>
+            </svg>
+            <span>Indicadores</span>
+          </a>
+
+          <a class="sidebar-link" href="#acompanhamento" data-section="acompanhamento"
+             data-title="Acompanhamento" data-subtitle="Alunos que exigem atenção em toda a escola">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4 21 19H3Z"></path><path d="M12 10v4"></path><path d="M12 16.5h.01"></path>
+            </svg>
+            <span>Acompanhamento</span>
+          </a>
+
+          <a class="sidebar-link" href="#relatorios" data-section="relatorios"
+             data-title="Relatórios" data-subtitle="Exportações e relatórios consolidados">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="6" y="4" width="12" height="17" rx="2"></rect><rect x="9" y="2.5" width="6" height="3" rx="1"></rect>
+              <path d="M9 11h6"></path><path d="M9 15h6"></path>
+            </svg>
+            <span>Relatórios</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <span class="avatar" id="sidebar-user-avatar" aria-hidden="true">C</span>
+            <div class="sidebar-user-info">
+              <strong id="sidebar-user-name">Coordenação</strong>
+              <small id="sidebar-user-role">Coordenação</small>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-logout" id="btn-logout" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"></path>
+              <path d="M15 16l4-4-4-4"></path><path d="M19 12H9"></path>
+            </svg>
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <div class="app-content">
+        <header class="topbar">
+          <button class="btn-icon sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menu" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path>
+            </svg>
+          </button>
+
+          <div class="topbar-title">
+            <h1 id="page-title">Visão geral</h1>
+            <p class="topbar-subtitle" id="page-subtitle">Indicadores gerais da escola</p>
+          </div>
+
+          <div class="topbar-actions">
+            <div class="notification" id="notification">
+              <button class="btn-icon" id="btn-notifications" aria-label="Notificações" aria-haspopup="true" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 13 6 9Z"></path>
+                  <path d="M10 18a2 2 0 0 0 4 0"></path>
+                </svg>
+                <span class="notification-dot" id="notification-dot" hidden></span>
+              </button>
+              <div class="notification-panel" id="notification-panel" hidden role="menu">
+                <h2>Notificações</h2>
+                <div id="notification-list"></div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="main-content" id="main-content">
+          <!-- ============ VISÃO GERAL ============ -->
+          <section class="dashboard-section is-active" id="section-visao-geral" aria-labelledby="page-title">
+            <div class="kpi-grid section-block" id="kpi-resumo-escola"></div>
+
+            <div class="card-grid section-block">
+              <div class="panel">
+                <div class="panel-header"><h2>Turmas com menor média</h2></div>
+                <div class="table-wrapper">
+                  <table class="data-table" aria-label="Turmas com menor média">
+                    <thead><tr><th scope="col">Turma</th><th scope="col">Média</th></tr></thead>
+                    <tbody id="tabela-menor-media-corpo"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header"><h2>Turmas com menor frequência</h2></div>
+                <div class="table-wrapper">
+                  <table class="data-table" aria-label="Turmas com menor frequência">
+                    <thead><tr><th scope="col">Turma</th><th scope="col">Frequência</th></tr></thead>
+                    <tbody id="tabela-menor-frequencia-corpo"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ ALUNOS ============ -->
+          <section class="dashboard-section" id="section-alunos" hidden aria-labelledby="page-title">
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Alunos da escola</h2></div>
+
+              <div class="filters-bar">
+                <label class="search-field">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.3-4.3"></path>
+                  </svg>
+                  <span class="sr-only" id="rotulo-busca-aluno-coord">Pesquisar aluno</span>
+                  <input type="search" id="busca-aluno-coord" placeholder="Pesquisar aluno..." aria-labelledby="rotulo-busca-aluno-coord" />
+                </label>
+
+                <label>
+                  <span class="sr-only">Filtrar por turma</span>
+                  <select id="filtro-turma-coord" aria-label="Filtrar por turma">
+                    <option value="">Todas as turmas</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span class="sr-only">Filtrar por situação</span>
+                  <select id="filtro-situacao-coord" aria-label="Filtrar por situação">
+                    <option value="">Todas as situações</option>
+                    <option value="normal">Normal</option>
+                    <option value="atencao">Atenção</option>
+                    <option value="critico">Crítico</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="table-wrapper">
+                <table class="data-table" aria-label="Lista de alunos da escola">
+                  <thead>
+                    <tr>
+                      <th scope="col">Aluno</th>
+                      <th scope="col">Turma</th>
+                      <th scope="col">Média</th>
+                      <th scope="col">Frequência</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-alunos-coord-corpo"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ PROFESSORES ============ -->
+          <section class="dashboard-section" id="section-professores" hidden aria-labelledby="page-title">
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Professores responsáveis por turma</h2></div>
+              <div class="table-wrapper">
+                <table class="data-table" aria-label="Professores e turmas sob responsabilidade">
+                  <thead>
+                    <tr>
+                      <th scope="col">Professor</th>
+                      <th scope="col">Turmas</th>
+                      <th scope="col">Alunos</th>
+                      <th scope="col">Média das turmas</th>
+                      <th scope="col">Frequência média</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-professores-corpo"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ TURMAS ============ -->
+          <section class="dashboard-section" id="section-turmas" hidden aria-labelledby="page-title">
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Todas as turmas</h2></div>
+              <div class="card-grid" id="grade-turmas-coord"></div>
+            </div>
+          </section>
+
+          <!-- ============ INDICADORES ============ -->
+          <section class="dashboard-section" id="section-indicadores" hidden aria-labelledby="page-title">
+            <div class="section-block">
+              <h2 class="section-heading">Alunos por situação</h2>
+              <p class="section-subheading">Distribuição de todos os alunos da escola por situação de acompanhamento.</p>
+              <div class="kpi-grid" id="kpi-situacao-escola"></div>
+            </div>
+
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Evolução geral da média da escola</h2></div>
+              <div class="mini-chart" id="grafico-evolucao-escola" role="img" aria-label="Evolução da média geral da escola por bimestre"></div>
+            </div>
+          </section>
+
+          <!-- ============ ACOMPANHAMENTO ============ -->
+          <section class="dashboard-section" id="section-acompanhamento" hidden aria-labelledby="page-title">
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Alunos que exigem acompanhamento</h2></div>
+              <ul class="note-list" id="lista-acompanhamento-coord"></ul>
+            </div>
+          </section>
+
+          <!-- ============ RELATÓRIOS ============ -->
+          <section class="dashboard-section" id="section-relatorios" hidden aria-labelledby="page-title">
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Relatórios consolidados</h2></div>
+              <p class="section-subheading">
+                A geração de relatórios em PDF/planilha depende da integração com o backend e ainda não está
+                disponível neste protótipo. Os modelos abaixo mostram o que será exportável futuramente.
+              </p>
+              <div class="card-grid">
+                <div class="class-card class-card--disabled">
+                  <span class="class-card-title">Relatório de desempenho por turma</span>
+                  <span class="class-card-meta"><span>Em breve</span></span>
+                </div>
+                <div class="class-card class-card--disabled">
+                  <span class="class-card-title">Relatório de frequência</span>
+                  <span class="class-card-meta"><span>Em breve</span></span>
+                </div>
+                <div class="class-card class-card--disabled">
+                  <span class="class-card-title">Relatório de alunos em acompanhamento</span>
+                  <span class="class-card-meta"><span>Em breve</span></span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+
+    <!-- Modal de detalhe do aluno -->
+    <div class="modal-backdrop" id="modal-aluno" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-aluno-titulo">
+        <div class="modal-header">
+          <h2 id="modal-aluno-titulo">Aluno</h2>
+          <button class="btn-icon" id="modal-aluno-fechar" data-modal-fechar aria-label="Fechar detalhes do aluno">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 6l12 12"></path><path d="M18 6 6 18"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-aluno-corpo"></div>
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/coordenacao.js"></script>
+  </body>
+</html>

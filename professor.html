@@ -1,0 +1,563 @@
+<!doctype html>
+
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>EduWatch · Área do Professor</title>
+
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/professor.css" />
+  </head>
+
+  <body class="dashboard-body">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark" aria-hidden="true">EW</span>
+          <span class="brand-name">EduWatch</span>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Navegação do professor">
+          <a
+            class="sidebar-link is-active"
+            href="#visao-geral"
+            data-section="visao-geral"
+            data-title="Visão geral"
+            data-subtitle="Panorama das suas turmas e alunos"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 11 12 4l8 7"></path>
+              <path d="M6 10v9h12v-9"></path>
+            </svg>
+            <span>Visão geral</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#turmas"
+            data-section="turmas"
+            data-title="Turmas"
+            data-subtitle="Turmas sob sua responsabilidade"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3 3 8l9 5 9-5-9-5Z"></path>
+              <path d="M3 13l9 5 9-5"></path>
+            </svg>
+            <span>Turmas</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#alunos"
+            data-section="alunos"
+            data-title="Alunos"
+            data-subtitle="Pesquise e filtre os alunos das suas turmas"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="9" cy="8" r="3"></circle>
+              <path d="M3 20c1-3 3.5-5 6-5s5 2 6 5"></path>
+              <circle cx="17" cy="9" r="2.5"></circle>
+              <path d="M15.5 13c2 .3 3.6 1.8 4.5 4"></path>
+            </svg>
+            <span>Alunos</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#desempenho"
+            data-section="desempenho"
+            data-title="Desempenho"
+            data-subtitle="Melhores e piores médias das suas turmas"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 20V10"></path>
+              <path d="M12 20V4"></path>
+              <path d="M20 20v-7"></path>
+            </svg>
+            <span>Desempenho</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#frequencia"
+            data-section="frequencia"
+            data-title="Frequência"
+            data-subtitle="Frequência média por turma"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="4" y="5" width="16" height="15" rx="2"></rect>
+              <path d="M4 10h16"></path>
+              <path d="M9 3v4"></path>
+              <path d="M15 3v4"></path>
+            </svg>
+            <span>Frequência</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#acompanhamento"
+            data-section="acompanhamento"
+            data-title="Acompanhamento"
+            data-subtitle="Alunos que precisam de atenção"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 4 21 19H3Z"></path>
+              <path d="M12 10v4"></path>
+              <path d="M12 16.5h.01"></path>
+            </svg>
+            <span>Acompanhamento</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <span class="avatar" id="sidebar-user-avatar" aria-hidden="true"
+              >P</span
+            >
+            <div class="sidebar-user-info">
+              <strong id="sidebar-user-name">Professor</strong>
+              <small id="sidebar-user-role">Professor</small>
+            </div>
+          </div>
+          <button
+            class="btn btn-ghost btn-logout"
+            id="btn-logout"
+            type="button"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"></path>
+              <path d="M15 16l4-4-4-4"></path>
+              <path d="M19 12H9"></path>
+            </svg>
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <div class="app-content">
+        <header class="topbar">
+          <button
+            class="btn-icon sidebar-toggle"
+            id="sidebar-toggle"
+            aria-label="Abrir menu"
+            aria-expanded="false"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 18h16"></path>
+            </svg>
+          </button>
+
+          <div class="topbar-title">
+            <h1 id="page-title">Visão geral</h1>
+            <p class="topbar-subtitle" id="page-subtitle">
+              Panorama das suas turmas e alunos
+            </p>
+          </div>
+
+          <div class="topbar-actions">
+            <div class="notification" id="notification">
+              <button
+                class="btn-icon"
+                id="btn-notifications"
+                aria-label="Notificações"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 13 6 9Z"
+                  ></path>
+                  <path d="M10 18a2 2 0 0 0 4 0"></path>
+                </svg>
+                <span
+                  class="notification-dot"
+                  id="notification-dot"
+                  hidden
+                ></span>
+              </button>
+              <div
+                class="notification-panel"
+                id="notification-panel"
+                hidden
+                role="menu"
+              >
+                <h2>Notificações</h2>
+                <div id="notification-list"></div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="main-content" id="main-content">
+          <!-- ============ VISÃO GERAL ============ -->
+          <section
+            class="dashboard-section is-active"
+            id="section-visao-geral"
+            aria-labelledby="page-title"
+          >
+            <div class="section-block">
+              <div class="kpi-grid" id="kpi-resumo-professor">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Alunos que precisam de atenção</h2>
+              </div>
+              <div class="table-wrapper">
+                <table
+                  class="data-table"
+                  aria-label="Alunos em atenção ou crítico"
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">Aluno</th>
+                      <th scope="col">Turma</th>
+                      <th scope="col">Média</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-resumo-atencao-corpo"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ TURMAS ============ -->
+          <section
+            class="dashboard-section"
+            id="section-turmas"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Suas turmas</h2>
+              </div>
+              <div class="card-grid" id="grade-turmas">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ ALUNOS ============ -->
+          <section
+            class="dashboard-section"
+            id="section-alunos"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Todos os alunos</h2>
+              </div>
+
+              <div class="filters-bar">
+                <label class="search-field">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="6"></circle>
+                    <path d="M20 20l-4.3-4.3"></path>
+                  </svg>
+                  <span class="sr-only" id="rotulo-busca-aluno"
+                    >Pesquisar aluno</span
+                  >
+                  <input
+                    type="search"
+                    id="busca-aluno"
+                    placeholder="Pesquisar aluno..."
+                    aria-labelledby="rotulo-busca-aluno"
+                  />
+                </label>
+
+                <label>
+                  <span class="sr-only">Filtrar por turma</span>
+                  <select id="filtro-turma" aria-label="Filtrar por turma">
+                    <option value="">Todas as turmas</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span class="sr-only">Filtrar por situação</span>
+                  <select
+                    id="filtro-situacao"
+                    aria-label="Filtrar por situação"
+                  >
+                    <option value="">Todas as situações</option>
+                    <option value="normal">Normal</option>
+                    <option value="atencao">Atenção</option>
+                    <option value="critico">Crítico</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span class="sr-only">Filtrar por desempenho</span>
+                  <select
+                    id="filtro-desempenho"
+                    aria-label="Filtrar por desempenho"
+                  >
+                    <option value="">Todo desempenho</option>
+                    <option value="alto">Média alta (≥ 7)</option>
+                    <option value="medio">Média média (5 a 6,9)</option>
+                    <option value="baixo">Média baixa (&lt; 5)</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="table-wrapper">
+                <table class="data-table" aria-label="Lista de alunos">
+                  <thead>
+                    <tr>
+                      <th scope="col">Aluno</th>
+                      <th scope="col">Turma</th>
+                      <th scope="col">Média</th>
+                      <th scope="col">Frequência</th>
+                      <th scope="col">Evolução</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-alunos-corpo"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ DESEMPENHO ============ -->
+          <section
+            class="dashboard-section"
+            id="section-desempenho"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="card-grid section-block">
+              <div class="panel">
+                <div class="panel-header"><h2>Maiores médias</h2></div>
+                <div class="table-wrapper">
+                  <table
+                    class="data-table"
+                    aria-label="Alunos com as maiores médias"
+                  >
+                    <thead>
+                      <tr>
+                        <th scope="col">Aluno</th>
+                        <th scope="col">Turma</th>
+                        <th scope="col">Média</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabela-melhores-medias-corpo"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header"><h2>Menores médias</h2></div>
+                <div class="table-wrapper">
+                  <table
+                    class="data-table"
+                    aria-label="Alunos com as menores médias"
+                  >
+                    <thead>
+                      <tr>
+                        <th scope="col">Aluno</th>
+                        <th scope="col">Turma</th>
+                        <th scope="col">Média</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabela-piores-medias-corpo"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ FREQUÊNCIA ============ -->
+          <section
+            class="dashboard-section"
+            id="section-frequencia"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Frequência média por turma</h2>
+              </div>
+              <div
+                class="mini-chart"
+                id="grafico-frequencia-turmas"
+                role="img"
+                aria-label="Frequência média por turma"
+              ></div>
+            </div>
+
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Detalhamento por turma</h2></div>
+              <div class="table-wrapper">
+                <table
+                  class="data-table"
+                  aria-label="Frequência detalhada por turma"
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">Turma</th>
+                      <th scope="col">Frequência</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-frequencia-turmas-corpo"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ ACOMPANHAMENTO ============ -->
+          <section
+            class="dashboard-section"
+            id="section-acompanhamento"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <h2>Alunos em atenção ou situação crítica</h2>
+              </div>
+              <ul class="note-list" id="lista-acompanhamento-professor"></ul>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+
+    <!-- Modal de detalhe do aluno -->
+    <div class="modal-backdrop" id="modal-aluno" hidden>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-aluno-titulo"
+      >
+        <div class="modal-header">
+          <h2 id="modal-aluno-titulo">Aluno</h2>
+          <button
+            class="btn-icon"
+            id="modal-aluno-fechar"
+            data-modal-fechar
+            aria-label="Fechar detalhes do aluno"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 6l12 12"></path>
+              <path d="M18 6 6 18"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-aluno-corpo">
+          <!-- Preenchido via JS -->
+        </div>
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/professor.js"></script>
+  </body>
+</html>
