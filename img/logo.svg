@@ -1,0 +1,29 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  fill="none"
+>
+  <!-- Escudo -->
+  <path
+    d="M32 5L52 12V28C52 41.5 44.2 52.3 32 59C19.8 52.3 12 41.5 12 28V12L32 5Z"
+    stroke="#003B36"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Gráfico de evolução -->
+  <path
+    d="M21 39L28 32L34 36L43 24"
+    stroke="#002B5C"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Pontos do gráfico -->
+  <circle cx="21" cy="39" r="2.5" fill="#002B5C"/>
+  <circle cx="28" cy="32" r="2.5" fill="#002B5C"/>
+  <circle cx="34" cy="36" r="2.5" fill="#002B5C"/>
+  <circle cx="43" cy="24" r="2.5" fill="#002B5C"/>
+</svg>
