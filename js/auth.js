@@ -52,22 +52,17 @@ function exigirPerfil(perfilEsperado) {
     return null;
   }
 
-  // Usuário normal: precisa possuir exatamente o perfil da página.
+  const parametros = new URLSearchParams(window.location.search);
+  const modoVisualizacao = parametros.get("modo") === "visualizacao";
+
+  // Usuário normal: só pode acessar seu próprio perfil.
   if (usuario.nivel === perfilEsperado) {
     return usuario;
   }
 
-  // Administrador só pode abrir outras áreas através
-  // do modo de visualização iniciado pelo painel administrativo.
-  const parametros = new URLSearchParams(window.location.search);
-  const modoVisualizacao = parametros.get("modo") === "visualizacao";
-
+  // Admin: acesso apenas pelo modo de visualização.
   if (usuario.nivel === "admin" && modoVisualizacao) {
-    return {
-      ...usuario,
-      modoVisualizacaoAdmin: true,
-      perfilVisualizacao: perfilEsperado,
-    };
+    return usuario;
   }
 
   window.location.href = "index.html";

@@ -73,14 +73,14 @@
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
               aria-hidden="true"
             >
-              <circle cx="12" cy="8" r="4"></circle>
-              <path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"></path>
-              <path d="M16 4h4v4"></path>
+              <path d="M3 9l9-5 9 5-9 5-9-5Z"></path>
+              <path d="M7 11v4c0 2 2.2 4 5 4s5-2 5-4v-4"></path>
+              <path d="M21 9v6"></path>
             </svg>
 
             <span>Área do professor</span>
@@ -92,14 +92,14 @@
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
               aria-hidden="true"
             >
-              <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-              <path d="M8 12h8"></path>
-              <path d="M12 8v8"></path>
+              <path d="M5 20V12"></path>
+              <path d="M12 20V7"></path>
+              <path d="M19 20V4"></path>
             </svg>
 
             <span>Área da coordenação</span>
@@ -207,7 +207,7 @@
 
           <section class="admin-area-grid" aria-label="Áreas disponíveis">
             <!-- ALUNO -->
-            <a class="admin-area-card" href="aluno.html">
+            <a class="admin-area-card" href="aluno.html?modo=visualizacao">
               <div class="admin-area-icon">
                 <svg
                   viewBox="0 0 24 24"
@@ -252,7 +252,7 @@
             </a>
 
             <!-- PROFESSOR -->
-            <a class="admin-area-card" href="professor.html">
+            <a class="admin-area-card" href="professor.html?modo=visualizacao">
               <div class="admin-area-icon">
                 <svg
                   viewBox="0 0 24 24"
@@ -263,9 +263,9 @@
                   stroke-linejoin="round"
                   aria-hidden="true"
                 >
-                  <circle cx="12" cy="8" r="4"></circle>
-                  <path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"></path>
-                  <path d="M16 4h4v4"></path>
+                  <path d="M3 9l9-5 9 5-9 5-9-5Z"></path>
+                  <path d="M7 11v4c0 2 2.2 4 5 4s5-2 5-4v-4"></path>
+                  <path d="M21 9v6"></path>
                 </svg>
               </div>
 
@@ -296,7 +296,10 @@
             </a>
 
             <!-- COORDENAÇÃO -->
-            <a class="admin-area-card" href="coordenacao.html">
+            <a
+              class="admin-area-card"
+              href="coordenacao.html?modo=visualizacao"
+            >
               <div class="admin-area-icon">
                 <svg
                   viewBox="0 0 24 24"
@@ -307,9 +310,9 @@
                   stroke-linejoin="round"
                   aria-hidden="true"
                 >
-                  <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-                  <path d="M8 12h8"></path>
-                  <path d="M12 8v8"></path>
+                  <path d="M5 20V12"></path>
+                  <path d="M12 20V7"></path>
+                  <path d="M19 20V4"></path>
                 </svg>
               </div>
 
