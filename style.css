@@ -8,17 +8,21 @@ body {
   text-align: center;
   margin: 0;
   min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 50px 20px 40px;
 }
 
-h1 {
-  color: #ffffff;
-  margin: 100px 0 8px;
-  font-size: 42px;
-}
+/* =========================
+   LOGO
+   ========================= */
 
 .logo-login {
-  margin-top: 70px;
   text-align: center;
+  margin-bottom: 0;
 }
 
 .logo-login img {
@@ -30,42 +34,63 @@ h1 {
 }
 
 .logo-login h1 {
-  margin: 0 0 20px;
   color: #ffffff;
+  margin: 0 0 18px;
   font-size: 42px;
 }
 
+/* =========================
+   DESCRIÇÃO
+   ========================= */
+
 .descricao {
   color: #ffffff;
-  margin: 0 0 30px;
+
+  /* Altere este valor para controlar
+     o espaço entre a descrição e o login */
+  margin: 0 0 35px;
+
   font-size: 18px;
 }
 
+/* =========================
+   TABELA / FORMULÁRIO
+   ========================= */
+
 .tabela-login {
-  background-color: white;
-  height: 440px;
+  background-color: #ffffff;
+
   width: 720px;
-  max-width: 90%;
+  max-width: 100%;
+  min-height: 440px;
+
   padding: 40px;
   border-radius: 12px;
 
-  position: absolute;
-  top: calc(50% + 60px);
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: 0 auto;
 }
+
+/* =========================
+   TÍTULO DO LOGIN
+   ========================= */
 
 h2 {
   color: #002b5c;
-  margin-top: 0;
-  margin-bottom: 30px;
+  margin: 0 0 30px;
   font-size: 30px;
 }
+
+/* =========================
+   CAMPOS
+   ========================= */
 
 label {
   display: block;
   text-align: left;
+
+  /* Controla o espaço entre os campos */
   margin-top: 20px;
+
   color: #003b36;
   font-size: 17px;
   font-weight: bold;
@@ -73,10 +98,13 @@ label {
 
 input {
   width: 100%;
+
   padding: 14px;
   margin-top: 7px;
+
   border: 1px solid #aaa;
   border-radius: 6px;
+
   font-size: 16px;
   outline: none;
 }
@@ -84,6 +112,10 @@ input {
 input:focus {
   border-color: #003b36;
 }
+
+/* =========================
+   CAMPO DE SENHA
+   ========================= */
 
 .campo-senha {
   position: relative;
@@ -96,8 +128,10 @@ input:focus {
 
 #mostrar-senha {
   position: absolute;
+
   right: 10px;
-  top: 57%;
+  top: 50%;
+
   transform: translateY(-50%);
 
   border: none;
@@ -122,13 +156,20 @@ input:focus {
   height: 22px;
 }
 
+/* =========================
+   BOTÃO ENTRAR
+   ========================= */
+
 .btn-login {
   width: 100%;
+
   padding: 14px;
+
+  /* Controla o espaço entre a senha e o botão */
   margin-top: 35px;
 
   background-color: #003b36;
-  color: white;
+  color: #ffffff;
 
   border: none;
   border-radius: 6px;
@@ -143,8 +184,14 @@ input:focus {
   background-color: #002b5c;
 }
 
+/* =========================
+   ESQUECI A SENHA
+   ========================= */
+
 #esqueci_senha {
   display: block;
+
+  /* Controla o espaço entre o botão e o link */
   margin-top: 22px;
 
   color: #002b5c;
@@ -157,20 +204,36 @@ input:focus {
   text-decoration: underline;
 }
 
+/* =========================
+   RESPONSIVIDADE
+   ========================= */
+
 @media (max-width: 500px) {
   body {
-    padding-top: 40px;
+    padding: 35px 15px 30px;
   }
 
-  h1 {
+  .logo-login img {
+    width: 75px;
+    height: 75px;
+  }
+
+  .logo-login h1 {
     font-size: 34px;
+    margin-bottom: 14px;
   }
 
   .descricao {
     font-size: 16px;
+    margin-bottom: 25px;
   }
 
   .tabela-login {
-    padding: 30px;
+    min-height: auto;
+    padding: 30px 25px;
+  }
+
+  h2 {
+    font-size: 26px;
   }
 }
