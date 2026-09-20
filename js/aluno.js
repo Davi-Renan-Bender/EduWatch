@@ -52,8 +52,11 @@ const DADOS_MOCK_ALUNO = {
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-  const usuario = exigirPerfil("aluno");
-  if (!usuario) return; // exigirPerfil já redirecionou para o login
+  const usuarioSessao = exigirPerfil("aluno");
+
+  if (!usuarioSessao) return;
+
+  const usuario = obterUsuarioVisualizacao(usuarioSessao, "aluno");
 
   preencherUsuarioNaSidebar(usuario, "Aluno");
   inicializarMenuMobile();

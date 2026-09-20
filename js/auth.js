@@ -47,17 +47,61 @@ function obterUsuarioLogado() {
 function exigirPerfil(perfilEsperado) {
   const usuario = obterUsuarioLogado();
 
-  if (
-    !usuario ||
-    (usuario.nivel !== perfilEsperado && usuario.nivel !== "admin")
-  ) {
+  if (!usuario) {
     window.location.href = "index.html";
     return null;
   }
 
-  return usuario;
-}
+  // Usuário normal: precisa possuir exatamente o perfil da página.
+  if (usuario.nivel === perfilEsperado) {
+    return usuario;
+  }
 
+  // Administrador só pode abrir outras áreas através
+  // do modo de visualização iniciado pelo painel administrativo.
+  const parametros = new URLSearchParams(window.location.search);
+  const modoVisualizacao = parametros.get("modo") === "visualizacao";
+
+  if (usuario.nivel === "admin" && modoVisualizacao) {
+    return {
+      ...usuario,
+      modoVisualizacaoAdmin: true,
+      perfilVisualizacao: perfilEsperado,
+    };
+  }
+
+  window.location.href = "index.html";
+  return null;
+}
+function obterUsuarioVisualizacao(usuario, perfil) {
+  if (!usuario) {
+    return null;
+  }
+
+  if (!usuario.modoVisualizacaoAdmin) {
+    return usuario;
+  }
+
+  const dadosDemo = {
+    aluno: {
+      nome: "Aluno de demonstração",
+      cpf: "00000000000",
+    },
+    professor: {
+      nome: "Professor de demonstração",
+      cpf: "00000000000",
+    },
+    coordenacao: {
+      nome: "Coordenador de demonstração",
+      cpf: "00000000000",
+    },
+  };
+
+  return {
+    ...usuario,
+    ...dadosDemo[perfil],
+  };
+}
 /**
  * Encerra a sessão local e volta para a tela de login.
  * Ponto único de logout: todas as páginas devem chamar esta função,
@@ -85,7 +129,7 @@ function preencherUsuarioNaSidebar(usuario, rotuloPerfil) {
   if (perfilEl) {
     perfilEl.textContent =
       usuario.nivel === "admin" ? "Administrador" : rotuloPerfil;
-  } 
+  }
 
   if (avatarEl) {
     avatarEl.textContent = usuario.nome.charAt(0).toUpperCase();

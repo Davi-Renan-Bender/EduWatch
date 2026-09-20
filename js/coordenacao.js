@@ -292,11 +292,13 @@ let alunosFiltradosCoordenacao = [];
 // --------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", function () {
-  const usuario = exigirPerfil("coordenacao");
+  const usuarioSessao = exigirPerfil("coordenacao");
 
-  if (!usuario) {
+  if (!usuarioSessao) {
     return;
   }
+
+  const usuario = obterUsuarioVisualizacao(usuarioSessao, "coordenacao");
 
   preencherUsuarioNaSidebar(usuario, "Coordenação");
 

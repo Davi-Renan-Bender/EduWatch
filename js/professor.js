@@ -195,8 +195,11 @@ const DADOS_MOCK_PROFESSOR = {
 let alunosFiltrados = [];
 
 document.addEventListener("DOMContentLoaded", function () {
-  const usuario = exigirPerfil("professor");
-  if (!usuario) return;
+  const usuarioSessao = exigirPerfil("professor");
+
+  if (!usuarioSessao) return;
+
+  const usuario = obterUsuarioVisualizacao(usuarioSessao, "professor");
 
   preencherUsuarioNaSidebar(usuario, "Professor");
   inicializarMenuMobile();
