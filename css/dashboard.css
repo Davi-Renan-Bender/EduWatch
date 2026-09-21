@@ -818,7 +818,7 @@ button {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(18, 33, 29, 0.5);
+  background-color: rgba(0, 13, 34, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -910,7 +910,7 @@ button {
   .sidebar-backdrop {
     position: fixed;
     inset: 0;
-    background-color: rgba(18, 33, 29, 0.45);
+    background-color: rgba(0, 13, 34, 0.68);
     z-index: 35;
   }
 

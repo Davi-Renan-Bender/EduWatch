@@ -4,7 +4,9 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #003b36;
+
+  background-color: #001d4a;
+
   text-align: center;
   margin: 0;
   min-height: 100vh;
@@ -28,14 +30,18 @@ body {
 .logo-login img {
   width: 90px;
   height: 90px;
+
   object-fit: contain;
   display: block;
+
   margin: 0 auto 12px;
 }
 
 .logo-login h1 {
   color: #ffffff;
+
   margin: 0 0 18px;
+
   font-size: 42px;
 }
 
@@ -44,10 +50,8 @@ body {
    ========================= */
 
 .descricao {
-  color: #ffffff;
+  color: #d9e8f8;
 
-  /* Altere este valor para controlar
-     o espaço entre a descrição e o login */
   margin: 0 0 35px;
 
   font-size: 18px;
@@ -62,12 +66,16 @@ body {
 
   width: 720px;
   max-width: 100%;
+
   min-height: 440px;
 
   padding: 40px;
+
   border-radius: 12px;
 
   margin: 0 auto;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
 }
 
 /* =========================
@@ -75,8 +83,10 @@ body {
    ========================= */
 
 h2 {
-  color: #002b5c;
+  color: #0b3f78;
+
   margin: 0 0 30px;
+
   font-size: 30px;
 }
 
@@ -86,12 +96,13 @@ h2 {
 
 label {
   display: block;
+
   text-align: left;
 
-  /* Controla o espaço entre os campos */
   margin-top: 20px;
 
-  color: #003b36;
+  color: #173b63;
+
   font-size: 17px;
   font-weight: bold;
 }
@@ -100,17 +111,25 @@ input {
   width: 100%;
 
   padding: 14px;
+
   margin-top: 7px;
 
-  border: 1px solid #aaa;
+  border: 1px solid #a9b8c8;
+
   border-radius: 6px;
 
   font-size: 16px;
+
   outline: none;
+
+  color: #162b44;
+  background-color: #ffffff;
 }
 
 input:focus {
-  border-color: #003b36;
+  border-color: #0b4f9c;
+
+  box-shadow: 0 0 0 3px rgba(11, 79, 156, 0.14);
 }
 
 /* =========================
@@ -119,6 +138,7 @@ input:focus {
 
 .campo-senha {
   position: relative;
+
   width: 100%;
 }
 
@@ -135,12 +155,14 @@ input:focus {
   transform: translateY(-50%);
 
   border: none;
+
   background: transparent;
 
   cursor: pointer;
+
   padding: 6px;
 
-  color: #555;
+  color: #61748a;
 
   display: flex;
   align-items: center;
@@ -148,7 +170,7 @@ input:focus {
 }
 
 #mostrar-senha:hover {
-  color: #003b36;
+  color: #0b4f9c;
 }
 
 .icone-olho {
@@ -165,23 +187,33 @@ input:focus {
 
   padding: 14px;
 
-  /* Controla o espaço entre a senha e o botão */
   margin-top: 35px;
 
-  background-color: #003b36;
+  background-color: #0b4f9c;
+
   color: #ffffff;
 
   border: none;
+
   border-radius: 6px;
 
   font-size: 17px;
   font-weight: bold;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn-login:hover {
-  background-color: #002b5c;
+  background-color: #2f80ed;
+
+  box-shadow: 0 6px 16px rgba(47, 128, 237, 0.3);
+
+  transform: translateY(-1px);
 }
 
 /* =========================
@@ -191,16 +223,18 @@ input:focus {
 #esqueci_senha {
   display: block;
 
-  /* Controla o espaço entre o botão e o link */
   margin-top: 22px;
 
-  color: #002b5c;
+  color: #2167a8;
+
   text-decoration: none;
 
   font-size: 15px;
 }
 
 #esqueci_senha:hover {
+  color: #0b4f9c;
+
   text-decoration: underline;
 }
 
@@ -220,16 +254,19 @@ input:focus {
 
   .logo-login h1 {
     font-size: 34px;
+
     margin-bottom: 14px;
   }
 
   .descricao {
     font-size: 16px;
+
     margin-bottom: 25px;
   }
 
   .tabela-login {
     min-height: auto;
+
     padding: 30px 25px;
   }
 
