@@ -1,17 +1,76 @@
 <!doctype html>
-<html lang="en">
+
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inicial</title>
+
+    <title>EduWatch</title>
+    <link rel="icon" type="image/svg+xml" href="img/logo.svg" />
+
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
-    <h1>
-      ESSE É O INDEX INICIAL<br />
-      ELE SÓ VAI SERVIR PARA TESTE<br />
-      DEPOIS QUE ESTIVER TUDO CONFIGURADO PODERÁ SER MODIFICADO <br />
-      TESTE DO GIT
-    </h1>
+    <div class="logo-login">
+      <img src="img/logo.svg" alt="EduWatch" />
+      <h1>EduWatch</h1>
+    </div>
+
+    <p class="descricao">Faça o login para entrar no EduWatch</p>
+
+    <div class="tabela-login">
+      <h2>Entrar</h2>
+
+      <form id="form-login">
+        <label for="cpf">CPF</label>
+        <input
+          type="text"
+          id="cpf"
+          placeholder="Digite seu CPF"
+          inputmode="numeric"
+          maxlength="14"
+          required
+        />
+
+        <label for="senha">Senha</label>
+
+        <div class="campo-senha">
+          <input
+            type="password"
+            id="senha"
+            placeholder="Digite sua senha"
+            autocomplete="current-password"
+            required
+          />
+
+          <button
+            type="button"
+            id="mostrar-senha"
+            aria-label="Mostrar senha"
+            title="Mostrar senha"
+          >
+            <svg
+              class="icone-olho"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <button class="btn-login" type="submit">Entrar</button>
+      </form>
+
+      <a id="esqueci_senha" href="#">Esqueci minha senha</a>
+    </div>
+
+    <script src="script.js"></script>
   </body>
 </html>

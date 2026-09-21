@@ -10,13 +10,18 @@ O sistema organiza dados como notas, frequência e atividades e transforma essas
 
 ## Tecnologias
 
+### Atualmente
+
 - HTML5
 - CSS3
 - JavaScript
+
+### Planejado
+
 - Node.js
 - Express.js
-- MySQL
-- Chart.js
+- MariaDB
+- API REST
 
 ## Equipe
 
@@ -24,7 +29,7 @@ Projeto desenvolvido por três estudantes do SENAI.
 
 ## Objetivo
 
-Desenvolver um protótipo funcional capaz de armazenar dados acadêmicos e utilizá-los para gerar análises, indicadores e alertas.
+Desenvolver um protótipo funcional capaz de organizar dados acadêmicos e utilizá-los para gerar análises, indicadores e alertas.
 
 > O EduWatch não utiliza Inteligência Artificial ou Machine Learning. As análises são realizadas através de regras e cálculos programados pela equipe.
 

@@ -1,0 +1,27 @@
+/* ==========================================================================
+   EduWatch — Ajustes específicos da página do Professor
+   Depende de variables.css e dashboard.css.
+   ========================================================================== */
+
+.class-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.modal-section h3 {
+  margin: 0 0 8px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.modal-observacao {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text);
+  background-color: var(--surface-muted);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin: 0;
+}

@@ -1,12 +1,239 @@
-/* Esse vai ser o CSS do EduWatch */
-
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  color: whitesmoke;
-  background-color: darkslategrey;
+  font-family: Arial, sans-serif;
+  background-color: #003b36;
+  text-align: center;
+  margin: 0;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 50px 20px 40px;
+}
+
+/* =========================
+   LOGO
+   ========================= */
+
+.logo-login {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.logo-login img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.logo-login h1 {
+  color: #ffffff;
+  margin: 0 0 18px;
+  font-size: 42px;
+}
+
+/* =========================
+   DESCRIÇÃO
+   ========================= */
+
+.descricao {
+  color: #ffffff;
+
+  /* Altere este valor para controlar
+     o espaço entre a descrição e o login */
+  margin: 0 0 35px;
+
+  font-size: 18px;
+}
+
+/* =========================
+   TABELA / FORMULÁRIO
+   ========================= */
+
+.tabela-login {
+  background-color: #ffffff;
+
+  width: 720px;
+  max-width: 100%;
+  min-height: 440px;
+
+  padding: 40px;
+  border-radius: 12px;
+
+  margin: 0 auto;
+}
+
+/* =========================
+   TÍTULO DO LOGIN
+   ========================= */
+
+h2 {
+  color: #002b5c;
+  margin: 0 0 30px;
+  font-size: 30px;
+}
+
+/* =========================
+   CAMPOS
+   ========================= */
+
+label {
+  display: block;
+  text-align: left;
+
+  /* Controla o espaço entre os campos */
+  margin-top: 20px;
+
+  color: #003b36;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+
+  padding: 14px;
+  margin-top: 7px;
+
+  border: 1px solid #aaa;
+  border-radius: 6px;
+
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #003b36;
+}
+
+/* =========================
+   CAMPO DE SENHA
+   ========================= */
+
+.campo-senha {
+  position: relative;
+  width: 100%;
+}
+
+.campo-senha input {
+  padding-right: 50px;
+}
+
+#mostrar-senha {
+  position: absolute;
+
+  right: 10px;
+  top: 56%;
+
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+  padding: 6px;
+
+  color: #555;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#mostrar-senha:hover {
+  color: #003b36;
+}
+
+.icone-olho {
+  width: 22px;
+  height: 22px;
+}
+
+/* =========================
+   BOTÃO ENTRAR
+   ========================= */
+
+.btn-login {
+  width: 100%;
+
+  padding: 14px;
+
+  /* Controla o espaço entre a senha e o botão */
+  margin-top: 35px;
+
+  background-color: #003b36;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 6px;
+
+  font-size: 17px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.btn-login:hover {
+  background-color: #002b5c;
+}
+
+/* =========================
+   ESQUECI A SENHA
+   ========================= */
+
+#esqueci_senha {
+  display: block;
+
+  /* Controla o espaço entre o botão e o link */
+  margin-top: 22px;
+
+  color: #002b5c;
+  text-decoration: none;
+
+  font-size: 15px;
+}
+
+#esqueci_senha:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   RESPONSIVIDADE
+   ========================= */
+
+@media (max-width: 500px) {
+  body {
+    padding: 35px 15px 30px;
+  }
+
+  .logo-login img {
+    width: 75px;
+    height: 75px;
+  }
+
+  .logo-login h1 {
+    font-size: 34px;
+    margin-bottom: 14px;
+  }
+
+  .descricao {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+
+  .tabela-login {
+    min-height: auto;
+    padding: 30px 25px;
+  }
+
+  h2 {
+    font-size: 26px;
+  }
 }
