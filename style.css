@@ -1,14 +1,20 @@
+/* ==========================================================================
+   EduWatch — Tela de Login
+   ========================================================================== */
+
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 
   background-color: #001d4a;
 
   text-align: center;
+
   margin: 0;
+
   min-height: 100vh;
 
   display: flex;
@@ -18,9 +24,9 @@ body {
   padding: 50px 20px 40px;
 }
 
-/* =========================
+/* ==========================================================================
    LOGO
-   ========================= */
+   ========================================================================== */
 
 .logo-login {
   text-align: center;
@@ -32,6 +38,7 @@ body {
   height: 90px;
 
   object-fit: contain;
+
   display: block;
 
   margin: 0 auto 12px;
@@ -43,56 +50,62 @@ body {
   margin: 0 0 18px;
 
   font-size: 42px;
+  font-weight: 700;
 }
 
-/* =========================
+/* ==========================================================================
    DESCRIÇÃO
-   ========================= */
+   ========================================================================== */
 
 .descricao {
-  color: #d9e8f8;
+  color: #d7e5f5;
 
   margin: 0 0 35px;
 
   font-size: 18px;
+
+  line-height: 1.5;
 }
 
-/* =========================
-   TABELA / FORMULÁRIO
-   ========================= */
+/* ==========================================================================
+   FORMULÁRIO
+   ========================================================================== */
 
 .tabela-login {
   background-color: #ffffff;
 
   width: 720px;
+
   max-width: 100%;
 
   min-height: 440px;
 
   padding: 40px;
 
-  border-radius: 12px;
+  border-radius: 14px;
 
   margin: 0 auto;
 
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 16px 40px rgba(0, 10, 30, 0.28);
 }
 
-/* =========================
-   TÍTULO DO LOGIN
-   ========================= */
+/* ==========================================================================
+   TÍTULO
+   ========================================================================== */
 
 h2 {
-  color: #0b3f78;
+  color: #123b68;
 
   margin: 0 0 30px;
 
   font-size: 30px;
+
+  line-height: 1.2;
 }
 
-/* =========================
-   CAMPOS
-   ========================= */
+/* ==========================================================================
+   LABELS
+   ========================================================================== */
 
 label {
   display: block;
@@ -104,8 +117,13 @@ label {
   color: #173b63;
 
   font-size: 17px;
+
   font-weight: bold;
 }
+
+/* ==========================================================================
+   INPUTS
+   ========================================================================== */
 
 input {
   width: 100%;
@@ -114,16 +132,25 @@ input {
 
   margin-top: 7px;
 
-  border: 1px solid #a9b8c8;
+  border: 1px solid #9db2c8;
 
-  border-radius: 6px;
+  border-radius: 7px;
 
   font-size: 16px;
 
   outline: none;
 
-  color: #162b44;
+  color: #14263d;
+
   background-color: #ffffff;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+input::placeholder {
+  color: #8191a4;
 }
 
 input:focus {
@@ -132,9 +159,9 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(11, 79, 156, 0.14);
 }
 
-/* =========================
+/* ==========================================================================
    CAMPO DE SENHA
-   ========================= */
+   ========================================================================== */
 
 .campo-senha {
   position: relative;
@@ -146,10 +173,15 @@ input:focus {
   padding-right: 50px;
 }
 
+/* ==========================================================================
+   BOTÃO MOSTRAR SENHA
+   ========================================================================== */
+
 #mostrar-senha {
   position: absolute;
 
   right: 10px;
+
   top: 56%;
 
   transform: translateY(-50%);
@@ -162,11 +194,15 @@ input:focus {
 
   padding: 6px;
 
-  color: #61748a;
+  color: #65778b;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
+  transition: color 0.18s ease;
 }
 
 #mostrar-senha:hover {
@@ -175,12 +211,13 @@ input:focus {
 
 .icone-olho {
   width: 22px;
+
   height: 22px;
 }
 
-/* =========================
+/* ==========================================================================
    BOTÃO ENTRAR
-   ========================= */
+   ========================================================================== */
 
 .btn-login {
   width: 100%;
@@ -195,41 +232,48 @@ input:focus {
 
   border: none;
 
-  border-radius: 6px;
+  border-radius: 7px;
 
   font-size: 17px;
+
   font-weight: bold;
 
   cursor: pointer;
 
   transition:
-    background-color 0.2s ease,
-    transform 0.15s ease,
-    box-shadow 0.2s ease;
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 .btn-login:hover {
   background-color: #2f80ed;
 
-  box-shadow: 0 6px 16px rgba(47, 128, 237, 0.3);
+  box-shadow: 0 8px 18px rgba(47, 128, 237, 0.28);
 
   transform: translateY(-1px);
 }
 
-/* =========================
+.btn-login:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
    ESQUECI A SENHA
-   ========================= */
+   ========================================================================== */
 
 #esqueci_senha {
   display: block;
 
   margin-top: 22px;
 
-  color: #2167a8;
+  color: #1765a8;
 
   text-decoration: none;
 
   font-size: 15px;
+
+  transition: color 0.18s ease;
 }
 
 #esqueci_senha:hover {
@@ -238,9 +282,21 @@ input:focus {
   text-decoration: underline;
 }
 
-/* =========================
+/* ==========================================================================
+   ACESSIBILIDADE
+   ========================================================================== */
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 3px solid #4da3ff;
+
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
    RESPONSIVIDADE
-   ========================= */
+   ========================================================================== */
 
 @media (max-width: 500px) {
   body {
@@ -249,6 +305,7 @@ input:focus {
 
   .logo-login img {
     width: 75px;
+
     height: 75px;
   }
 
@@ -268,9 +325,19 @@ input:focus {
     min-height: auto;
 
     padding: 30px 25px;
+
+    border-radius: 12px;
   }
 
   h2 {
     font-size: 26px;
+  }
+
+  label {
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
   }
 }
