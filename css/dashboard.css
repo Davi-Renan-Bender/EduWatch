@@ -1975,3 +1975,41 @@ button.class-card {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* =====================================
+   DESEMPENHO - TELA TODA
+===================================== */
+
+#section-desempenho {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Coloca os dois cards um embaixo do outro */
+#section-desempenho .card-grid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+    gap: 24px;
+}
+
+/* Cada card ocupa toda a largura */
+#section-desempenho .card-grid .panel {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+/* Tabela ocupa toda a largura */
+#section-desempenho .table-wrapper {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#section-desempenho .data-table {
+    width: 100%;
+    min-width: 0;
+}
