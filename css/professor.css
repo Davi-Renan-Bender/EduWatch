@@ -1,0 +1,59 @@
+/* ================================
+   DESEMPENHO - TELA TODA
+================================ */
+
+.class-card-footer {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-top: auto;
+}
+
+.class-card-footer .class-card-meta {
+  margin-top: 0;
+}
+
+.class-card-footer .status-badge {
+  flex: 0 0 auto;
+}
+
+.modal-section h3 {
+  margin: 0;
+
+  color: var(--text-strong);
+
+  font-size: 14px;
+
+  font-weight: var(--fw-bold);
+}
+
+.modal-observacao {
+  font-size: 13.5px;
+
+  line-height: 1.6;
+
+  color: var(--text);
+
+  background-color: var(--surface-muted);
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-md);
+
+  padding: 12px 14px;
+
+  margin: 0;
+}
+
+@media (max-width: 620px) {
+  .class-card-footer {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+}

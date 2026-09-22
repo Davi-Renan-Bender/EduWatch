@@ -1,0 +1,383 @@
+<!doctype html>
+
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>EduWatch · Administração</title>
+    <link rel="icon" type="image/svg+xml" href="img/logo.svg" />
+
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+  </head>
+
+  <body class="dashboard-body">
+    <div class="app-shell">
+      <!-- ============================================================
+           SIDEBAR
+           ============================================================ -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <img class="brand-logo" src="img/logo.svg" alt="EduWatch" />
+          <span class="brand-name">EduWatch</span>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Navegação administrativa">
+          <a
+            class="sidebar-link is-active"
+            href="admin.html"
+            aria-current="page"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="4" y="4" width="6" height="6" rx="1"></rect>
+              <rect x="14" y="4" width="6" height="6" rx="1"></rect>
+              <rect x="4" y="14" width="6" height="6" rx="1"></rect>
+              <rect x="14" y="14" width="6" height="6" rx="1"></rect>
+            </svg>
+
+            <span>Áreas do sistema</span>
+          </a>
+
+          <a class="sidebar-link" href="aluno.html?modo=visualizacao">
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"></path>
+            </svg>
+
+            <span>Área do aluno</span>
+          </a>
+
+          <a class="sidebar-link" href="professor.html?modo=visualizacao">
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 9l9-5 9 5-9 5-9-5Z"></path>
+              <path d="M7 11v4c0 2 2.2 4 5 4s5-2 5-4v-4"></path>
+              <path d="M21 9v6"></path>
+            </svg>
+
+            <span>Área do professor</span>
+          </a>
+
+          <a class="sidebar-link" href="coordenacao.html?modo=visualizacao">
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 20V12"></path>
+              <path d="M12 20V7"></path>
+              <path d="M19 20V4"></path>
+            </svg>
+
+            <span>Área da coordenação</span>
+          </a>
+        </nav>
+
+        <!-- Usuário logado -->
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <span class="avatar" id="sidebar-user-avatar" aria-hidden="true">
+              A
+            </span>
+
+            <div class="sidebar-user-info">
+              <strong id="sidebar-user-name"> Administrador </strong>
+
+              <small id="sidebar-user-role"> Administrador </small>
+            </div>
+          </div>
+
+          <button
+            class="btn btn-ghost btn-logout"
+            id="btn-logout"
+            type="button"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"></path>
+              <path d="M15 16l4-4-4-4"></path>
+              <path d="M19 12H9"></path>
+            </svg>
+
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <!-- ============================================================
+           CONTEÚDO
+           ============================================================ -->
+
+      <div class="app-content">
+        <!-- Topbar -->
+        <header class="topbar">
+          <button
+            class="btn-icon sidebar-toggle"
+            id="sidebar-toggle"
+            type="button"
+            aria-label="Abrir menu"
+            aria-expanded="false"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 18h16"></path>
+            </svg>
+          </button>
+
+          <div class="topbar-title">
+            <h1>Áreas do sistema</h1>
+
+            <p class="topbar-subtitle">Acesso administrativo ao EduWatch</p>
+          </div>
+        </header>
+
+        <!-- ============================================================
+             CONTEÚDO PRINCIPAL
+             ============================================================ -->
+
+        <main class="main-content admin-main">
+          <section
+            class="admin-welcome section-block"
+            aria-labelledby="admin-heading"
+          >
+            <div class="admin-welcome-content">
+              <span class="admin-eyebrow"> ACESSO ADMINISTRATIVO </span>
+
+              <h2 id="admin-heading">Selecione uma área para acessar</h2>
+
+              <p>
+                Como administrador, você possui acesso às diferentes interfaces
+                do EduWatch. Escolha abaixo qual ambiente deseja visualizar.
+              </p>
+            </div>
+          </section>
+
+          <!-- ========================================================
+               CARDS DE ACESSO
+               ======================================================== -->
+
+          <section class="admin-area-grid" aria-label="Áreas disponíveis">
+            <!-- ALUNO -->
+            <a class="admin-area-card" href="aluno.html?modo=visualizacao">
+              <div class="admin-area-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="8" r="4"></circle>
+                  <path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"></path>
+                </svg>
+              </div>
+
+              <div class="admin-area-content">
+                <span class="admin-area-type"> PERFIL </span>
+
+                <h2>Aluno</h2>
+
+                <p>
+                  Acesse a interface de acompanhamento individual do estudante.
+                </p>
+              </div>
+
+              <span class="admin-area-action">
+                Acessar
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m13 6 6 6-6 6"></path>
+                </svg>
+              </span>
+            </a>
+
+            <!-- PROFESSOR -->
+            <a class="admin-area-card" href="professor.html?modo=visualizacao">
+              <div class="admin-area-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 9l9-5 9 5-9 5-9-5Z"></path>
+                  <path d="M7 11v4c0 2 2.2 4 5 4s5-2 5-4v-4"></path>
+                  <path d="M21 9v6"></path>
+                </svg>
+              </div>
+
+              <div class="admin-area-content">
+                <span class="admin-area-type"> PERFIL </span>
+
+                <h2>Professor</h2>
+
+                <p>Acesse a interface de acompanhamento de turmas e alunos.</p>
+              </div>
+
+              <span class="admin-area-action">
+                Acessar
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m13 6 6 6-6 6"></path>
+                </svg>
+              </span>
+            </a>
+
+            <!-- COORDENAÇÃO -->
+            <a
+              class="admin-area-card"
+              href="coordenacao.html?modo=visualizacao"
+            >
+              <div class="admin-area-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 20V12"></path>
+                  <path d="M12 20V7"></path>
+                  <path d="M19 20V4"></path>
+                </svg>
+              </div>
+
+              <div class="admin-area-content">
+                <span class="admin-area-type"> PERFIL </span>
+
+                <h2>Coordenação</h2>
+
+                <p>
+                  Acesse a visão geral da escola, indicadores, alunos,
+                  professores e turmas.
+                </p>
+              </div>
+
+              <span class="admin-area-action">
+                Acessar
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m13 6 6 6-6 6"></path>
+                </svg>
+              </span>
+            </a>
+          </section>
+
+          <!-- Informação inferior -->
+          <section class="admin-info">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 11v5"></path>
+              <path d="M12 8h.01"></path>
+            </svg>
+
+            <p>
+              O acesso administrativo permite visualizar as diferentes
+              interfaces do protótipo EduWatch.
+            </p>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Overlay da sidebar no celular -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>

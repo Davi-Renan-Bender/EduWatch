@@ -1,0 +1,148 @@
+/* ==========================================================================
+   EduWatch — Ajustes específicos da página do Aluno
+   Depende de variables.css e dashboard.css.
+   ========================================================================== */
+
+.student-summary {
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  flex-wrap: wrap;
+}
+
+.student-summary .avatar {
+  width: 62px;
+  height: 62px;
+
+  flex-basis: 62px;
+
+  color: #084676;
+
+  background: linear-gradient(135deg, #d8edff 0%, #9fd0f5 100%);
+
+  border: 1px solid #b3d8f5;
+
+  font-size: 21px;
+}
+
+.student-summary-info {
+  min-width: 180px;
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.student-summary-info h2 {
+  margin: 0;
+
+  color: var(--text-strong);
+
+  font-size: 20px;
+
+  font-weight: var(--fw-bold);
+
+  line-height: 1.25;
+}
+
+.student-summary-meta {
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 6px 12px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+.student-summary-meta span {
+  display: inline-flex;
+
+  align-items: center;
+}
+
+.profile-fields {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 12px 18px;
+
+  margin: 0;
+}
+
+.profile-fields div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-width: 0;
+
+  padding: 12px 13px;
+
+  background: var(--surface-muted);
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-md);
+}
+
+.profile-fields dt {
+  font-size: 12px;
+
+  font-weight: var(--fw-semibold);
+
+  color: var(--muted);
+}
+
+.profile-fields dd {
+  margin: 0;
+
+  color: var(--text-strong);
+
+  font-size: 14px;
+
+  font-weight: var(--fw-semibold);
+
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .student-summary {
+    align-items: flex-start;
+
+    gap: 14px;
+  }
+
+  .student-summary .avatar {
+    width: 54px;
+    height: 54px;
+
+    flex-basis: 54px;
+
+    font-size: 18px;
+  }
+
+  .student-summary-info h2 {
+    font-size: 18px;
+  }
+
+  .profile-fields {
+    grid-template-columns: 1fr;
+  }
+}
