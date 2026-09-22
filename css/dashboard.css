@@ -369,8 +369,8 @@ button {
 .main-content {
   flex: 1;
   padding: 28px;
-  max-width: var(--content-max-width);
   width: 100%;
+  max-width: none;
 }
 
 .dashboard-section[hidden] {
@@ -576,16 +576,13 @@ button {
    -------------------------------------------------------------------------- */
 
 .table-wrapper {
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  width: 100%;
+  overflow-x: visible;
 }
 
 .data-table {
   width: 100%;
-  border-collapse: collapse;
-  min-width: 560px;
-  background-color: var(--surface);
+  min-width: 0;
 }
 
 .data-table th,
@@ -944,4 +941,41 @@ button {
     width: 260px;
     right: -8px;
   }
+}
+
+/* ================================
+   DESEMPENHO - TELA TODA
+================================ */
+
+#section-desempenho {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Coloca os dois painéis um embaixo do outro */
+#section-desempenho .card-grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Cada painel ocupa toda a largura */
+#section-desempenho .panel {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+/* Tabela ocupa toda a largura do painel */
+#section-desempenho .table-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+#section-desempenho .data-table {
+    width: 100%;
+    min-width: 0;
 }
