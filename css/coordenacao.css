@@ -3,132 +3,159 @@
    Depende de variables.css e dashboard.css.
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   Cards da Coordenação
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   KPIs
+   ========================================================================== */
 
-#kpi-resumo-escola .kpi-card {
-  min-height: 104px;
-}
-
+#kpi-resumo-escola .kpi-card,
 #kpi-situacao-escola .kpi-card {
-  min-height: 104px;
+  min-height: 110px;
 }
 
-/* --------------------------------------------------------------------------
-   Tabelas da Coordenação
-   -------------------------------------------------------------------------- */
+#kpi-resumo-escola .kpi-value,
+#kpi-situacao-escola .kpi-value {
+  font-size: 28px;
+}
+
+/* ==========================================================================
+   TABELAS
+   ========================================================================== */
 
 #section-alunos .data-table td:first-child,
 #section-professores .data-table td:first-child {
-  font-weight: 600;
+  font-weight: var(--fw-bold);
 }
 
 #section-alunos .data-table tbody tr.is-clickable {
   transition:
-    background-color 0.15s ease,
-    box-shadow 0.15s ease;
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 #section-alunos .data-table tbody tr.is-clickable:focus-visible {
-  outline: 3px solid var(--primary-strong);
+  outline: 3px solid rgba(77, 163, 255, 0.28);
+
   outline-offset: -3px;
 }
 
-/* --------------------------------------------------------------------------
-   Cards de turma
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   CARDS DE TURMA
+   ========================================================================== */
 
 #grade-turmas-coord .class-card {
   transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
 }
 
 #grade-turmas-coord .class-card:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 #grade-turmas-coord .class-card-footer {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   gap: 12px;
-  margin-top: 4px;
+
+  margin-top: auto;
 }
 
-/* --------------------------------------------------------------------------
-   Indicadores
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   INDICADORES
+   ========================================================================== */
 
 #section-indicadores .mini-chart {
-  min-height: 180px;
+  min-height: 250px;
 }
 
 #section-indicadores .mini-chart-fill {
-  transition: height 0.25s ease;
+  transition:
+    height 0.28s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
-/* --------------------------------------------------------------------------
-   Modal da Coordenação
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   MODAL
+   ========================================================================== */
 
 #section-alunos {
   min-width: 0;
 }
 
 .modal-section h3 {
-  margin: 0 0 8px;
-  font-size: 13.5px;
-  color: var(--muted);
+  margin: 0;
+
+  color: var(--text-strong);
+
+  font-size: 14px;
+
+  font-weight: var(--fw-bold);
 }
 
 .modal-observacao {
   font-size: 13.5px;
+
   line-height: 1.6;
+
   color: var(--text);
+
   background-color: var(--surface-muted);
-  border-radius: var(--radius-sm);
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-md);
+
   padding: 12px 14px;
+
   margin: 0;
 }
 
-/* --------------------------------------------------------------------------
-   Relatórios indisponíveis no protótipo
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   RELATÓRIOS INDISPONÍVEIS
+   ========================================================================== */
 
 .class-card--disabled {
   cursor: default;
-  opacity: 0.72;
+
+  opacity: 0.78;
 }
 
 .class-card--disabled:hover {
   border-color: var(--border);
+
   transform: none;
+
+  box-shadow: var(--shadow-xs);
 }
 
-/* --------------------------------------------------------------------------
-   Responsividade
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
 
 @media (max-width: 760px) {
   #kpi-resumo-escola .kpi-card,
   #kpi-situacao-escola .kpi-card {
-    min-height: 96px;
+    min-height: 100px;
   }
 
   #grade-turmas-coord .class-card-footer {
     align-items: flex-start;
+
     flex-direction: column;
+
     gap: 8px;
   }
 }
 
 @media (max-width: 640px) {
   #section-indicadores .mini-chart {
-    gap: 10px;
-    height: 150px;
+    min-height: 230px;
   }
 
   #section-indicadores .mini-chart-fill {

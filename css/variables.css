@@ -1,137 +1,129 @@
 /* ==========================================================================
-   EduWatch — Sistema de variáveis
-   Tema azul educacional
-   Fundo principal: #001d4a
+   EduWatch — Sistema de design
+   Base compartilhada por todos os dashboards.
    ========================================================================== */
 
 :root {
-  /* ==========================================================================
-     CORES PRINCIPAIS
-     ========================================================================== */
+  /* ---------- Marca / azul institucional ---------- */
 
-  --primary: #0b4f9c;
+  --primary: #0b5fae;
   --primary-strong: #176fc1;
+  --primary-deep: #003b73;
   --secondary: #2f80ed;
+  --accent: #4da3ff;
 
-  /* ==========================================================================
-     FUNDO E SUPERFÍCIES
-     ========================================================================== */
+  /* ---------- Fundos ---------- */
 
   --background: #001d4a;
+  --page-background: #edf4fb;
+
   --surface: #ffffff;
-  --surface-muted: #edf4fb;
+  --surface-muted: #f4f8fc;
+  --surface-hover: #f0f6fc;
 
-  /* ==========================================================================
-     TEXTOS
-     ========================================================================== */
+  /* Compatibilidade com dashboard.css */
 
-  --text: #14263d;
-  --text-inverted: #ffffff;
-  --muted: #5d7087;
-
-  --text-on-background: #f4f8ff;
-  --muted-on-background: #b8c8dc;
-
-  /* ==========================================================================
-     BORDAS
-     ========================================================================== */
-
-  --border: #d4e0ec;
-  --border-strong: #9db2c8;
-
-  /* ==========================================================================
-     ESTADOS
-     ========================================================================== */
-
-  --success: #1f7a46;
-  --success-bg: #e7f5ed;
-
-  --warning: #996800;
-  --warning-bg: #fff3d8;
-
-  --danger: #b42318;
-  --danger-bg: #fde9e7;
-
-  /* ==========================================================================
-     VARIÁVEIS DO CSS REFORMULADO
-     Mantidas para compatibilidade com a refatoração do Claude
-     ========================================================================== */
-
-  /* Fundo */
-  --color-bg: #001d4a;
-
-  /* Superfície */
+  --color-bg: #edf4fb;
   --color-surface: #ffffff;
 
-  /* Texto */
+  /* ---------- Textos ---------- */
+
+  --text: #14263d;
+  --text-strong: #0f2742;
+  --text-inverted: #ffffff;
+
+  --muted: #61758b;
+
+  --text-on-background: #ffffff;
+  --muted-on-background: #bfd0e2;
+
   --color-text: #14263d;
-  --color-text-muted: #5d7087;
+  --color-text-muted: #61758b;
   --color-text-subtle: #8191a4;
 
-  /* Texto sobre azul */
   --color-text-on-navy: #ffffff;
-  --color-text-on-navy-muted: #c1d0e1;
+  --color-text-on-navy-muted: #c4d3e2;
 
-  /* ==========================================================================
-     ESCALA AZUL
-     ========================================================================== */
+  /* ---------- Bordas ---------- */
 
-  --navy-950: #000d22;
-  --navy-900: #00183d;
-  --navy-800: #002653;
-  --navy-700: #003d78;
-  --navy-500: #0b4f9c;
-  --navy-400: #2878c7;
-  --navy-200: #a8cff2;
+  --border: #d4e0ec;
+  --border-strong: #9eb3c8;
 
-  /* ==========================================================================
-     NEUTROS
-     ========================================================================== */
+  --color-border: #d4e0ec;
+  --color-border-strong: #9eb3c8;
 
-  --neutral-50: #f7faff;
-  --neutral-100: #edf3f9;
+  /* ---------- Estados ---------- */
 
-  /* ==========================================================================
-     CORES DE ESTADO — NOMES DO CSS REFORMULADO
-     ========================================================================== */
+  --success: #237a4d;
+  --success-text: #1f7147;
+  --success-bg: #e8f6ee;
+  --success-border: #b2dcc3;
 
-  --success-text: #1f7a46;
-  --success-border: #a9d7bb;
+  --warning: #9a6800;
+  --warning-text: #956500;
+  --warning-bg: #fff4d8;
+  --warning-border: #e5cc89;
 
-  --warning-text: #996800;
-  --warning-border: #e7cb82;
-
+  --danger: #b42318;
   --danger-text: #b42318;
+  --danger-bg: #fdebea;
   --danger-border: #e7aca6;
 
-  /* ==========================================================================
-     DESTAQUES
-     O antigo "gold" foi convertido para azul.
-     ========================================================================== */
+  --info: #176fc1;
+  --info-bg: #eaf3fc;
+  --info-border: #b9d6ef;
+
+  /* ---------- Escala azul ---------- */
+
+  --navy-950: #000d22;
+  --navy-900: #001d4a;
+  --navy-850: #002653;
+  --navy-800: #00345f;
+  --navy-700: #004a82;
+  --navy-600: #0060a8;
+  --navy-500: #0b5fae;
+  --navy-400: #2878c7;
+  --navy-300: #65a7df;
+  --navy-200: #a8cff2;
+  --navy-100: #dcecf9;
+
+  /* ---------- Neutros ---------- */
+
+  --neutral-0: #ffffff;
+  --neutral-50: #f8fbfe;
+  --neutral-100: #f1f6fa;
+  --neutral-200: #e6eef6;
+  --neutral-300: #d6e2ee;
+  --neutral-500: #8295a9;
+  --neutral-700: #455a70;
+  --neutral-900: #17293d;
+
+  /* Compatibilidade com a refatoração anterior */
 
   --gold-400: #5fa8ff;
   --gold-500: #2f80ed;
 
-  /* ==========================================================================
-     RADIUS
-     ========================================================================== */
+  /* ---------- Raios ---------- */
 
-  --radius-sm: 6px;
+  --radius-sm: 7px;
   --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-lg: 15px;
+  --radius-xl: 18px;
   --radius-full: 999px;
 
-  /* ==========================================================================
-     SOMBRAS
-     ========================================================================== */
+  /* ---------- Sombras ---------- */
 
-  --shadow-sm: 0 2px 6px rgba(0, 16, 40, 0.08);
-  --shadow-md: 0 8px 24px rgba(0, 16, 40, 0.16);
-  --shadow-lg: 0 16px 40px rgba(0, 10, 30, 0.22);
+  --shadow-xs: 0 1px 3px rgba(0, 29, 74, 0.05);
 
-  /* ==========================================================================
-     ESPAÇAMENTOS
-     ========================================================================== */
+  --shadow-sm: 0 3px 10px rgba(0, 29, 74, 0.08);
+
+  --shadow-md: 0 10px 28px rgba(0, 29, 74, 0.13);
+
+  --shadow-lg: 0 18px 44px rgba(0, 17, 43, 0.2);
+
+  --shadow-focus: 0 0 0 4px rgba(47, 128, 237, 0.16);
+
+  /* ---------- Espaçamento ---------- */
 
   --space-1: 4px;
   --space-2: 8px;
@@ -139,11 +131,11 @@
   --space-4: 16px;
   --space-5: 20px;
   --space-6: 24px;
+  --space-7: 28px;
   --space-8: 32px;
+  --space-10: 40px;
 
-  /* ==========================================================================
-     TIPOGRAFIA
-     ========================================================================== */
+  /* ---------- Tipografia ---------- */
 
   --fz-xs: 12px;
   --fz-sm: 14px;
@@ -151,28 +143,23 @@
   --fz-md: 17px;
   --fz-lg: 20px;
   --fz-xl: 24px;
+  --fz-2xl: 30px;
+  --fz-3xl: 36px;
 
   --fw-medium: 500;
   --fw-semibold: 600;
   --fw-bold: 700;
+  --fw-heavy: 800;
 
-  /* ==========================================================================
-     TRANSIÇÕES
-     ========================================================================== */
+  /* ---------- Interações ---------- */
 
-  --transition-fast: 0.18s ease;
-  --transition-base: 0.25s ease;
-  --transition-slow: 0.35s ease;
+  --transition-fast: 0.16s ease;
+  --transition-base: 0.22s ease;
+  --transition-slow: 0.32s ease;
 
-  /* ==========================================================================
-     FOCO
-     ========================================================================== */
+  --ring-focus: 0 0 0 4px rgba(77, 163, 255, 0.22);
 
-  --ring-focus: 0 0 0 3px rgba(47, 128, 237, 0.18);
-
-  /* ==========================================================================
-     Z-INDEX
-     ========================================================================== */
+  /* ---------- Camadas ---------- */
 
   --z-backdrop: 40;
   --z-sidebar: 50;
@@ -180,11 +167,14 @@
   --z-notification: 70;
   --z-modal: 100;
 
-  /* ==========================================================================
-     LAYOUT
-     ========================================================================== */
+  /* ---------- Layout ---------- */
 
   --sidebar-width: 264px;
   --header-height: 76px;
   --content-max-width: 1180px;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
 }
