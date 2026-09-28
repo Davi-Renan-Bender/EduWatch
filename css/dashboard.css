@@ -77,12 +77,7 @@
 
   color: var(--color-text-on-navy);
 
-  background: linear-gradient(
-    180deg,
-    #002b5c 0%,
-    var(--navy-900) 55%,
-    #001634 100%
-  );
+  background: #001d4a;
 
   border-right: 1px solid rgba(255, 255, 255, 0.09);
 
