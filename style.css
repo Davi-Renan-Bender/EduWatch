@@ -5,7 +5,6 @@
 
 :root {
   --login-bg: #001d4a;
-  --login-bg-2: #003b73;
   --login-primary: #0b5fae;
   --login-primary-hover: #1674c9;
   --login-text: #13263d;
@@ -40,18 +39,7 @@ body {
   color: #ffffff;
   text-align: center;
 
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(76, 160, 255, 0.16),
-      transparent 34%
-    ),
-    linear-gradient(
-      160deg,
-      var(--login-bg-2) 0%,
-      var(--login-bg) 58%,
-      #001432 100%
-    );
+  background: var(--login-bg);
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -263,9 +251,9 @@ body {
   font-size: 17px;
   font-weight: 700;
 
-  background: linear-gradient(135deg, #0b5fae 0%, #176fc1 100%);
+  background: #001d4a;
 
-  border: 1px solid #0b5fae;
+  border: 1px solid #001d4a;
   border-radius: 9px;
 
   cursor: pointer;
