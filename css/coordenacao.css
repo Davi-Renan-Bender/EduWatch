@@ -81,6 +81,127 @@
 }
 
 /* ==========================================================================
+   CADASTROS
+   ========================================================================== */
+
+#section-cadastros {
+  min-width: 0;
+}
+
+#section-cadastros .panel {
+  width: 100%;
+}
+
+#section-cadastros .panel-header {
+  margin-bottom: 24px;
+}
+
+#section-cadastros .section-subheading {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#form-cadastro-usuario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+#form-cadastro-usuario .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#form-cadastro-usuario .form-group:first-child {
+  grid-column: 1 / -1;
+}
+
+#form-cadastro-usuario label {
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+}
+
+#form-cadastro-usuario input,
+#form-cadastro-usuario select {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  color: var(--text);
+  font: inherit;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+#form-cadastro-usuario input::placeholder {
+  color: var(--text-muted);
+}
+
+#form-cadastro-usuario input:hover,
+#form-cadastro-usuario select:hover {
+  border-color: var(--text-muted);
+}
+
+#form-cadastro-usuario input:focus,
+#form-cadastro-usuario select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.14);
+}
+
+#form-cadastro-usuario .form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+#btn-cadastrar-usuario {
+  min-height: 46px;
+  padding: 10px 20px;
+}
+
+#cadastro-mensagem {
+  grid-column: 1 / -1;
+  min-height: 20px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  #form-cadastro-usuario {
+    grid-template-columns: 1fr;
+  }
+
+  #form-cadastro-usuario .form-group:first-child {
+    grid-column: auto;
+  }
+
+  #form-cadastro-usuario .form-actions {
+    grid-column: auto;
+  }
+
+  #cadastro-mensagem {
+    grid-column: auto;
+  }
+
+  #btn-cadastrar-usuario {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
    MODAL
    ========================================================================== */
 
@@ -168,26 +289,26 @@
 ===================================== */
 
 #section-visao-geral .card-grid {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 /* Cada painel ocupa toda a largura */
 #section-visao-geral .card-grid .panel {
-    width: 100%;
-    max-width: none;
-    margin: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 /* Tabela ocupa toda a largura */
 #section-visao-geral .table-wrapper {
-    width: 100%;
-    overflow: hidden;
+  width: 100%;
+  overflow: hidden;
 }
 
 #section-visao-geral .data-table {
-    width: 100%;
-    min-width: 0;
+  width: 100%;
+  min-width: 0;
 }
