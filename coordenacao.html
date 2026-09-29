@@ -47,6 +47,32 @@
 
           <a
             class="sidebar-link"
+            href="#cadastros"
+            data-section="cadastros"
+            data-title="Cadastros"
+            data-subtitle="Cadastro de alunos e professores"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="9" cy="8" r="3"></circle>
+              <path d="M3 20c1-3 3.5-5 6-5s5 2 6 5"></path>
+              <path d="M19 8v6"></path>
+              <path d="M16 11h6"></path>
+            </svg>
+
+            <span>Cadastros</span>
+          </a>
+
+          <a
+            class="sidebar-link"
             href="#alunos"
             data-section="alunos"
             data-title="Alunos"
@@ -542,6 +568,106 @@
                   <span class="class-card-meta"><span>Em breve</span></span>
                 </div>
               </div>
+            </div>
+          </section>
+          <!-- ============ CADASTROS ============ -->
+          <section
+            class="dashboard-section"
+            id="section-cadastros"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <div class="panel section-block">
+              <div class="panel-header">
+                <div>
+                  <h2>Cadastro de alunos e professores</h2>
+                  <p class="section-subheading">
+                    Cadastre novos usuários para acesso ao EduWatch.
+                  </p>
+                </div>
+              </div>
+
+              <form id="form-cadastro-usuario" class="form-grid">
+                <div class="form-group">
+                  <label for="cadastro-tipo">Tipo de usuário</label>
+
+                  <select id="cadastro-tipo" name="tipo" required>
+                    <option value="">Selecione...</option>
+                    <option value="aluno">Aluno</option>
+                    <option value="professor">Professor</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="cadastro-nome">Nome completo</label>
+
+                  <input
+                    type="text"
+                    id="cadastro-nome"
+                    name="nome"
+                    placeholder="Digite o nome completo"
+                    autocomplete="name"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="cadastro-cpf">CPF</label>
+
+                  <input
+                    type="text"
+                    id="cadastro-cpf"
+                    name="cpf"
+                    placeholder="000.000.000-00"
+                    inputmode="numeric"
+                    maxlength="14"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="cadastro-senha">Senha</label>
+
+                  <input
+                    type="password"
+                    id="cadastro-senha"
+                    name="senha"
+                    placeholder="Digite a senha"
+                    autocomplete="new-password"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="cadastro-confirmar-senha">Confirmar senha</label>
+
+                  <input
+                    type="password"
+                    id="cadastro-confirmar-senha"
+                    name="confirmar-senha"
+                    placeholder="Digite a senha novamente"
+                    autocomplete="new-password"
+                    required
+                  />
+                </div>
+
+                <div class="form-actions">
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="btn-cadastrar-usuario"
+                  >
+                    Cadastrar usuário
+                  </button>
+                </div>
+
+                <p
+                  id="cadastro-mensagem"
+                  class="form-message"
+                  aria-live="polite"
+                ></p>
+              </form>
             </div>
           </section>
         </main>
