@@ -1,6 +1,11 @@
-/* ================================
-   DESEMPENHO - TELA TODA
-================================ */
+/* ==========================================================================
+   EduWatch — professor.css
+   Estilos específicos da área do professor
+   ========================================================================== */
+
+/* ==========================================================================
+   CARDS DAS TURMAS
+   ========================================================================== */
 
 .class-card-footer {
   display: flex;
@@ -21,6 +26,10 @@
 .class-card-footer .status-badge {
   flex: 0 0 auto;
 }
+
+/* ==========================================================================
+   MODAL DO ALUNO
+   ========================================================================== */
 
 .modal-section h3 {
   margin: 0;
@@ -50,10 +59,562 @@
   margin: 0;
 }
 
+/* ==========================================================================
+   AVALIAÇÕES
+   ========================================================================== */
+
+#section-avaliacoes {
+  width: 100%;
+  max-width: none;
+}
+
+/* ---------- Introdução ---------- */
+
+.section-intro {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 2px;
+}
+
+.section-eyebrow {
+  display: inline-flex;
+
+  align-items: center;
+
+  min-height: 26px;
+
+  padding: 4px 9px;
+
+  margin-bottom: 7px;
+
+  color: var(--primary);
+
+  background: var(--info-bg);
+
+  border: 1px solid var(--info-border);
+
+  border-radius: var(--radius-full);
+
+  font-size: 11px;
+
+  font-weight: var(--fw-bold);
+
+  letter-spacing: 0.04em;
+
+  text-transform: uppercase;
+}
+
+.section-main-title {
+  margin: 0;
+
+  color: var(--text-strong);
+
+  font-size: clamp(24px, 2.5vw, 30px);
+
+  font-weight: var(--fw-heavy);
+
+  line-height: 1.2;
+
+  letter-spacing: -0.025em;
+}
+
+.section-main-description {
+  max-width: 700px;
+
+  margin: 7px 0 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
+
+  line-height: 1.55;
+}
+
+/* ---------- Status da avaliação ---------- */
+
+.assessment-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  min-height: 30px;
+
+  padding: 5px 10px;
+
+  color: var(--primary);
+
+  background: var(--info-bg);
+
+  border: 1px solid var(--info-border);
+
+  border-radius: var(--radius-full);
+
+  font-size: 12px;
+
+  font-weight: var(--fw-bold);
+
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   FORMULÁRIO
+   ========================================================================== */
+
+.assessment-form {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px 20px;
+}
+
+.form-field {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  min-width: 0;
+}
+
+.form-field label {
+  color: var(--text-strong);
+
+  font-size: 13px;
+
+  font-weight: var(--fw-bold);
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+
+  min-height: 44px;
+
+  padding: 10px 12px;
+
+  color: var(--text);
+
+  background: #ffffff;
+
+  border: 1px solid var(--border-strong);
+
+  border-radius: var(--radius-md);
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.form-field input::placeholder {
+  color: #91a0b0;
+}
+
+.form-field input:hover,
+.form-field select:hover {
+  border-color: #7f9eb8;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: var(--primary);
+
+  box-shadow: var(--ring-focus);
+
+  background: #ffffff;
+}
+
+.form-field small {
+  color: var(--muted);
+
+  font-size: 11.5px;
+
+  line-height: 1.4;
+}
+
+.input-with-suffix {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+}
+
+.input-with-suffix input {
+  padding-right: 70px;
+}
+
+.input-with-suffix span {
+  position: absolute;
+
+  right: 13px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+
+  font-weight: var(--fw-semibold);
+
+  pointer-events: none;
+}
+
+/* ---------- Ações do formulário ---------- */
+
+.assessment-form-actions {
+  grid-column: 1 / -1;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 4px;
+
+  padding-top: 17px;
+
+  border-top: 1px solid var(--border);
+}
+
+/* ==========================================================================
+   LANÇAMENTO DE NOTAS
+   ========================================================================== */
+
+.grade-toolbar {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding: 13px 15px;
+
+  background: var(--surface-muted);
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-md);
+}
+
+.grade-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  min-width: 0;
+}
+
+.grade-info-icon {
+  width: 36px;
+
+  height: 36px;
+
+  flex: 0 0 36px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: var(--primary);
+
+  background: var(--info-bg);
+
+  border: 1px solid var(--info-border);
+
+  border-radius: var(--radius-md);
+}
+
+.grade-info-icon svg {
+  width: 18px;
+
+  height: 18px;
+}
+
+.grade-info div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  min-width: 0;
+}
+
+.grade-info strong {
+  color: var(--text-strong);
+
+  font-size: 13px;
+}
+
+.grade-info div span {
+  color: var(--muted);
+
+  font-size: 12px;
+
+  line-height: 1.4;
+}
+
+.grade-scale {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  min-height: 30px;
+
+  padding: 5px 10px;
+
+  color: var(--muted);
+
+  background: #ffffff;
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-full);
+
+  font-size: 12px;
+
+  white-space: nowrap;
+}
+
+.grade-scale strong {
+  color: var(--text-strong);
+
+  font-size: 13px;
+}
+
+/* ---------- Tabela ---------- */
+
+.assessment-table-wrapper {
+  overflow-x: auto;
+}
+
+.assessment-table {
+  min-width: 680px;
+}
+
+.assessment-table th:last-child,
+.assessment-table td:last-child {
+  width: 150px;
+}
+
+.assessment-table th:nth-child(2),
+.assessment-table td:nth-child(2) {
+  width: 160px;
+}
+
+.assessment-table th:nth-child(3),
+.assessment-table td:nth-child(3) {
+  width: 140px;
+}
+
+/* ==========================================================================
+   ESTADO VAZIO
+   ========================================================================== */
+
+.assessment-empty-state {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 210px;
+
+  padding: 30px 20px;
+
+  text-align: center;
+
+  background: var(--surface-muted);
+
+  border: 1px dashed var(--border-strong);
+
+  border-radius: var(--radius-md);
+}
+
+.assessment-empty-icon {
+  width: 48px;
+
+  height: 48px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 3px;
+
+  color: var(--primary);
+
+  background: #ffffff;
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-xs);
+}
+
+.assessment-empty-icon svg {
+  width: 23px;
+
+  height: 23px;
+}
+
+.assessment-empty-state strong {
+  color: var(--text-strong);
+
+  font-size: 14px;
+
+  font-weight: var(--fw-bold);
+}
+
+.assessment-empty-state > span {
+  max-width: 440px;
+
+  color: var(--muted);
+
+  font-size: 12.5px;
+
+  line-height: 1.55;
+}
+
+/* ==========================================================================
+   RODAPÉ DO LANÇAMENTO
+   ========================================================================== */
+
+.assessment-footer {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding-top: 4px;
+}
+
+.assessment-footer-info {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+
+  min-width: 0;
+}
+
+.assessment-footer-info strong {
+  color: var(--text-strong);
+
+  font-size: 13px;
+}
+
+.assessment-footer-info span {
+  color: var(--muted);
+
+  font-size: 11.5px;
+
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
+
+@media (max-width: 800px) {
+  .assessment-form {
+    grid-template-columns: 1fr;
+  }
+
+  .assessment-form-actions {
+    grid-column: auto;
+  }
+
+  .grade-toolbar {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .grade-scale {
+    align-self: flex-start;
+  }
+
+  .assessment-footer {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .assessment-footer .btn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 620px) {
   .class-card-footer {
     align-items: flex-start;
 
     flex-direction: column;
+  }
+
+  .section-main-title {
+    font-size: 23px;
+  }
+
+  .section-main-description {
+    font-size: 13px;
+  }
+
+  .assessment-status {
+    display: none;
+  }
+
+  .assessment-form-actions {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .assessment-form-actions .btn {
+    width: 100%;
+  }
+
+  .grade-toolbar {
+    padding: 12px;
+  }
+
+  .grade-info {
+    align-items: flex-start;
   }
 }
