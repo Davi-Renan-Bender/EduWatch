@@ -95,6 +95,32 @@
 
           <a
             class="sidebar-link"
+            href="#avaliacoes"
+            data-section="avaliacoes"
+            data-title="Avaliações"
+            data-subtitle="Crie avaliações e lance notas para os alunos"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+              <path d="M9 3.5h6"></path>
+              <path d="M9 8h6"></path>
+              <path d="M9 12h3"></path>
+            </svg>
+
+            <span>Avaliações</span>
+          </a>
+
+          <a
+            class="sidebar-link"
             href="#desempenho"
             data-section="desempenho"
             data-title="Desempenho"
@@ -410,6 +436,235 @@
                   </thead>
                   <tbody id="tabela-alunos-corpo"></tbody>
                 </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ AVALIAÇÕES ============ -->
+          <section
+            class="dashboard-section"
+            id="section-avaliacoes"
+            hidden
+            aria-labelledby="page-title"
+          >
+            <!-- CABEÇALHO DA SEÇÃO -->
+            <div class="section-intro">
+              <div>
+                <span class="section-eyebrow">Lançamento acadêmico</span>
+                <h2 class="section-main-title">Nova avaliação</h2>
+                <p class="section-main-description">
+                  Cadastre uma avaliação e registre as notas dos alunos da
+                  turma.
+                </p>
+              </div>
+            </div>
+
+            <!-- DADOS DA AVALIAÇÃO -->
+            <div class="panel section-block">
+              <div class="panel-header">
+                <div>
+                  <h2>Informações da avaliação</h2>
+                  <p>
+                    Defina os dados que serão utilizados para o lançamento das
+                    notas.
+                  </p>
+                </div>
+
+                <span class="assessment-status"> Nova avaliação </span>
+              </div>
+
+              <form class="assessment-form" id="form-avaliacao">
+                <div class="form-field">
+                  <label for="avaliacao-turma"> Turma </label>
+
+                  <select id="avaliacao-turma" name="turma" required>
+                    <option value="">Selecione uma turma</option>
+                  </select>
+
+                  <small>
+                    As turmas disponíveis serão carregadas posteriormente.
+                  </small>
+                </div>
+
+                <div class="form-field">
+                  <label for="avaliacao-disciplina"> Disciplina </label>
+
+                  <select id="avaliacao-disciplina" name="disciplina" required>
+                    <option value="">Selecione uma disciplina</option>
+                  </select>
+
+                  <small>
+                    A disciplina será vinculada à avaliação selecionada.
+                  </small>
+                </div>
+
+                <div class="form-field">
+                  <label for="avaliacao-periodo"> Período letivo </label>
+
+                  <select id="avaliacao-periodo" name="periodo" required>
+                    <option value="">Selecione o período</option>
+                  </select>
+
+                  <small>
+                    Informe em qual período a avaliação será registrada.
+                  </small>
+                </div>
+
+                <div class="form-field">
+                  <label for="avaliacao-titulo"> Nome da avaliação </label>
+
+                  <input
+                    id="avaliacao-titulo"
+                    name="titulo"
+                    type="text"
+                    placeholder="Ex.: Avaliação de conteúdo"
+                    maxlength="120"
+                    required
+                  />
+
+                  <small>
+                    Defina um nome que facilite a identificação da avaliação.
+                  </small>
+                </div>
+
+                <div class="form-field">
+                  <label for="avaliacao-data"> Data da avaliação </label>
+
+                  <input id="avaliacao-data" name="data" type="date" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="avaliacao-valor"> Valor máximo </label>
+
+                  <div class="input-with-suffix">
+                    <input
+                      id="avaliacao-valor"
+                      name="valor"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      placeholder="0,0"
+                      required
+                    />
+
+                    <span>pontos</span>
+                  </div>
+                </div>
+
+                <div class="assessment-form-actions">
+                  <button class="btn" type="reset">Limpar</button>
+
+                  <button class="btn btn-primary" type="button">
+                    Continuar para as notas
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- LANÇAMENTO DAS NOTAS -->
+            <div class="panel section-block">
+              <div class="panel-header">
+                <div>
+                  <h2>Notas dos alunos</h2>
+                  <p>Os alunos da turma selecionada aparecerão nesta tabela.</p>
+                </div>
+              </div>
+
+              <div class="grade-toolbar">
+                <div class="grade-info">
+                  <span class="grade-info-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <path d="M12 11v5"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                  </span>
+
+                  <div>
+                    <strong>Lançamento das notas</strong>
+                    <span>
+                      Após selecionar a turma, a lista de alunos será carregada
+                      aqui.
+                    </span>
+                  </div>
+                </div>
+
+                <span class="grade-scale">
+                  Nota máxima:
+                  <strong>—</strong>
+                </span>
+              </div>
+
+              <div class="table-wrapper assessment-table-wrapper">
+                <table
+                  class="data-table assessment-table"
+                  aria-label="Lançamento de notas dos alunos"
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">Aluno</th>
+                      <th scope="col">Matrícula</th>
+                      <th scope="col">Nota</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="tabela-notas-corpo">
+                    <!--
+            Preenchido futuramente via API.
+
+            Não inserir alunos aqui.
+            Os registros deverão vir do banco de dados.
+          -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="assessment-empty-state">
+                <div class="assessment-empty-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+                    <path d="M9 8h6"></path>
+                    <path d="M9 12h4"></path>
+                    <path d="M9 16h3"></path>
+                  </svg>
+                </div>
+
+                <strong>Nenhum aluno carregado</strong>
+
+                <span>
+                  Selecione uma turma para visualizar os alunos e lançar as
+                  respectivas notas.
+                </span>
+              </div>
+
+              <div class="assessment-footer">
+                <div class="assessment-footer-info">
+                  <strong>Avaliação ainda não registrada</strong>
+                  <span>
+                    Os dados serão salvos no sistema quando a integração com o
+                    banco estiver disponível.
+                  </span>
+                </div>
+
+                <button class="btn btn-primary" type="button">
+                  Salvar avaliação
+                </button>
               </div>
             </div>
           </section>
