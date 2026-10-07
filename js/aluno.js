@@ -3,53 +3,6 @@
 //
 // DADOS → LÓGICA → INTERFACE
 //
-// Os dados abaixo são mockados apenas para o protótipo visual. Quando o
-// backend existir, a função carregarDadosAluno() deve ser reescrita para
-// buscar estes mesmos campos em, por exemplo:
-//   GET /api/alunos/:id
-//   GET /api/desempenho?alunoId=:id
-//   GET /api/frequencia?alunoId=:id
-// mantendo o mesmo formato de campos (nome, media, frequencia, situacao...)
-// para que renderResumo/renderDisciplinas/renderEvolucao/renderAcompanhamento
-// não precisem mudar.
-// ==========================================================================
-
-// --------------------------------------------------------------------------
-// DADOS MOCKADOS — substituir por resposta da API
-// --------------------------------------------------------------------------
-const DADOS_MOCK_ALUNO = {
-  turma: "9º Ano A",
-  periodo: "3º Bimestre — 2026",
-  mediaGeral: 7.4,
-  frequenciaGeral: 91,
-  situacaoGeral: "atencao",
-  evolucaoRecente: 0.4,
-  disciplinas: [
-    { nome: "Matemática", media: 6.8, frequencia: 88, situacao: "atencao" },
-    { nome: "Português", media: 8.1, frequencia: 95, situacao: "normal" },
-    { nome: "Ciências", media: 7.5, frequencia: 92, situacao: "normal" },
-    { nome: "História", media: 5.9, frequencia: 85, situacao: "critico" },
-    { nome: "Geografia", media: 8.6, frequencia: 96, situacao: "normal" },
-  ],
-  evolucaoBimestres: [
-    { rotulo: "1º Bim.", valor: 6.5 },
-    { rotulo: "2º Bim.", valor: 6.9 },
-    { rotulo: "3º Bim.", valor: 7.4 },
-  ],
-  acompanhamento: [
-    {
-      texto:
-        "Dificuldade identificada em Geometria (Matemática) nas últimas duas avaliações.",
-    },
-    {
-      texto:
-        "Professor de História sugere reforço em interpretação de texto histórico.",
-    },
-    {
-      texto: "Frequência em queda em Matemática nas últimas três semanas.",
-    },
-  ],
-};
 
 document.addEventListener("DOMContentLoaded", function () {
   const usuarioSessao = exigirPerfil("aluno");
@@ -76,25 +29,8 @@ function carregarDadosAluno(usuario) {
   containerCabecalho.innerHTML = estadoCarregandoHTML(
     "Carregando seus dados...",
   );
-
-  // TODO(API): trocar por fetch(`/api/alunos/${usuario.id}`) + fetch(`/api/desempenho?alunoId=${usuario.id}`)
-  window.setTimeout(function () {
-    try {
-      renderCabecalho(usuario, DADOS_MOCK_ALUNO);
-      renderResumo(DADOS_MOCK_ALUNO);
-      renderDisciplinas(DADOS_MOCK_ALUNO.disciplinas);
-      renderFrequencia(DADOS_MOCK_ALUNO);
-      renderEvolucao(DADOS_MOCK_ALUNO.evolucaoBimestres);
-      renderAcompanhamento(DADOS_MOCK_ALUNO.acompanhamento);
-      renderPerfil(usuario, DADOS_MOCK_ALUNO);
-    } catch (erro) {
-      console.error(erro);
-      containerCabecalho.innerHTML = estadoErroHTML(
-        "Não foi possível carregar seus dados agora. Tente novamente mais tarde.",
-      );
-    }
-  }, 300);
 }
+containerCabecalho.innerHTML = estadoVazioHTML("Nenhum dado disponível.");
 
 function renderCabecalho(usuario, dados) {
   const container = document.getElementById("cabecalho-aluno");
@@ -304,14 +240,6 @@ function campoPerfilHTML(rotulo, valor) {
 }
 
 function carregarNotificacoes() {
-  // TODO(API): trocar por fetch('/api/notificacoes')
-  const notificacoes = [
-    {
-      titulo: "Nova nota lançada",
-      detalhe: "Matemática — Avaliação bimestral",
-    },
-  ];
-
   const lista = document.getElementById("notification-list");
   const marcador = document.getElementById("notification-dot");
 
