@@ -1,42 +1,4 @@
 // ========================================
-// USUÁRIOS TEMPORÁRIOS DO EDUWATCH
-// ========================================
-
-const usuarios = [
-  {
-    nome: "Davi",
-    cpf: "11111111111",
-    senha: "1234",
-    nivel: "aluno",
-    pagina: "aluno.html",
-  },
-
-  {
-    nome: "Carlos",
-    cpf: "22222222222",
-    senha: "1234",
-    nivel: "professor",
-    pagina: "professor.html",
-  },
-
-  {
-    nome: "Mariana",
-    cpf: "33333333333",
-    senha: "1234",
-    nivel: "coordenacao",
-    pagina: "coordenacao.html",
-  },
-
-  {
-    nome: "Administrador",
-    cpf: "44444444444",
-    senha: "1234",
-    nivel: "admin",
-    pagina: "admin.html",
-  },
-];
-
-// ========================================
 // MOSTRAR / OCULTAR SENHA
 // ========================================
 
@@ -120,47 +82,4 @@ campoCPF.addEventListener("input", function () {
 
   // Coloca o CPF formatado de volta no campo
   this.value = cpf;
-});
-
-// ========================================
-// LOGIN
-// ========================================
-
-const formulario = document.getElementById("form-login");
-
-formulario.addEventListener("submit", function (event) {
-  // Impede o navegador de recarregar a página
-  event.preventDefault();
-
-  const cpfDigitado = document.getElementById("cpf").value;
-  const senhaDigitada = document.getElementById("senha").value;
-
-  // Remove pontos e hífen antes de comparar
-  const cpfLimpo = cpfDigitado.replace(/\D/g, "");
-
-  // Procura o usuário
-  const usuarioEncontrado = usuarios.find(function (usuario) {
-    return usuario.cpf === cpfLimpo && usuario.senha === senhaDigitada;
-  });
-
-  // ========================================
-  // USUÁRIO ENCONTRADO
-  // ========================================
-
-  if (usuarioEncontrado) {
-    // Guarda os dados do usuário temporariamente
-    sessionStorage.setItem(
-      "usuarioLogado",
-      JSON.stringify({
-        nome: usuarioEncontrado.nome,
-        cpf: usuarioEncontrado.cpf,
-        nivel: usuarioEncontrado.nivel,
-      }),
-    );
-
-    // Redireciona para a página correspondente
-    window.location.href = usuarioEncontrado.pagina;
-  } else {
-    alert("CPF ou senha incorretos.");
-  }
 });
