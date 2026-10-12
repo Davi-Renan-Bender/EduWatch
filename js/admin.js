@@ -12,12 +12,12 @@
 // a API existir. Aqui fazemos apenas a proteção da interface no navegador.
 // ==========================================================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   // ------------------------------------------------------------------------
   // Verificação do perfil
   // ------------------------------------------------------------------------
 
-  const usuario = exigirPerfil("admin");
+  const usuario = await exigirPerfil("admin");
 
   if (!usuario) {
     return;

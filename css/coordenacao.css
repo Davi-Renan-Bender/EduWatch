@@ -179,6 +179,23 @@
   color: var(--text-muted);
 }
 
+#cadastro-mensagem.form-message--success {
+  color: #167547;
+}
+
+#cadastro-mensagem.form-message--error {
+  color: #b42318;
+}
+
+#cadastro-mensagem.form-message--info {
+  color: var(--text-muted);
+}
+
+#btn-cadastrar-usuario:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 @media (max-width: 640px) {
   #form-cadastro-usuario {
     grid-template-columns: 1fr;

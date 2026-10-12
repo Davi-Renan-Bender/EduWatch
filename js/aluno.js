@@ -4,8 +4,8 @@
 // DADOS → LÓGICA → INTERFACE
 //
 
-document.addEventListener("DOMContentLoaded", function () {
-  const usuarioSessao = exigirPerfil("aluno");
+document.addEventListener("DOMContentLoaded", async function () {
+  const usuarioSessao = await exigirPerfil("aluno");
 
   if (!usuarioSessao) return;
 

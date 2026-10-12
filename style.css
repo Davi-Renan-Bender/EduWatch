@@ -285,6 +285,38 @@ body {
   outline-offset: 3px;
 }
 
+/* ---------- Mensagens do login ---------- */
+
+.mensagem-login {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.mensagem-login[hidden] {
+  display: none;
+}
+
+.mensagem-login--erro {
+  color: #8f2020;
+  background: #fff0f0;
+  border: 1px solid #f2caca;
+}
+
+.mensagem-login--info {
+  color: #174b80;
+  background: #edf5ff;
+  border: 1px solid #c6def8;
+}
+
+.btn-login:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
 /* ---------- Esqueci a senha ---------- */
 
 #esqueci_senha {

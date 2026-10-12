@@ -10,20 +10,28 @@ let alunosFiltradosCoordenacao = [];
 // INICIALIZAÇÃO
 // --------------------------------------------------------------------------
 
-document.addEventListener("DOMContentLoaded", function () {
-  const usuarioSessao = exigirPerfil("coordenacao");
+document.addEventListener("DOMContentLoaded", async function () {
+  const usuarioSessao = await exigirPerfil("coordenacao");
 
   if (!usuarioSessao) {
     return;
   }
 
-  const usuario = obterUsuarioVisualizacao(usuarioSessao, "coordenacao");
+  const usuario = usuarioSessao.modoGestaoUsuariosAdmin
+    ? usuarioSessao
+    : obterUsuarioVisualizacao(usuarioSessao, "coordenacao");
 
   preencherUsuarioNaSidebar(usuario, "Coordenação");
 
   inicializarMenuMobile();
   inicializarNavegacaoPorSecao();
   inicializarNotificacoes();
+  inicializarCadastroUsuarios(usuarioSessao);
+
+  if (window.location.hash === "#cadastros") {
+    const linkCadastros = document.querySelector('.sidebar-link[data-section="cadastros"]');
+    if (linkCadastros) linkCadastros.click();
+  }
 
   carregarNotificacoes();
   carregarDadosCoordenacao();
@@ -36,6 +44,129 @@ document.addEventListener("DOMContentLoaded", function () {
 // --------------------------------------------------------------------------
 
 function carregarDadosCoordenacao() {}
+
+
+// --------------------------------------------------------------------------
+// CADASTRO ADMINISTRATIVO DE USUÁRIOS
+// --------------------------------------------------------------------------
+
+function exibirMensagemCadastroUsuario(mensagem, tipo = "info") {
+  const elemento = document.getElementById("cadastro-mensagem");
+  if (!elemento) return;
+
+  elemento.textContent = mensagem;
+  elemento.classList.toggle("form-message--success", tipo === "sucesso");
+  elemento.classList.toggle("form-message--error", tipo === "erro");
+  elemento.classList.toggle("form-message--info", tipo === "info");
+}
+
+function inicializarCadastroUsuarios(usuarioSessao) {
+  const formulario = document.getElementById("form-cadastro-usuario");
+  const campoTipo = document.getElementById("cadastro-tipo");
+  const campoNome = document.getElementById("cadastro-nome");
+  const campoEmail = document.getElementById("cadastro-email");
+  const campoCpf = document.getElementById("cadastro-cpf");
+  const campoSenha = document.getElementById("cadastro-senha");
+  const campoConfirmarSenha = document.getElementById("cadastro-confirmar-senha");
+  const botao = document.getElementById("btn-cadastrar-usuario");
+
+  if (!formulario || !campoTipo || !campoNome || !campoEmail || !campoSenha || !campoConfirmarSenha || !botao) {
+    return;
+  }
+
+  // O administrador pode criar outros administradores. A coordenação não.
+  // Esta opção é apenas de interface: o PHP verifica a autorização novamente.
+  const ehAdministrador = usuarioSessao?.tipoUsuario === "administrador" || usuarioSessao?.nivel === "admin";
+  if (ehAdministrador && !Array.from(campoTipo.options).some((opcao) => opcao.value === "administrador")) {
+    const opcaoAdmin = document.createElement("option");
+    opcaoAdmin.value = "administrador";
+    opcaoAdmin.textContent = "Administrador";
+    campoTipo.appendChild(opcaoAdmin);
+  }
+
+  formulario.addEventListener("submit", async function (evento) {
+    evento.preventDefault();
+    exibirMensagemCadastroUsuario("");
+
+    const email = campoEmail.value.trim().toLowerCase();
+    const nome = campoNome.value.trim();
+    const tipoUsuario = campoTipo.value;
+    const senha = campoSenha.value;
+    const confirmarSenha = campoConfirmarSenha.value;
+    const cpfOriginal = campoCpf ? campoCpf.value.trim() : "";
+    const cpf = cpfOriginal ? cpfOriginal.replace(/\D/g, "") : "";
+
+    if (!tipoUsuario || !nome || !email || !campoEmail.validity.valid) {
+      exibirMensagemCadastroUsuario("Preencha o tipo, o nome e um e-mail válido.", "erro");
+      return;
+    }
+
+    if (senha.length < 6) {
+      exibirMensagemCadastroUsuario("A senha deve ter pelo menos 6 caracteres.", "erro");
+      return;
+    }
+
+    if (senha !== confirmarSenha) {
+      exibirMensagemCadastroUsuario("As senhas não coincidem.", "erro");
+      campoConfirmarSenha.focus();
+      return;
+    }
+
+    if (cpfOriginal && cpf.length !== 11) {
+      exibirMensagemCadastroUsuario("Se informar CPF, digite 11 números. Você também pode deixar o campo vazio.", "erro");
+      campoCpf.focus();
+      return;
+    }
+
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = "Cadastrando...";
+
+    try {
+      const resposta = await fetch("api/usuarios/criar.php", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          nome,
+          tipoUsuario,
+          cpf,
+          senha,
+          confirmarSenha,
+        }),
+      });
+
+      let resultado;
+      try {
+        resultado = await resposta.json();
+      } catch {
+        throw new Error("O servidor retornou uma resposta inesperada. Confirme se está usando o Apache do XAMPP.");
+      }
+
+      if (!resposta.ok || resultado.sucesso !== true) {
+        throw new Error(resultado.mensagem || "Não foi possível cadastrar o usuário.");
+      }
+
+      formulario.reset();
+      exibirMensagemCadastroUsuario(
+        "Usuário cadastrado com sucesso: " + resultado.usuario.email + ". A conta já pode fazer login.",
+        "sucesso"
+      );
+    } catch (erro) {
+      exibirMensagemCadastroUsuario(
+        erro instanceof Error ? erro.message : "Não foi possível concluir o cadastro. Tente novamente.",
+        "erro"
+      );
+    } finally {
+      botao.disabled = false;
+      botao.textContent = textoOriginal;
+    }
+  });
+}
 
 // --------------------------------------------------------------------------
 // COMPONENTE KPI
