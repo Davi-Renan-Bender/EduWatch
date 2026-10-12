@@ -31,7 +31,7 @@ function iconeSvg(nome) {
 }
 
 /**
- * Normaliza um valor de situação vindo dos dados (mock ou, futuramente, API)
+ * Normaliza um valor de situação vindo dos dados do banco
  * para um rótulo e uma classe CSS visual.
  * Situações esperadas da API: "normal" | "atencao" | "critico".
  * @param {string} situacao

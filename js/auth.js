@@ -78,24 +78,15 @@ function obterUsuarioVisualizacao(usuario, perfil) {
     return usuario;
   }
 
-  const dadosDemo = {
-    aluno: {
-      nome: "Aluno de demonstração",
-      cpf: "00000000000",
-    },
-    professor: {
-      nome: "Professor de demonstração",
-      cpf: "00000000000",
-    },
-    coordenacao: {
-      nome: "Coordenador de demonstração",
-      cpf: "00000000000",
-    },
+  const rotulos = {
+    aluno: "Visualização: Aluno",
+    professor: "Visualização: Professor",
+    coordenacao: "Visualização: Coordenação",
   };
 
   return {
     ...usuario,
-    ...dadosDemo[perfil],
+    nome: rotulos[perfil] || "Visualização",
   };
 }
 /**

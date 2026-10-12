@@ -20,17 +20,10 @@ document.addEventListener("DOMContentLoaded", function () {
   carregarDadosAluno(usuario);
 });
 
-/**
- * Simula a busca de dados no backend. Mostra estado de carregamento e,
- * em caso de falha (simulação), mostraria o estado de erro.
- */
 function carregarDadosAluno(usuario) {
   const containerCabecalho = document.getElementById("cabecalho-aluno");
-  containerCabecalho.innerHTML = estadoCarregandoHTML(
-    "Carregando seus dados...",
-  );
+  containerCabecalho.innerHTML = estadoVazioHTML("Nenhum dado disponível.");
 }
-containerCabecalho.innerHTML = estadoVazioHTML("Nenhum dado disponível.");
 
 function renderCabecalho(usuario, dados) {
   const container = document.getElementById("cabecalho-aluno");
@@ -243,23 +236,7 @@ function carregarNotificacoes() {
   const lista = document.getElementById("notification-list");
   const marcador = document.getElementById("notification-dot");
 
-  if (notificacoes.length === 0) {
-    lista.innerHTML = estadoVazioHTML("Nenhuma notificação no momento.");
-    return;
-  }
+  lista.innerHTML = estadoVazioHTML("Nenhuma notificação no momento.");
 
-  marcador.hidden = false;
-  lista.innerHTML = notificacoes
-    .map(function (n) {
-      return (
-        '<div class="notification-item">' +
-        "<strong>" +
-        n.titulo +
-        "</strong>" +
-        "<span>" +
-        n.detalhe +
-        "</span></div>"
-      );
-    })
-    .join("");
+  marcador.hidden = true;
 }

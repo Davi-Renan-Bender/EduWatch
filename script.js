@@ -83,24 +83,3 @@ campoCPF.addEventListener("input", function () {
   // Coloca o CPF formatado de volta no campo
   this.value = cpf;
 });
-
-// ========================================
-// USUÁRIO ENCONTRADO
-// ========================================
-
-if (usuarioEncontrado) {
-  // Guarda os dados do usuário temporariamente
-  sessionStorage.setItem(
-    "usuarioLogado",
-    JSON.stringify({
-      nome: usuarioEncontrado.nome,
-      cpf: usuarioEncontrado.cpf,
-      nivel: usuarioEncontrado.nivel,
-    }),
-  );
-
-  // Redireciona para a página correspondente
-  window.location.href = usuarioEncontrado.pagina;
-} else {
-  alert("CPF ou senha incorretos.");
-}
