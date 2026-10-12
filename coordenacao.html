@@ -50,7 +50,7 @@
             href="#cadastros"
             data-section="cadastros"
             data-title="Cadastros"
-            data-subtitle="Cadastro de alunos e professores"
+            data-subtitle="Cadastro de usuários autorizados"
           >
             <svg
               class="sidebar-icon"
@@ -580,9 +580,9 @@
             <div class="panel section-block">
               <div class="panel-header">
                 <div>
-                  <h2>Cadastro de alunos e professores</h2>
+                  <h2>Cadastro de usuários</h2>
                   <p class="section-subheading">
-                    Cadastre novos usuários para acesso ao EduWatch.
+                    A coordenação e a administração podem criar contas com dados fictícios. Os usuários entram usando e-mail e senha.
                   </p>
                 </div>
               </div>
@@ -595,6 +595,7 @@
                     <option value="">Selecione...</option>
                     <option value="aluno">Aluno</option>
                     <option value="professor">Professor</option>
+                    <option value="coordenacao">Coordenação</option>
                   </select>
                 </div>
 
@@ -605,24 +606,38 @@
                     type="text"
                     id="cadastro-nome"
                     name="nome"
-                    placeholder="Digite o nome completo"
-                    autocomplete="name"
+                    placeholder="Digite o nome completo fictício"
+                    autocomplete="off"
+                    maxlength="120"
                     required
                   />
                 </div>
 
                 <div class="form-group">
-                  <label for="cadastro-cpf">CPF</label>
+                  <label for="cadastro-email">E-mail fictício</label>
+
+                  <input
+                    type="email"
+                    id="cadastro-email"
+                    name="email"
+                    placeholder="aluno01@example.com"
+                    autocomplete="off"
+                    maxlength="254"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="cadastro-cpf">CPF fictício (opcional)</label>
 
                   <input
                     type="text"
                     id="cadastro-cpf"
                     name="cpf"
-                    placeholder="000.000.000-00"
+                    placeholder="Deixe vazio se não precisar"
                     inputmode="numeric"
                     maxlength="14"
                     autocomplete="off"
-                    required
                   />
                 </div>
 
@@ -633,8 +648,10 @@
                     type="password"
                     id="cadastro-senha"
                     name="senha"
-                    placeholder="Digite a senha"
+                    placeholder="Digite a senha (mínimo de 6 caracteres)"
                     autocomplete="new-password"
+                    minlength="6"
+                    maxlength="4096"
                     required
                   />
                 </div>
@@ -648,6 +665,8 @@
                     name="confirmar-senha"
                     placeholder="Digite a senha novamente"
                     autocomplete="new-password"
+                    minlength="6"
+                    maxlength="4096"
                     required
                   />
                 </div>

@@ -6,8 +6,8 @@
 
 let alunosFiltrados = [];
 
-document.addEventListener("DOMContentLoaded", function () {
-  const usuarioSessao = exigirPerfil("professor");
+document.addEventListener("DOMContentLoaded", async function () {
+  const usuarioSessao = await exigirPerfil("professor");
 
   if (!usuarioSessao) return;
 

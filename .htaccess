@@ -1,0 +1,9 @@
+# Bloqueia o acesso aos arquivos de configuração do ambiente.
+
+<FilesMatch "^\.env">
+Require all denied
+</FilesMatch>
+
+# Impede a listagem dos arquivos da pasta.
+
+Options -Indexes
