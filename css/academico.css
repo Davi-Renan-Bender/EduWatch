@@ -1,0 +1,63 @@
+/* Estilos compartilhados dos fluxos acadêmicos conectados ao banco. */
+.academic-feedback {
+  margin: 0.75rem 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.65rem;
+  background: var(--surface-muted, #edf4fb);
+  color: var(--text, #14263d);
+  font-size: 0.92rem;
+}
+.academic-feedback[data-type="success"] { border-left: 4px solid #16803d; }
+.academic-feedback[data-type="warning"] { border-left: 4px solid #b7791f; }
+.academic-feedback[data-type="error"] { border-left: 4px solid #b42318; }
+.academic-grade-input,
+.academic-grade-status {
+  width: 100%;
+  min-width: 7rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.45rem;
+  background: #fff;
+  color: #14263d;
+  font: inherit;
+}
+.academic-grade-input:disabled { background: #f1f5f9; color: #64748b; }
+.academic-grade-status { min-width: 10rem; }
+.student-assessment-panel { margin-top: 1.25rem; }
+.student-assessment-panel .table-wrapper { overflow-x: auto; }
+.student-assessment-panel table { min-width: 760px; }
+
+.chart-canvas-wrap {
+  position: relative;
+  min-height: 300px;
+  margin-top: 1rem;
+}
+
+.chart-canvas-wrap--compact {
+  min-height: 250px;
+  margin: 0 0 1.25rem;
+}
+
+.chart-canvas-wrap canvas {
+  display: block;
+  max-width: 100%;
+}
+
+.chart-state,
+.academic-empty-message {
+  display: grid;
+  min-height: 170px;
+  place-items: center;
+  padding: 1rem;
+  color: var(--color-text-muted, #64748b);
+  text-align: center;
+}
+
+.academic-empty-message {
+  min-height: 120px;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .chart-canvas-wrap { min-height: 240px; }
+}

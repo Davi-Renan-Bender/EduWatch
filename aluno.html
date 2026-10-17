@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/aluno.css" />
+    <link rel="stylesheet" href="css/academico.css" />
   </head>
 
   <body class="dashboard-body">
@@ -299,6 +300,10 @@
               <div class="panel-header">
                 <h2>Desempenho por disciplina</h2>
               </div>
+              <div class="chart-canvas-wrap chart-canvas-wrap--compact">
+                <canvas id="grafico-disciplinas" aria-label="Gráfico de médias por disciplina" role="img"></canvas>
+                <p class="chart-state" role="status" hidden></p>
+              </div>
               <div class="table-wrapper">
                 <table
                   class="data-table"
@@ -308,7 +313,7 @@
                     <tr>
                       <th scope="col">Disciplina</th>
                       <th scope="col">Média</th>
-                      <th scope="col">Frequência</th>
+                      <th scope="col">Avaliações lançadas</th>
                       <th scope="col">Situação</th>
                     </tr>
                   </thead>
@@ -325,29 +330,11 @@
             hidden
             aria-labelledby="page-title"
           >
-            <div class="section-block">
-              <div class="kpi-grid" id="kpi-frequencia-aluno"></div>
-            </div>
-
             <div class="panel section-block">
               <div class="panel-header">
                 <h2>Frequência por disciplina</h2>
               </div>
-              <div class="table-wrapper">
-                <table
-                  class="data-table"
-                  aria-label="Frequência por disciplina"
-                >
-                  <thead>
-                    <tr>
-                      <th scope="col">Disciplina</th>
-                      <th scope="col">Frequência</th>
-                      <th scope="col">Situação</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tabela-frequencia-corpo"></tbody>
-                </table>
-              </div>
+              <p class="academic-empty-message" id="mensagem-frequencia-aluno">A frequência aparecerá aqui quando o registro de aulas e presenças estiver integrado.</p>
             </div>
           </section>
 
@@ -362,12 +349,10 @@
               <div class="panel-header">
                 <h2>Evolução da média geral por bimestre</h2>
               </div>
-              <div
-                class="mini-chart"
-                id="grafico-evolucao"
-                role="img"
-                aria-label="Gráfico de evolução da média por bimestre"
-              ></div>
+              <div class="chart-canvas-wrap">
+                <canvas id="grafico-evolucao" aria-label="Gráfico de evolução da média por bimestre" role="img"></canvas>
+                <p class="chart-state" role="status" hidden></p>
+              </div>
             </div>
           </section>
 
@@ -408,6 +393,9 @@
 
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="js/charts.js"></script>
     <script src="js/aluno.js"></script>
+    <script src="js/notas-aluno.js"></script>
   </body>
 </html>

@@ -329,3 +329,54 @@
   width: 100%;
   min-width: 0;
 }
+
+
+/* ==========================================================================\n   GRÁFICOS CHART.JS\n   ========================================================================== */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  min-width: 0;
+}
+
+.chart-container--doughnut {
+  height: 340px;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.chart-container canvas {
+  display: block;
+  max-width: 100%;
+}
+
+.chart-container canvas[hidden] {
+  display: none;
+}
+
+.chart-empty {
+  min-height: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.chart-empty[hidden] {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .chart-container {
+    height: 280px;
+  }
+
+  .chart-container--doughnut {
+    height: 300px;
+  }
+}

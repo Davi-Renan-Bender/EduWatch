@@ -5,6 +5,27 @@
 //
 
 let alunosFiltradosCoordenacao = [];
+let alunosCoordenacaoTodos = [];
+let graficoSituacaoEscola = null;
+let graficoEvolucaoEscola = null;
+
+function escaparHTMLCoordenacao(valor) {
+  return String(valor ?? "").replace(/[&<>"\']/g, (caractere) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "\'": "&#39;",
+  })[caractere]);
+}
+
+function formatarMediaCoordenacao(valor) {
+  return valor === null || valor === undefined || !Number.isFinite(Number(valor))
+    ? "—"
+    : Number(valor).toFixed(1);
+}
+
+function formatarFrequenciaCoordenacao(valor) {
+  return valor === null || valor === undefined || !Number.isFinite(Number(valor))
+    ? "Sem dados"
+    : Number(valor) + "%";
+}
 
 // --------------------------------------------------------------------------
 // INICIALIZAÇÃO
@@ -43,7 +64,56 @@ document.addEventListener("DOMContentLoaded", async function () {
 // CARREGAMENTO DOS DADOS
 // --------------------------------------------------------------------------
 
-function carregarDadosCoordenacao() {}
+async function carregarDadosCoordenacao() {
+  const kpis = document.getElementById("kpi-resumo-escola");
+  const corpoAlunos = document.getElementById("tabela-alunos-coord-corpo");
+  if (kpis) kpis.innerHTML = estadoCarregandoHTML("Carregando indicadores da escola...");
+  if (corpoAlunos) corpoAlunos.innerHTML = '<tr><td colspan="5">' + estadoCarregandoHTML("Carregando alunos...") + "</td></tr>";
+
+  try {
+    const resposta = await fetch("api/academico/painel-coordenacao.php", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    let dados;
+    try { dados = await resposta.json(); }
+    catch { throw new Error("O servidor retornou uma resposta inválida. Verifique o Apache e a API."); }
+    if (!resposta.ok || dados.sucesso !== true) {
+      throw new Error(dados.mensagem || "Não foi possível carregar os dados da coordenação.");
+    }
+
+    const resumo = dados.resumo || {};
+    renderResumoCoordenacao(resumo);
+    renderSituacoesEscola(resumo, dados.alunos || []);
+    renderMenoresMedias(dados.turmas || []);
+    renderMenoresFrequencias(dados.turmas || []);
+    alunosCoordenacaoTodos = Array.isArray(dados.alunos) ? dados.alunos : [];
+    alunosFiltradosCoordenacao = alunosCoordenacaoTodos.slice();
+    const filtroTurma = document.getElementById("filtro-turma-coord");
+    if (filtroTurma) {
+      filtroTurma.innerHTML = '<option value="">Todas as turmas</option>';
+      const turmas = (dados.turmas || []).slice().sort((a, b) => String(a.nome).localeCompare(String(b.nome), "pt-BR"));
+      turmas.forEach((turma) => {
+        const opcao = document.createElement("option");
+        opcao.value = String(turma.id);
+        opcao.textContent = turma.nome;
+        filtroTurma.appendChild(opcao);
+      });
+    }
+    renderTabelaAlunosCoordenacao(alunosFiltradosCoordenacao);
+    renderProfessores(dados.professores || []);
+    renderTurmasCoordenacao(dados.turmas || []);
+    renderEvolucaoEscola(dados.evolucao || []);
+    renderAcompanhamentoCoordenacao(alunosCoordenacaoTodos);
+  } catch (erro) {
+    const mensagem = erro instanceof Error ? erro.message : "Falha ao carregar o painel.";
+    if (kpis) kpis.innerHTML = estadoErroHTML(mensagem);
+    if (corpoAlunos) corpoAlunos.innerHTML = '<tr><td colspan="5">' + estadoErroHTML(mensagem) + "</td></tr>";
+    console.error("EduWatch coordenação:", erro);
+  }
+}
 
 
 // --------------------------------------------------------------------------
@@ -199,19 +269,19 @@ function renderResumoCoordenacao(resumo) {
   }
 
   container.innerHTML =
-    kpiCardCoordenacaoHTML("Alunos", String(resumo.totalAlunos)) +
-    kpiCardCoordenacaoHTML("Professores", String(resumo.totalProfessores)) +
-    kpiCardCoordenacaoHTML("Turmas", String(resumo.totalTurmas)) +
-    kpiCardCoordenacaoHTML("Média geral", resumo.mediaGeral.toFixed(1)) +
-    kpiCardCoordenacaoHTML("Frequência média", resumo.frequenciaMedia + "%") +
+    kpiCardCoordenacaoHTML("Alunos", String(resumo.totalAlunos ?? 0)) +
+    kpiCardCoordenacaoHTML("Professores", String(resumo.totalProfessores ?? 0)) +
+    kpiCardCoordenacaoHTML("Turmas", String(resumo.totalTurmas ?? 0)) +
+    kpiCardCoordenacaoHTML("Média geral", formatarMediaCoordenacao(resumo.mediaGeral)) +
+    kpiCardCoordenacaoHTML("Frequência média", formatarFrequenciaCoordenacao(resumo.frequenciaMedia)) +
     kpiCardCoordenacaoHTML(
       "Alunos em atenção",
-      String(resumo.alunosAtencao),
+      String(resumo.alunosAtencao ?? 0),
       "kpi-card--warning",
     ) +
     kpiCardCoordenacaoHTML(
       "Alunos em situação crítica",
-      String(resumo.alunosCritico),
+      String(resumo.alunosCritico ?? 0),
       "kpi-card--danger",
     );
 }
@@ -231,22 +301,22 @@ function renderMenoresMedias(turmas) {
     return;
   }
 
-  const menores = turmas
-    .slice()
-    .sort(function (a, b) {
-      return a.media - b.media;
-    })
-    .slice(0, 3);
+  const comMedia = turmas.filter((turma) => turma.media !== null && turma.media !== undefined);
+  if (comMedia.length === 0) {
+    corpo.innerHTML = '<tr><td colspan="2">' + estadoVazioHTML("Ainda não há notas suficientes para calcular médias por turma.") + "</td></tr>";
+    return;
+  }
+  const menores = comMedia.slice().sort((a, b) => a.media - b.media).slice(0, 3);
 
   corpo.innerHTML = menores
     .map(function (turma) {
       return (
         "<tr>" +
         "<td>" +
-        turma.nome +
+        escaparHTMLCoordenacao(turma.nome) +
         "</td>" +
         "<td>" +
-        turma.media.toFixed(1) +
+        formatarMediaCoordenacao(turma.media) +
         "</td>" +
         "</tr>"
       );
@@ -269,28 +339,13 @@ function renderMenoresFrequencias(turmas) {
     return;
   }
 
-  const menores = turmas
-    .slice()
-    .sort(function (a, b) {
-      return a.frequencia - b.frequencia;
-    })
-    .slice(0, 3);
-
-  corpo.innerHTML = menores
-    .map(function (turma) {
-      return (
-        "<tr>" +
-        "<td>" +
-        turma.nome +
-        "</td>" +
-        "<td>" +
-        turma.frequencia +
-        "%" +
-        "</td>" +
-        "</tr>"
-      );
-    })
-    .join("");
+  const comFrequencia = (turmas || []).filter((turma) => turma.frequencia !== null && turma.frequencia !== undefined);
+  if (comFrequencia.length === 0) {
+    corpo.innerHTML = '<tr><td colspan="2">' + estadoVazioHTML("Ainda não há dados de frequência registrados no banco.") + "</td></tr>";
+    return;
+  }
+  const menores = comFrequencia.slice().sort((a, b) => a.frequencia - b.frequencia).slice(0, 3);
+  corpo.innerHTML = menores.map((turma) => "<tr><td>" + escaparHTMLCoordenacao(turma.nome) + "</td><td>" + formatarFrequenciaCoordenacao(turma.frequencia) + "</td></tr>").join("");
 }
 
 // --------------------------------------------------------------------------
@@ -335,11 +390,16 @@ function aplicarFiltrosAlunosCoordenacao() {
   const turmaEl = document.getElementById("filtro-turma-coord");
   const situacaoEl = document.getElementById("filtro-situacao-coord");
 
-  const termo = buscaEl ? (buscaEl.value || "").trim().toLowerCase() : "";
-
+  const termo = buscaEl ? (buscaEl.value || "").trim().toLocaleLowerCase("pt-BR") : "";
   const turmaId = turmaEl ? turmaEl.value : "";
   const situacao = situacaoEl ? situacaoEl.value : "";
 
+  alunosFiltradosCoordenacao = alunosCoordenacaoTodos.filter((aluno) => {
+    const correspondeBusca = !termo || String(aluno.nome || "").toLocaleLowerCase("pt-BR").includes(termo);
+    const correspondeTurma = !turmaId || String(aluno.turmaId) === String(turmaId);
+    const correspondeSituacao = !situacao || aluno.situacao === situacao;
+    return correspondeBusca && correspondeTurma && correspondeSituacao;
+  });
   renderTabelaAlunosCoordenacao(alunosFiltradosCoordenacao);
 }
 
@@ -363,20 +423,19 @@ function renderTabelaAlunosCoordenacao(lista) {
     .map(function (aluno) {
       return (
         '<tr class="is-clickable" data-aluno-id="' +
-        aluno.id +
+        Number(aluno.id) +
         '" tabindex="0">' +
         "<td>" +
-        aluno.nome +
+        escaparHTMLCoordenacao(aluno.nome) +
         "</td>" +
         "<td>" +
-        aluno.turma +
+        escaparHTMLCoordenacao(aluno.turma) +
         "</td>" +
         "<td>" +
-        aluno.media.toFixed(1) +
+        formatarMediaCoordenacao(aluno.media) +
         "</td>" +
         "<td>" +
-        aluno.frequencia +
-        "%" +
+        formatarFrequenciaCoordenacao(aluno.frequencia) +
         "</td>" +
         "<td>" +
         selosituacaoHTML(aluno.situacao) +
@@ -412,7 +471,7 @@ function renderProfessores(professores) {
       return (
         "<tr>" +
         "<td>" +
-        professor.nome +
+        escaparHTMLCoordenacao(professor.nome) +
         "</td>" +
         "<td>" +
         professor.turmas +
@@ -421,11 +480,10 @@ function renderProfessores(professores) {
         professor.alunos +
         "</td>" +
         "<td>" +
-        professor.mediaTurmas.toFixed(1) +
+        formatarMediaCoordenacao(professor.mediaTurmas) +
         "</td>" +
         "<td>" +
-        professor.frequenciaMedia +
-        "%" +
+        formatarFrequenciaCoordenacao(professor.frequenciaMedia) +
         "</td>" +
         "</tr>"
       );
@@ -457,21 +515,20 @@ function renderTurmasCoordenacao(turmas) {
         turma.id +
         '">' +
         '<span class="class-card-title">' +
-        turma.nome +
+        escaparHTMLCoordenacao(turma.nome) +
         "</span>" +
         '<span class="class-card-meta">' +
         "<span>" +
         turma.totalAlunos +
         " alunos</span>" +
         "<span>Média " +
-        turma.media.toFixed(1) +
+        formatarMediaCoordenacao(turma.media) +
         "</span>" +
         "</span>" +
         '<span class="class-card-footer">' +
         '<span class="class-card-meta">' +
         "<span>Frequência " +
-        turma.frequencia +
-        "%</span>" +
+        formatarFrequenciaCoordenacao(turma.frequencia) + "</span>" +
         "</span>" +
         selosituacaoHTML(turma.situacao) +
         "</span>" +
@@ -509,67 +566,188 @@ function irParaAlunosDaTurmaCoordenacao(turmaId) {
 // INDICADORES
 // --------------------------------------------------------------------------
 
-function renderSituacoesEscola(resumo) {
+function renderSituacoesEscola(resumo, alunos = []) {
   const container = document.getElementById("kpi-situacao-escola");
 
-  if (!container) {
+  if (container) {
+    container.innerHTML =
+      kpiCardCoordenacaoHTML("Normal", String(resumo.alunosNormais ?? 0)) +
+      kpiCardCoordenacaoHTML(
+        "Atenção",
+        String(resumo.alunosAtencao ?? 0),
+        "kpi-card--warning",
+      ) +
+      kpiCardCoordenacaoHTML(
+        "Crítico",
+        String(resumo.alunosCritico ?? 0),
+        "kpi-card--danger",
+      );
+  }
+
+  renderGraficoSituacoesEscola(resumo, alunos);
+}
+
+function mostrarEstadoGrafico(canvas, mensagemElemento, mensagem) {
+  if (canvas) canvas.hidden = true;
+  if (mensagemElemento) {
+    mensagemElemento.textContent = mensagem;
+    mensagemElemento.hidden = false;
+  }
+}
+
+function renderGraficoSituacoesEscola(resumo, alunos) {
+  const canvas = document.getElementById("grafico-situacao-escola");
+  const mensagem = document.getElementById("grafico-situacao-vazio");
+  if (!canvas) return;
+
+  if (typeof Chart === "undefined") {
+    mostrarEstadoGrafico(canvas, mensagem, "Não foi possível carregar o Chart.js. Verifique a conexão com a internet e recarregue a página.");
     return;
   }
 
-  container.innerHTML =
-    kpiCardCoordenacaoHTML("Normal", String(resumo.alunosNormais)) +
-    kpiCardCoordenacaoHTML(
-      "Atenção",
-      String(resumo.alunosAtencao),
-      "kpi-card--warning",
-    ) +
-    kpiCardCoordenacaoHTML(
-      "Crítico",
-      String(resumo.alunosCritico),
-      "kpi-card--danger",
-    );
+  const semDados = Array.isArray(alunos)
+    ? alunos.filter((aluno) => aluno.situacao === "sem_dados").length
+    : 0;
+  const valores = [
+    Number(resumo.alunosNormais) || 0,
+    Number(resumo.alunosAtencao) || 0,
+    Number(resumo.alunosCritico) || 0,
+    semDados,
+  ];
+
+  if (valores.reduce((soma, valor) => soma + valor, 0) === 0) {
+    if (graficoSituacaoEscola) {
+      graficoSituacaoEscola.destroy();
+      graficoSituacaoEscola = null;
+    }
+    mostrarEstadoGrafico(canvas, mensagem, "Ainda não há alunos suficientes para gerar este gráfico.");
+    return;
+  }
+
+  canvas.hidden = false;
+  if (mensagem) mensagem.hidden = true;
+
+  const configuracao = {
+    type: "doughnut",
+    data: {
+      labels: ["Normal", "Atenção", "Crítico", "Sem dados"],
+      datasets: [{
+        data: valores,
+        backgroundColor: ["#16845b", "#d99a16", "#c83d4d", "#8a94a6"],
+        borderColor: "#ffffff",
+        borderWidth: 2,
+        hoverOffset: 6,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "62%",
+      plugins: {
+        legend: { position: "bottom", labels: { usePointStyle: true, padding: 18 } },
+        tooltip: {
+          callbacks: {
+            label(context) {
+              const total = context.dataset.data.reduce((soma, valor) => soma + Number(valor || 0), 0);
+              const valor = Number(context.raw || 0);
+              const percentual = total > 0 ? (valor / total * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) : "0";
+              return ` ${context.label}: ${valor} (${percentual}%)`;
+            },
+          },
+        },
+      },
+    },
+  };
+
+  if (graficoSituacaoEscola) {
+    graficoSituacaoEscola.data = configuracao.data;
+    graficoSituacaoEscola.options = configuracao.options;
+    graficoSituacaoEscola.update();
+  } else {
+    graficoSituacaoEscola = new Chart(canvas.getContext("2d"), configuracao);
+  }
 }
 
 function renderEvolucaoEscola(evolucao) {
-  const container = document.getElementById("grafico-evolucao-escola");
+  const canvas = document.getElementById("grafico-evolucao-escola");
+  const mensagem = document.getElementById("grafico-evolucao-vazio");
+  if (!canvas) return;
 
-  if (!container) {
+  if (typeof Chart === "undefined") {
+    mostrarEstadoGrafico(canvas, mensagem, "Não foi possível carregar o Chart.js. Verifique a conexão com a internet e recarregue a página.");
     return;
   }
 
-  if (!evolucao || evolucao.length === 0) {
-    container.innerHTML = estadoVazioHTML(
-      "Ainda não há histórico suficiente para exibir a evolução.",
-    );
+  const pontos = (Array.isArray(evolucao) ? evolucao : [])
+    .filter((item) => item && item.valor !== null && item.valor !== undefined && Number.isFinite(Number(item.valor)))
+    .slice()
+    .sort((a, b) => Number(a.ordem || 0) - Number(b.ordem || 0));
 
+  if (pontos.length === 0) {
+    if (graficoEvolucaoEscola) {
+      graficoEvolucaoEscola.destroy();
+      graficoEvolucaoEscola = null;
+    }
+    mostrarEstadoGrafico(canvas, mensagem, "Ainda não há histórico de notas suficiente para exibir a evolução.");
     return;
   }
 
-  // A escala da média escolar vai de 0 a 10.
-  const valorMaximo = 10;
+  canvas.hidden = false;
+  if (mensagem) mensagem.hidden = true;
 
-  container.innerHTML = evolucao
-    .map(function (bimestre) {
-      const altura = Math.max(
-        8,
-        Math.round((bimestre.valor / valorMaximo) * 100),
-      );
+  const configuracao = {
+    type: "line",
+    data: {
+      labels: pontos.map((item) => String(item.rotulo || "Período")),
+      datasets: [{
+        label: "Média da escola",
+        data: pontos.map((item) => Number(item.valor)),
+        borderColor: "#087f72",
+        backgroundColor: "rgba(8, 127, 114, 0.13)",
+        pointBackgroundColor: "#087f72",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 3,
+        tension: 0.28,
+        fill: true,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: "index" },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label(context) {
+              return ` Média: ${Number(context.raw).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })}/10`;
+            },
+          },
+        },
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: 10,
+          ticks: { stepSize: 2 },
+          title: { display: true, text: "Média (0 a 10)" },
+          grid: { color: "rgba(120, 130, 145, 0.16)" },
+        },
+        x: { grid: { display: false } },
+      },
+    },
+  };
 
-      return (
-        '<div class="mini-chart-bar">' +
-        '<span class="mini-chart-value">' +
-        bimestre.valor.toFixed(1) +
-        "</span>" +
-        '<div class="mini-chart-fill" style="height: ' +
-        altura +
-        '%"></div>' +
-        '<span class="mini-chart-label">' +
-        bimestre.rotulo +
-        "</span>" +
-        "</div>"
-      );
-    })
-    .join("");
+  if (graficoEvolucaoEscola) {
+    graficoEvolucaoEscola.data = configuracao.data;
+    graficoEvolucaoEscola.options = configuracao.options;
+    graficoEvolucaoEscola.update();
+  } else {
+    graficoEvolucaoEscola = new Chart(canvas.getContext("2d"), configuracao);
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -584,7 +762,7 @@ function renderAcompanhamentoCoordenacao(alunos) {
   }
 
   const alunosParaAcompanhar = alunos.filter(function (aluno) {
-    return aluno.situacao !== "normal";
+    return aluno.situacao === "atencao" || aluno.situacao === "critico";
   });
 
   if (alunosParaAcompanhar.length === 0) {
@@ -604,11 +782,11 @@ function renderAcompanhamentoCoordenacao(alunos) {
         '<li class="note-item">' +
         iconeSvg("alerta") +
         "<span><strong>" +
-        aluno.nome +
+        escaparHTMLCoordenacao(aluno.nome) +
         "</strong> (" +
-        aluno.turma +
+        escaparHTMLCoordenacao(aluno.turma) +
         ") — " +
-        observacao +
+        escaparHTMLCoordenacao(observacao) +
         "</span></li>"
       );
     })
@@ -671,13 +849,27 @@ function abrirDetalheAlunoCoordenacao(alunoId) {
 
   if (!titulo || !corpo) return;
 
-  titulo.textContent = "Detalhes do aluno";
-
-  corpo.innerHTML =
-    '<div class="modal-section">' +
-    estadoVazioHTML("Os dados deste aluno ainda não foram carregados.") +
-    "</div>";
-
+  const aluno = alunosCoordenacaoTodos.find((item) => Number(item.id) === Number(alunoId));
+  if (!aluno) return;
+  titulo.textContent = aluno.nome;
+  corpo.replaceChildren();
+  const detalhes = [
+    ["Turma", aluno.turma],
+    ["Média", formatarMediaCoordenacao(aluno.media)],
+    ["Frequência", formatarFrequenciaCoordenacao(aluno.frequencia)],
+    ["Situação", situacaoMeta(aluno.situacao).rotulo],
+    ["Avaliações com nota", String(aluno.avaliacoesLancadas ?? 0)],
+  ];
+  detalhes.forEach(([rotulo, valor]) => {
+    const secao = document.createElement("div");
+    secao.className = "modal-section";
+    const label = document.createElement("strong");
+    label.textContent = rotulo + ": ";
+    const texto = document.createElement("span");
+    texto.textContent = valor;
+    secao.append(label, texto);
+    corpo.appendChild(secao);
+  });
   abrirModal("modal-aluno");
 }
 

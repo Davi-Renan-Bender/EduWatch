@@ -51,10 +51,44 @@ eduwatch_carregar_env(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env');
 
 function eduwatch_config(): array
 {
-    static $config = null;
-    if ($config !== null) {
-        return $config;
+    $envPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env';
+
+if (is_readable($envPath)) {
+    foreach (file($envPath, FILE_IGNORE_NEW_LINES) as $line) {
+        $line = trim($line);
+
+        if ($line === '' || str_starts_with($line, '#')) {
+            continue;
+        }
+
+        $pos = strpos($line, '=');
+
+        if ($pos === false) {
+            continue;
+        }
+
+        $name = trim(substr($line, 0, $pos));
+        $value = trim(substr($line, $pos + 1));
+
+        if ($value !== '') {
+            $first = $value[0];
+            $last = $value[strlen($value) - 1];
+
+            if (
+                ($first === '"' && $last === '"') ||
+                ($first === "'" && $last === "'")
+            ) {
+                $value = substr($value, 1, -1);
+            }
+        }
+
+        $existing = getenv($name);
+
+        if ($name !== '' && ($existing === false || $existing === '')) {
+            putenv($name . '=' . $value);
+        }
     }
+}
 
     $url = rtrim((string) (getenv('SUPABASE_URL') ?: ''), '/');
     $publicKey = (string) (getenv('SUPABASE_PUBLISHABLE_KEY') ?: getenv('SUPABASE_ANON_KEY') ?: '');

@@ -1,384 +1,322 @@
-// ==========================================================================
-// EduWatch — professor.js
-//
-// DADOS → LÓGICA → INTERFACE
-//
+// EduWatch — painel do professor com dados das turmas atribuídas no banco.
+let dadosProfessor = { alunos: [], turmas: [] };
 
-let alunosFiltrados = [];
-
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", async () => {
   const usuarioSessao = await exigirPerfil("professor");
-
   if (!usuarioSessao) return;
 
   const usuario = obterUsuarioVisualizacao(usuarioSessao, "professor");
-
   preencherUsuarioNaSidebar(usuario, "Professor");
   inicializarMenuMobile();
   inicializarNavegacaoPorSecao();
   inicializarNotificacoes();
-
-  carregarNotificacoes();
-  carregarDadosProfessor();
   inicializarFiltrosAlunos();
   inicializarModalAluno();
+  carregarNotificacoes();
+  await carregarDadosProfessor();
+  window.EduWatchFrequencia?.inicializar();
 });
 
-function carregarDadosProfessor() {}
+function profElemento(tag, texto, classe) {
+  const elemento = document.createElement(tag);
+  if (texto !== undefined && texto !== null) elemento.textContent = String(texto);
+  if (classe) elemento.className = classe;
+  return elemento;
+}
+
+function profTemNumero(valor) {
+  return valor !== null && valor !== "" && valor !== undefined && Number.isFinite(Number(valor));
+}
+
+function profMedia(valor) {
+  return profTemNumero(valor)
+    ? Number(valor).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })
+    : "—";
+}
+
+function profStatus(situacao) {
+  return {
+    normal: { rotulo: "Normal", classe: "status-badge--normal" },
+    atencao: { rotulo: "Atenção", classe: "status-badge--atencao" },
+    critico: { rotulo: "Crítico", classe: "status-badge--critico" },
+    sem_dados: { rotulo: "Sem dados", classe: "status-badge--indefinido" },
+  }[situacao] || { rotulo: "Sem dados", classe: "status-badge--indefinido" };
+}
+
+function profSelo(situacao) {
+  const meta = profStatus(situacao);
+  const selo = profElemento("span", undefined, `status-badge ${meta.classe}`);
+  const ponto = profElemento("span", undefined, "status-dot");
+  ponto.setAttribute("aria-hidden", "true");
+  selo.append(ponto, profElemento("span", meta.rotulo));
+  return selo;
+}
+
+function profEstadoTabela(corpo, colunas, mensagem) {
+  if (!corpo) return;
+  const linha = document.createElement("tr");
+  const celula = profElemento("td", mensagem);
+  celula.colSpan = colunas;
+  linha.append(celula);
+  corpo.replaceChildren(linha);
+}
+
+async function requisitarPainelProfessor() {
+  let resposta;
+  try {
+    resposta = await fetch("api/academico/painel-professor.php", {
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+  } catch (_erro) {
+    throw new Error("Não foi possível conectar ao EduWatch. Confira o Apache e tente novamente.");
+  }
+  let dados;
+  try {
+    dados = await resposta.json();
+  } catch (_erro) {
+    throw new Error("O servidor retornou uma resposta inválida ao carregar o painel.");
+  }
+  if (!resposta.ok || dados.sucesso === false) {
+    throw new Error(dados.mensagem || "Não foi possível carregar o painel das suas turmas.");
+  }
+  return dados;
+}
+
+async function carregarDadosProfessor() {
+  try {
+    const dados = await requisitarPainelProfessor();
+    dadosProfessor = {
+      resumo: dados.resumo || {},
+      alunos: Array.isArray(dados.alunos) ? dados.alunos : [],
+      turmas: Array.isArray(dados.turmas) ? dados.turmas : [],
+    };
+    renderResumoProfessor(dadosProfessor.resumo);
+    renderTurmas(dadosProfessor.turmas);
+    popularFiltroTurmas(dadosProfessor.turmas);
+    aplicarFiltrosAlunos();
+    renderTabelaAtencao(dadosProfessor.alunos);
+    renderDesempenho(dadosProfessor.alunos);
+    window.EduWatchCharts?.renderBar("grafico-medias-turmas", dadosProfessor.turmas, "Média por turma", "Ainda não há notas publicadas nas suas turmas.");
+    renderAcompanhamentoProfessor(dadosProfessor.alunos);
+  } catch (erro) {
+    renderErroProfessor(erro.message || "Não foi possível carregar os dados das turmas.");
+  }
+}
+
+function profKpi(rotulo, valor, detalhe, classe) {
+  const card = profElemento("article", undefined, `kpi-card${classe ? ` ${classe}` : ""}`);
+  card.append(profElemento("span", rotulo, "kpi-label"), profElemento("strong", valor, "kpi-value"));
+  if (detalhe) card.append(profElemento("span", detalhe, "kpi-trend"));
+  return card;
+}
 
 function renderResumoProfessor(resumo) {
   const container = document.getElementById("kpi-resumo-professor");
-  container.innerHTML =
-    kpiCardHTML("Alunos", String(resumo.totalAlunos)) +
-    kpiCardHTML("Turmas", String(resumo.totalTurmas)) +
-    kpiCardHTML("Média geral", resumo.mediaGeral.toFixed(1)) +
-    kpiCardHTML("Frequência média", resumo.frequenciaMedia + "%") +
-    kpiCardHTML(
-      "Alunos em atenção",
-      String(resumo.alunosAtencao),
-      "kpi-card--warning",
-    ) +
-    kpiCardHTML(
-      "Alunos em situação crítica",
-      String(resumo.alunosCritico),
-      "kpi-card--danger",
-    );
-}
-
-function kpiCardHTML(rotulo, valor, classeExtra) {
-  return (
-    '<article class="kpi-card' +
-    (classeExtra ? " " + classeExtra : "") +
-    '">' +
-    '<span class="kpi-label">' +
-    rotulo +
-    "</span>" +
-    '<strong class="kpi-value">' +
-    valor +
-    "</strong>" +
-    "</article>"
+  if (!container) return;
+  container.replaceChildren(
+    profKpi("Alunos", resumo.total_alunos || 0, "em turmas atribuídas"),
+    profKpi("Turmas", resumo.total_turmas || 0, "ativas"),
+    profKpi("Média geral", profMedia(resumo.media_geral), "notas publicadas, escala 0 a 10"),
+    profKpi("Avaliações publicadas", resumo.avaliacoes_publicadas || 0, "das suas disciplinas"),
+    profKpi("Alunos em atenção", resumo.alunos_atencao || 0, "média abaixo de 7,0", (resumo.alunos_atencao || 0) > 0 ? "kpi-card--warning" : ""),
   );
 }
 
 function renderTabelaAtencao(alunos) {
   const corpo = document.getElementById("tabela-resumo-atencao-corpo");
-  const listaAtencao = alunos.filter(function (a) {
-    return a.situacao !== "normal";
-  });
-
-  if (listaAtencao.length === 0) {
-    corpo.innerHTML =
-      '<tr><td colspan="4">' +
-      estadoVazioHTML("Nenhum aluno em atenção no momento.") +
-      "</td></tr>";
+  if (!corpo) return;
+  const lista = alunos.filter((aluno) => ["atencao", "critico"].includes(aluno.situacao));
+  if (!lista.length) {
+    profEstadoTabela(corpo, 4, "Nenhum aluno com média abaixo de 7,0 nas notas publicadas.");
     return;
   }
-
-  corpo.innerHTML = listaAtencao
-    .map(function (a) {
-      return (
-        "<tr>" +
-        "<td>" +
-        a.nome +
-        "</td>" +
-        "<td>" +
-        a.turma +
-        "</td>" +
-        "<td>" +
-        a.media.toFixed(1) +
-        "</td>" +
-        "<td>" +
-        selosituacaoHTML(a.situacao) +
-        "</td>" +
-        "</tr>"
-      );
-    })
-    .join("");
+  corpo.replaceChildren();
+  lista.forEach((aluno) => {
+    const linha = document.createElement("tr");
+    linha.append(profElemento("td", aluno.nome), profElemento("td", aluno.turma), profElemento("td", profMedia(aluno.media)));
+    const situacao = document.createElement("td");
+    situacao.append(profSelo(aluno.situacao));
+    linha.append(situacao);
+    corpo.append(linha);
+  });
 }
 
 function renderTurmas(turmas) {
   const container = document.getElementById("grade-turmas");
-
-  if (!turmas || turmas.length === 0) {
-    container.innerHTML = estadoVazioHTML("Nenhuma turma encontrada.");
+  if (!container) return;
+  if (!turmas.length) {
+    container.replaceChildren(profElemento("p", "Nenhuma turma ativa está atribuída ao seu usuário.", "academic-empty-message"));
     return;
   }
-
-  container.innerHTML = turmas
-    .map(function (turma) {
-      return (
-        '<button class="class-card" type="button" data-turma-id="' +
-        turma.id +
-        '">' +
-        '<span class="class-card-title">' +
-        turma.nome +
-        "</span>" +
-        '<span class="class-card-meta"><span>' +
-        turma.totalAlunos +
-        " alunos</span><span>Média " +
-        turma.media.toFixed(1) +
-        "</span></span>" +
-        '<span class="class-card-footer"><span class="class-card-meta"><span>Frequência ' +
-        turma.frequencia +
-        "%</span></span>" +
-        selosituacaoHTML(turma.situacao) +
-        "</span></button>"
-      );
-    })
-    .join("");
-
-  container.querySelectorAll(".class-card").forEach(function (card) {
-    card.addEventListener("click", function () {
-      irParaAlunosDaTurma(card.getAttribute("data-turma-id"));
-    });
+  container.replaceChildren();
+  turmas.forEach((turma) => {
+    const card = profElemento("button", undefined, "class-card");
+    card.type = "button";
+    card.dataset.turmaId = String(turma.id);
+    const meta = profElemento("span", undefined, "class-card-meta");
+    meta.append(profElemento("span", `${turma.total_alunos} aluno(s)`), profElemento("span", `Média ${profMedia(turma.media)}`));
+    const rodape = profElemento("span", undefined, "class-card-footer");
+    const avaliacoes = profElemento("span", `${turma.avaliacoes_publicadas} avaliação(ões) publicada(s)`, "class-card-meta");
+    rodape.append(avaliacoes, profSelo(turma.situacao));
+    card.append(profElemento("span", turma.nome, "class-card-title"), meta, rodape);
+    card.addEventListener("click", () => irParaAlunosDaTurma(String(turma.id)));
+    container.append(card);
   });
 }
 
 function irParaAlunosDaTurma(turmaId) {
-  const linkAlunos = document.querySelector(
-    '.sidebar-link[data-section="alunos"]',
-  );
-  if (linkAlunos) linkAlunos.click();
-
-  const selectTurma = document.getElementById("filtro-turma");
-  if (selectTurma) selectTurma.value = turmaId;
-
+  document.querySelector('.sidebar-link[data-section="alunos"]')?.click();
+  const select = document.getElementById("filtro-turma");
+  if (select) select.value = turmaId;
   aplicarFiltrosAlunos();
 }
 
 function popularFiltroTurmas(turmas) {
   const select = document.getElementById("filtro-turma");
-  turmas.forEach(function (turma) {
-    const opcao = document.createElement("option");
-    opcao.value = turma.id;
-    opcao.textContent = turma.nome;
-    select.appendChild(opcao);
+  if (!select) return;
+  const selecionado = select.value;
+  select.replaceChildren(profElemento("option", "Todas as turmas"));
+  turmas.forEach((turma) => {
+    const opcao = profElemento("option", turma.nome);
+    opcao.value = String(turma.id);
+    select.append(opcao);
   });
+  select.value = selecionado;
 }
 
 function inicializarFiltrosAlunos() {
-  const busca = document.getElementById("busca-aluno");
-  const filtroTurma = document.getElementById("filtro-turma");
-  const filtroSituacao = document.getElementById("filtro-situacao");
-  const filtroDesempenho = document.getElementById("filtro-desempenho");
-
-  [busca, filtroTurma, filtroSituacao, filtroDesempenho].forEach(
-    function (campo) {
-      if (campo) campo.addEventListener("input", aplicarFiltrosAlunos);
-    },
-  );
+  ["busca-aluno", "filtro-turma", "filtro-situacao", "filtro-desempenho"].forEach((id) => {
+    const campo = document.getElementById(id);
+    if (campo) campo.addEventListener("input", aplicarFiltrosAlunos);
+    if (campo && campo.tagName === "SELECT") campo.addEventListener("change", aplicarFiltrosAlunos);
+  });
 }
 
 function aplicarFiltrosAlunos() {
-  const termo = (document.getElementById("busca-aluno").value || "")
-    .trim()
-    .toLowerCase();
-  const turmaId = document.getElementById("filtro-turma").value;
-  const situacao = document.getElementById("filtro-situacao").value;
-  const desempenho = document.getElementById("filtro-desempenho").value;
-
-  alunosFiltrados = [];
-  renderTabelaAlunos(alunosFiltrados);
+  const termo = (document.getElementById("busca-aluno")?.value || "").trim().toLocaleLowerCase("pt-BR");
+  const turmaId = document.getElementById("filtro-turma")?.value || "";
+  const situacao = document.getElementById("filtro-situacao")?.value || "";
+  const desempenho = document.getElementById("filtro-desempenho")?.value || "";
+  const alunos = dadosProfessor.alunos.filter((aluno) => {
+    if (termo && !`${aluno.nome} ${aluno.turma}`.toLocaleLowerCase("pt-BR").includes(termo)) return false;
+    if (turmaId && String(aluno.turma_id) !== turmaId) return false;
+    if (situacao && aluno.situacao !== situacao) return false;
+    if (desempenho === "alto" && (!profTemNumero(aluno.media) || aluno.media < 7)) return false;
+    if (desempenho === "medio" && (!profTemNumero(aluno.media) || aluno.media < 5 || aluno.media >= 7)) return false;
+    if (desempenho === "baixo" && (!profTemNumero(aluno.media) || aluno.media >= 5)) return false;
+    return true;
+  });
+  renderTabelaAlunos(alunos);
 }
 
-function renderTabelaAlunos(lista) {
+function renderTabelaAlunos(alunos) {
   const corpo = document.getElementById("tabela-alunos-corpo");
-
-  if (!lista || lista.length === 0) {
-    corpo.innerHTML =
-      '<tr><td colspan="6">' +
-      estadoVazioHTML("Nenhum aluno encontrado para os filtros selecionados.") +
-      "</td></tr>";
+  if (!corpo) return;
+  if (!alunos.length) {
+    profEstadoTabela(corpo, 5, "Nenhum aluno encontrado para os filtros selecionados.");
     return;
   }
-
-  corpo.innerHTML = lista
-    .map(function (aluno) {
-      const sinalEvolucao = aluno.evolucao >= 0 ? "+" : "";
-      return (
-        '<tr class="is-clickable" data-aluno-id="' +
-        aluno.id +
-        '" tabindex="0">' +
-        "<td>" +
-        aluno.nome +
-        "</td>" +
-        "<td>" +
-        aluno.turma +
-        "</td>" +
-        "<td>" +
-        aluno.media.toFixed(1) +
-        "</td>" +
-        "<td>" +
-        aluno.frequencia +
-        "%</td>" +
-        "<td>" +
-        sinalEvolucao +
-        aluno.evolucao.toFixed(1) +
-        "</td>" +
-        "<td>" +
-        selosituacaoHTML(aluno.situacao) +
-        "</td>" +
-        "</tr>"
-      );
-    })
-    .join("");
+  corpo.replaceChildren();
+  alunos.forEach((aluno) => {
+    const linha = document.createElement("tr");
+    linha.className = "is-clickable";
+    linha.dataset.alunoId = String(aluno.id);
+    linha.tabIndex = 0;
+    linha.append(profElemento("td", aluno.nome), profElemento("td", aluno.turma), profElemento("td", profMedia(aluno.media)), profElemento("td", aluno.avaliacoes_lancadas));
+    const situacao = document.createElement("td");
+    situacao.append(profSelo(aluno.situacao));
+    linha.append(situacao);
+    corpo.append(linha);
+  });
 }
 
 function inicializarModalAluno() {
-  const corpoTabela = document.getElementById("tabela-alunos-corpo");
-  const botaoFechar = document.getElementById("modal-aluno-fechar");
-
-  corpoTabela.addEventListener("click", function (evento) {
+  const corpo = document.getElementById("tabela-alunos-corpo");
+  const fechar = document.getElementById("modal-aluno-fechar");
+  const modal = document.getElementById("modal-aluno");
+  if (!corpo || !fechar || !modal) return;
+  corpo.addEventListener("click", (evento) => {
     const linha = evento.target.closest("tr[data-aluno-id]");
-    if (linha) abrirDetalheAluno(Number(linha.getAttribute("data-aluno-id")));
+    if (linha) abrirDetalheAluno(Number(linha.dataset.alunoId));
   });
-
-  corpoTabela.addEventListener("keydown", function (evento) {
+  corpo.addEventListener("keydown", (evento) => {
     if (evento.key !== "Enter") return;
     const linha = evento.target.closest("tr[data-aluno-id]");
-    if (linha) abrirDetalheAluno(Number(linha.getAttribute("data-aluno-id")));
+    if (linha) abrirDetalheAluno(Number(linha.dataset.alunoId));
   });
-
-  botaoFechar.addEventListener("click", function () {
-    fecharModal("modal-aluno");
+  fechar.addEventListener("click", () => fecharModal("modal-aluno"));
+  modal.addEventListener("click", (evento) => {
+    if (evento.target === modal) fecharModal("modal-aluno");
   });
-
-  document
-    .getElementById("modal-aluno")
-    .addEventListener("click", function (evento) {
-      if (evento.target.id === "modal-aluno") fecharModal("modal-aluno");
-    });
 }
 
 function abrirDetalheAluno(alunoId) {
-  document.getElementById("modal-aluno-titulo").textContent =
-    "Detalhes do aluno";
-
-  document.getElementById("modal-aluno-corpo").innerHTML =
-    '<div class="modal-section">' +
-    estadoVazioHTML("Os dados deste aluno ainda não foram carregados.") +
-    "</div>";
-
+  const aluno = dadosProfessor.alunos.find((item) => Number(item.id) === alunoId);
+  const titulo = document.getElementById("modal-aluno-titulo");
+  const corpo = document.getElementById("modal-aluno-corpo");
+  if (!aluno || !titulo || !corpo) return;
+  titulo.textContent = aluno.nome;
+  const lista = document.createElement("dl");
+  lista.className = "profile-fields";
+  [["Turma", aluno.turma], ["Média", profMedia(aluno.media)], ["Avaliações lançadas", aluno.avaliacoes_lancadas], ["Situação", profStatus(aluno.situacao).rotulo]].forEach(([rotulo, valor]) => {
+    const linha = document.createElement("div");
+    linha.append(profElemento("dt", rotulo), profElemento("dd", valor));
+    lista.append(linha);
+  });
+  corpo.replaceChildren(lista);
   abrirModal("modal-aluno");
 }
 
 function renderDesempenho(alunos) {
-  const ordenadosDesc = alunos.slice().sort(function (a, b) {
-    return b.media - a.media;
-  });
-
-  const melhores = ordenadosDesc.slice(0, 3);
-  const piores = ordenadosDesc.slice(-3).reverse();
-
-  document.getElementById("tabela-melhores-medias-corpo").innerHTML = melhores
-    .map(function (a) {
-      return (
-        "<tr><td>" +
-        a.nome +
-        "</td><td>" +
-        a.turma +
-        "</td><td>" +
-        a.media.toFixed(1) +
-        "</td></tr>"
-      );
-    })
-    .join("");
-
-  document.getElementById("tabela-piores-medias-corpo").innerHTML = piores
-    .map(function (a) {
-      return (
-        "<tr><td>" +
-        a.nome +
-        "</td><td>" +
-        a.turma +
-        "</td><td>" +
-        a.media.toFixed(1) +
-        "</td></tr>"
-      );
-    })
-    .join("");
+  const comMedia = alunos.filter((aluno) => profTemNumero(aluno.media));
+  const melhores = [...comMedia].sort((a, b) => b.media - a.media).slice(0, 3);
+  const piores = [...comMedia].sort((a, b) => a.media - b.media).slice(0, 3);
+  renderRanking("tabela-melhores-medias-corpo", melhores, "Ainda não há notas publicadas para formar este ranking.");
+  renderRanking("tabela-piores-medias-corpo", piores, "Ainda não há notas publicadas para formar este ranking.");
 }
 
-function renderFrequenciaTurmas(turmas) {
-  const grafico = document.getElementById("grafico-frequencia-turmas");
-  const valorMaximo = 100;
-
-  grafico.innerHTML = turmas
-    .map(function (turma) {
-      const altura = Math.max(
-        8,
-        Math.round((turma.frequencia / valorMaximo) * 100),
-      );
-      return (
-        '<div class="mini-chart-bar">' +
-        '<span class="mini-chart-value">' +
-        turma.frequencia +
-        "%</span>" +
-        '<div class="mini-chart-fill mini-chart-fill--' +
-        turma.situacao +
-        '" style="height: ' +
-        altura +
-        '%"></div>' +
-        '<span class="mini-chart-label">' +
-        turma.nome +
-        "</span>" +
-        "</div>"
-      );
-    })
-    .join("");
-
-  document.getElementById("tabela-frequencia-turmas-corpo").innerHTML = turmas
-    .map(function (turma) {
-      return (
-        "<tr><td>" +
-        turma.nome +
-        "</td><td>" +
-        turma.frequencia +
-        "%</td><td>" +
-        selosituacaoHTML(turma.situacao) +
-        "</td></tr>"
-      );
-    })
-    .join("");
+function renderRanking(id, alunos, vazio) {
+  const corpo = document.getElementById(id);
+  if (!corpo) return;
+  if (!alunos.length) {
+    profEstadoTabela(corpo, 3, vazio);
+    return;
+  }
+  corpo.replaceChildren();
+  alunos.forEach((aluno) => {
+    const linha = document.createElement("tr");
+    linha.append(profElemento("td", aluno.nome), profElemento("td", aluno.turma), profElemento("td", profMedia(aluno.media)));
+    corpo.append(linha);
+  });
 }
 
 function renderAcompanhamentoProfessor(alunos) {
   const lista = document.getElementById("lista-acompanhamento-professor");
-  const alunosParaAcompanhar = alunos.filter(function (a) {
-    return a.situacao !== "normal";
-  });
-
-  if (alunosParaAcompanhar.length === 0) {
-    lista.innerHTML =
-      "<li>" +
-      estadoVazioHTML("Nenhum aluno exige acompanhamento no momento.") +
-      "</li>";
+  if (!lista) return;
+  const atencao = alunos.filter((aluno) => ["atencao", "critico"].includes(aluno.situacao));
+  lista.replaceChildren();
+  if (!atencao.length) {
+    lista.append(profElemento("li", "Nenhum aluno com média abaixo de 7,0 nas notas publicadas."));
     return;
   }
+  atencao.forEach((aluno) => lista.append(profElemento("li", `${aluno.nome} (${aluno.turma}): média ${profMedia(aluno.media)} em avaliações publicadas.`, "note-item")));
+}
 
-  lista.innerHTML = alunosParaAcompanhar
-    .map(function (a) {
-      const observacao = a.observacoes || "Sem observação registrada.";
-      return (
-        '<li class="note-item">' +
-        iconeSvg("alerta") +
-        "<span><strong>" +
-        a.nome +
-        "</strong> (" +
-        a.turma +
-        ") — " +
-        observacao +
-        "</span></li>"
-      );
-    })
-    .join("");
+function renderErroProfessor(mensagem) {
+  const kpis = document.getElementById("kpi-resumo-professor");
+  if (kpis) kpis.replaceChildren(profKpi("Dados das turmas", "Indisponíveis", mensagem, "kpi-card--warning"));
+  profEstadoTabela(document.getElementById("tabela-resumo-atencao-corpo"), 4, mensagem);
+  profEstadoTabela(document.getElementById("tabela-alunos-corpo"), 5, mensagem);
+  profEstadoTabela(document.getElementById("tabela-melhores-medias-corpo"), 3, mensagem);
+  profEstadoTabela(document.getElementById("tabela-piores-medias-corpo"), 3, mensagem);
+  window.EduWatchCharts?.showMessage("grafico-medias-turmas", "O gráfico será exibido quando os dados puderem ser carregados.");
 }
 
 function carregarNotificacoes() {
   const lista = document.getElementById("notification-list");
   const marcador = document.getElementById("notification-dot");
-
-  lista.innerHTML = estadoVazioHTML("Nenhuma notificação no momento.");
-
-  marcador.hidden = true;
+  if (lista) lista.replaceChildren(profElemento("p", "Nenhuma notificação no momento."));
+  if (marcador) marcador.hidden = true;
 }

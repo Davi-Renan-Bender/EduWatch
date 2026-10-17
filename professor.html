@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/professor.css" />
+    <link rel="stylesheet" href="css/academico.css" />
   </head>
 
   <body class="dashboard-body">
@@ -429,8 +430,7 @@
                       <th scope="col">Aluno</th>
                       <th scope="col">Turma</th>
                       <th scope="col">Média</th>
-                      <th scope="col">Frequência</th>
-                      <th scope="col">Evolução</th>
+                      <th scope="col">Avaliações lançadas</th>
                       <th scope="col">Situação</th>
                     </tr>
                   </thead>
@@ -482,7 +482,7 @@
                   </select>
 
                   <small>
-                    As turmas disponíveis serão carregadas posteriormente.
+                    São exibidas somente as turmas atribuídas ao seu usuário.
                   </small>
                 </div>
 
@@ -618,12 +618,7 @@
                   </thead>
 
                   <tbody id="tabela-notas-corpo">
-                    <!--
-            Preenchido futuramente via API.
-
-            Não inserir alunos aqui.
-            Os registros deverão vir do banco de dados.
-          -->
+                  <!-- Preenchido com alunos ativos da turma selecionada. -->
                   </tbody>
                 </table>
               </div>
@@ -657,13 +652,12 @@
                 <div class="assessment-footer-info">
                   <strong>Avaliação ainda não registrada</strong>
                   <span>
-                    Os dados serão salvos no sistema quando a integração com o
-                    banco estiver disponível.
+                    Preencha os dados e continue para carregar os alunos.
                   </span>
                 </div>
 
                 <button class="btn btn-primary" type="button">
-                  Salvar avaliação
+                  Salvar notas
                 </button>
               </div>
             </div>
@@ -676,6 +670,13 @@
             hidden
             aria-labelledby="page-title"
           >
+            <div class="panel section-block">
+              <div class="panel-header"><h2>Média por turma</h2></div>
+              <div class="chart-canvas-wrap">
+                <canvas id="grafico-medias-turmas" aria-label="Gráfico de médias por turma" role="img"></canvas>
+                <p class="chart-state" role="status" hidden></p>
+              </div>
+            </div>
             <div class="card-grid section-block">
               <div class="panel">
                 <div class="panel-header"><h2>Maiores médias</h2></div>
@@ -726,33 +727,58 @@
           >
             <div class="panel section-block">
               <div class="panel-header">
-                <h2>Frequência média por turma</h2>
+                <div>
+                  <h2>Registro de frequência</h2>
+                  <p class="academic-section-description">Crie uma aula, registre a situação de cada aluno e feche a chamada quando estiver completa.</p>
+                </div>
               </div>
-              <div
-                class="mini-chart"
-                id="grafico-frequencia-turmas"
-                role="img"
-                aria-label="Frequência média por turma"
-              ></div>
+              <div id="frequencia-mensagem" class="attendance-message" role="status" aria-live="polite" hidden></div>
+              <div class="attendance-form-grid">
+                <label class="attendance-field">
+                  <span>Turma e disciplina</span>
+                  <select id="frequencia-atribuicao" required><option value="">Carregando opções...</option></select>
+                </label>
+                <label class="attendance-field">
+                  <span>Período letivo</span>
+                  <select id="frequencia-periodo" required><option value="">Selecione a turma primeiro</option></select>
+                </label>
+                <label class="attendance-field">
+                  <span>Data da aula</span>
+                  <input id="frequencia-data" type="date" required>
+                </label>
+                <label class="attendance-field attendance-field--wide">
+                  <span>Tema da aula (opcional)</span>
+                  <input id="frequencia-tema" type="text" maxlength="180" placeholder="Ex.: Introdução às funções">
+                </label>
+              </div>
+              <div class="attendance-actions">
+                <button type="button" class="btn-primary" id="frequencia-criar-aula">Criar aula</button>
+              </div>
             </div>
 
-            <div class="panel section-block">
-              <div class="panel-header"><h2>Detalhamento por turma</h2></div>
-              <div class="table-wrapper">
-                <table
-                  class="data-table"
-                  aria-label="Frequência detalhada por turma"
-                >
-                  <thead>
-                    <tr>
-                      <th scope="col">Turma</th>
-                      <th scope="col">Frequência</th>
-                      <th scope="col">Situação</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tabela-frequencia-turmas-corpo"></tbody>
+            <div class="panel section-block attendance-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Aulas registradas</h2>
+                  <p class="academic-section-description">Selecione uma aula para abrir ou revisar a chamada.</p>
+                </div>
+              </div>
+              <label class="attendance-field attendance-lesson-picker">
+                <span>Aula</span>
+                <select id="frequencia-aula" disabled><option value="">Selecione turma, disciplina e período</option></select>
+              </label>
+              <div id="frequencia-resumo-aula" class="attendance-lesson-summary" hidden></div>
+              <div class="assessment-table-wrapper attendance-table-wrapper">
+                <table class="assessment-table attendance-table">
+                  <thead><tr><th scope="col">Aluno</th><th scope="col">Situação</th></tr></thead>
+                  <tbody id="frequencia-alunos-corpo"><tr><td colspan="2">Selecione uma aula para carregar os alunos.</td></tr></tbody>
                 </table>
               </div>
+              <div class="attendance-actions attendance-actions--bottom">
+                <button type="button" class="btn-secondary" id="frequencia-salvar" disabled>Salvar chamada</button>
+                <button type="button" class="btn-primary" id="frequencia-fechar" disabled>Fechar frequência</button>
+              </div>
+              <p class="academic-section-description">Status disponíveis: presente, ausente, atraso e justificada. Ao fechar, a aula será marcada como realizada e a chamada ficará bloqueada.</p>
             </div>
           </section>
 
@@ -814,6 +840,10 @@
 
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="js/charts.js"></script>
     <script src="js/professor.js"></script>
+    <script src="js/avaliacoes.js"></script>
+    <script src="js/frequencia.js"></script>
   </body>
 </html>

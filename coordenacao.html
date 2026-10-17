@@ -510,14 +510,30 @@
 
             <div class="panel section-block">
               <div class="panel-header">
+                <h2>Distribuição dos alunos por situação</h2>
+              </div>
+              <div class="chart-container chart-container--doughnut">
+                <canvas
+                  id="grafico-situacao-escola"
+                  role="img"
+                  aria-label="Gráfico de rosca com a distribuição dos alunos por situação"
+                ></canvas>
+                <p id="grafico-situacao-vazio" class="chart-empty" hidden></p>
+              </div>
+            </div>
+
+            <div class="panel section-block">
+              <div class="panel-header">
                 <h2>Evolução geral da média da escola</h2>
               </div>
-              <div
-                class="mini-chart"
-                id="grafico-evolucao-escola"
-                role="img"
-                aria-label="Evolução da média geral da escola por bimestre"
-              ></div>
+              <div class="chart-container">
+                <canvas
+                  id="grafico-evolucao-escola"
+                  role="img"
+                  aria-label="Evolução da média geral da escola por período letivo"
+                ></canvas>
+                <p id="grafico-evolucao-vazio" class="chart-empty" hidden></p>
+              </div>
             </div>
           </section>
 
@@ -731,6 +747,8 @@
 
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <!-- Chart.js: carregado antes do script que cria os gráficos. Requer internet. -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
     <script src="js/coordenacao.js"></script>
   </body>
 </html>

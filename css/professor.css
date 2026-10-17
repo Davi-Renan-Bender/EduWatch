@@ -618,3 +618,44 @@
     align-items: flex-start;
   }
 }
+
+/* ========================================================================
+   FREQUÊNCIA / CHAMADA
+   ======================================================================== */
+.attendance-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+.attendance-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; color: var(--text-strong); font-size: 13px; font-weight: var(--fw-semibold, 600); }
+.attendance-field input, .attendance-field select, .attendance-status-select {
+  width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-md, 8px);
+  background: var(--surface, #fff); color: var(--text-strong); font: inherit; font-weight: 400;
+}
+.attendance-field--wide { grid-column: span 2; }
+.attendance-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.attendance-actions button { min-height: 40px; padding: 9px 15px; border: 1px solid var(--border); border-radius: var(--radius-md, 8px); cursor: pointer; font: inherit; font-weight: 600; }
+.attendance-actions button:disabled { opacity: .55; cursor: not-allowed; }
+.attendance-actions .btn-primary { background: var(--primary, #075b50); color: #fff; border-color: transparent; }
+.attendance-actions .btn-secondary { background: var(--surface-muted, #f3f5f4); color: var(--text-strong); }
+.attendance-panel { margin-top: 20px; }
+.academic-section-description { margin: 6px 0 0; color: var(--text-muted, #697773); font-size: 13px; line-height: 1.5; }
+.attendance-lesson-picker { max-width: 650px; margin: 14px 0 18px; }
+.attendance-lesson-summary { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; border: 1px solid var(--border); border-radius: var(--radius-md, 8px); background: var(--surface-muted, #f7f8f7); font-size: 13px; }
+.attendance-message { padding: 11px 13px; margin-top: 12px; border-radius: var(--radius-md, 8px); font-size: 13px; line-height: 1.5; }
+.attendance-message[hidden] { display: none; }
+.attendance-message--info { background: var(--surface-muted, #f3f5f4); color: var(--text); }
+.attendance-message--sucesso { background: #e8f5ee; color: #17643b; }
+.attendance-message--erro { background: #fff0ef; color: #9b2828; }
+.attendance-table-wrapper { overflow-x: auto; }
+.attendance-table { width: 100%; }
+.attendance-table th:last-child, .attendance-table td:last-child { width: min(320px, 45%); }
+.attendance-table td { vertical-align: middle; }
+.attendance-status-select { max-width: 300px; min-height: 38px; }
+@media (max-width: 760px) {
+  .attendance-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .attendance-field--wide { grid-column: auto; }
+  .attendance-actions { justify-content: stretch; }
+  .attendance-actions button { flex: 1 1 100%; }
+}
