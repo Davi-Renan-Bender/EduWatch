@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   inicializarNavegacaoPorSecao();
   inicializarNotificacoes();
   inicializarCadastroUsuarios(usuarioSessao);
+  ewInicializarAtribuicoesProfessor();
 
   if (window.location.hash === "#cadastros") {
     const linkCadastros = document.querySelector('.sidebar-link[data-section="cadastros"]');
@@ -1024,4 +1025,150 @@ function carregarNotificacoes() {
   lista.innerHTML = estadoVazioHTML("Nenhuma notificação no momento.");
 
   marcador.hidden = true;
+}
+
+// Gerenciamento de múltiplas atribuições para cada professor.
+function ewAtribEscapar(valor) {
+  return String(valor ?? "").replace(/[&<>"']/g, (caractere) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[caractere]);
+}
+
+function ewAtribMostrarMensagem(mensagem, tipo = "info") {
+  const elemento = document.getElementById("atribuicao-professor-mensagem");
+  if (!elemento) return;
+  elemento.textContent = mensagem;
+  elemento.classList.toggle("form-message--success", tipo === "sucesso");
+  elemento.classList.toggle("form-message--error", tipo === "erro");
+  elemento.classList.toggle("form-message--info", tipo === "info");
+}
+
+async function ewAtribBuscarOpcoes() {
+  const resposta = await fetch("api/usuarios/opcoes-atribuicoes.php", {
+    method: "GET",
+    credentials: "same-origin",
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+  });
+  let dados;
+  try { dados = await resposta.json(); }
+  catch { throw new Error("O servidor retornou uma resposta inválida ao carregar as atribuições."); }
+  if (!resposta.ok || dados.sucesso !== true) {
+    throw new Error(dados.mensagem || "Não foi possível carregar as atribuições.");
+  }
+  return dados;
+}
+
+function ewAtribPopularSelect(campo, itens, mensagemVazia) {
+  if (!campo) return;
+  campo.replaceChildren();
+  const inicial = document.createElement("option");
+  inicial.value = "";
+  inicial.textContent = "Selecione...";
+  campo.appendChild(inicial);
+  (itens || []).forEach((item) => {
+    const option = document.createElement("option");
+    option.value = String(item.id);
+    option.textContent = String(item.nome || "");
+    campo.appendChild(option);
+  });
+  if (!itens || itens.length === 0) {
+    inicial.textContent = mensagemVazia;
+    campo.disabled = true;
+  } else {
+    campo.disabled = false;
+  }
+}
+
+function ewAtribRenderizarLista(dados) {
+  const corpo = document.getElementById("tabela-atribuicoes-professor-corpo");
+  if (!corpo) return;
+
+  const turmas = new Map((dados.turmas || []).map((item) => [String(item.id), item.nome]));
+  const disciplinas = new Map((dados.disciplinas || []).map((item) => [String(item.id), item.nome]));
+  const professores = new Map((dados.todosProfessores || dados.professores || []).map((item) => [String(item.id), item.nome]));
+  const lista = (dados.atribuicoes || []).slice().sort((a, b) => {
+    const turmaA = turmas.get(String(a.turmaId)) || "";
+    const turmaB = turmas.get(String(b.turmaId)) || "";
+    return turmaA.localeCompare(turmaB, "pt-BR") ||
+      (disciplinas.get(String(a.disciplinaId)) || "").localeCompare(disciplinas.get(String(b.disciplinaId)) || "", "pt-BR") ||
+      (professores.get(String(a.professorId)) || "").localeCompare(professores.get(String(b.professorId)) || "", "pt-BR");
+  });
+
+  if (lista.length === 0) {
+    corpo.innerHTML = '<tr><td colspan="3">Nenhuma atribuição encontrada.</td></tr>';
+    return;
+  }
+  corpo.innerHTML = lista.map((item) => {
+    const prof = professores.get(String(item.professorId)) || "Professor não encontrado/inativo";
+    const turma = turmas.get(String(item.turmaId)) || "Turma não encontrada/inativa";
+    const disciplina = disciplinas.get(String(item.disciplinaId)) || "Disciplina não encontrada/inativa";
+    return `<tr><td>${ewAtribEscapar(prof)}</td><td>${ewAtribEscapar(turma)}</td><td>${ewAtribEscapar(disciplina)}</td></tr>`;
+  }).join("");
+}
+
+async function ewAtribCarregarTudo() {
+  const selectProfessor = document.getElementById("atribuicao-professor");
+  const selectTurma = document.getElementById("atribuicao-turma");
+  const selectDisciplina = document.getElementById("atribuicao-disciplina");
+  try {
+    const dados = await ewAtribBuscarOpcoes();
+    ewAtribPopularSelect(selectProfessor, dados.professores, "Nenhum professor ativo");
+    ewAtribPopularSelect(selectTurma, dados.turmas, "Nenhuma turma ativa");
+    ewAtribPopularSelect(selectDisciplina, dados.disciplinas, "Nenhuma disciplina ativa");
+    ewAtribRenderizarLista(dados);
+  } catch (erro) {
+    const mensagem = erro instanceof Error ? erro.message : "Falha ao carregar atribuições.";
+    ewAtribMostrarMensagem(mensagem, "erro");
+    const corpo = document.getElementById("tabela-atribuicoes-professor-corpo");
+    if (corpo) corpo.innerHTML = `<tr><td colspan="3">${ewAtribEscapar(mensagem)}</td></tr>`;
+    console.error("EduWatch: falha ao carregar atribuições de professores.", erro);
+  }
+}
+
+function ewInicializarAtribuicoesProfessor() {
+  const formulario = document.getElementById("form-atribuicao-professor");
+  const botao = document.getElementById("btn-salvar-atribuicao-professor");
+  if (!formulario || !botao) return;
+
+  formulario.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    ewAtribMostrarMensagem("");
+    const professorId = document.getElementById("atribuicao-professor")?.value || "";
+    const turmaId = document.getElementById("atribuicao-turma")?.value || "";
+    const disciplinaId = document.getElementById("atribuicao-disciplina")?.value || "";
+    if (!professorId || !turmaId || !disciplinaId) {
+      ewAtribMostrarMensagem("Selecione professor, turma e disciplina.", "erro");
+      return;
+    }
+
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = "Salvando...";
+    try {
+      const resposta = await fetch("api/usuarios/atribuir-professor.php", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ professorId, turmaId, disciplinaId }),
+      });
+      let dados;
+      try { dados = await resposta.json(); }
+      catch { throw new Error("O servidor retornou uma resposta inválida ao salvar a atribuição."); }
+      if (!resposta.ok || dados.sucesso !== true) {
+        throw new Error(dados.mensagem || "Não foi possível salvar a atribuição.");
+      }
+      ewAtribMostrarMensagem(dados.mensagem || "Atribuição salva.", "sucesso");
+      document.getElementById("atribuicao-turma").value = "";
+      document.getElementById("atribuicao-disciplina").value = "";
+      await ewAtribCarregarTudo();
+    } catch (erro) {
+      ewAtribMostrarMensagem(erro instanceof Error ? erro.message : "Falha ao salvar atribuição.", "erro");
+    } finally {
+      botao.disabled = false;
+      botao.textContent = textoOriginal;
+    }
+  });
+
+  ewAtribCarregarTudo();
 }
