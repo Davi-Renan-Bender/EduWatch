@@ -1,4 +1,5 @@
 /* EduWatch — aparência complementar para notificações e frequência do aluno. */
+
 .edu-notification-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -116,6 +117,7 @@
 }
 
 /* Área de frequência do aluno */
+
 .student-attendance-message {
   margin: 0.75rem 0;
   color: var(--text-muted, #526277);
@@ -233,21 +235,21 @@
 
 .student-attendance-badge--normal,
 .student-attendance-badge--presente {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .student-attendance-badge--atencao,
 .student-attendance-badge--atraso,
 .student-attendance-badge--justificada {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--warning-bg);
+  color: var(--warning-text);
 }
 
 .student-attendance-badge--critico,
 .student-attendance-badge--ausente {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--danger-bg);
+  color: var(--danger-text);
 }
 
 @media (max-width: 1100px) {

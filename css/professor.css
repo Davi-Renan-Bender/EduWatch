@@ -1,21 +1,19 @@
 /* ==========================================================================
    EduWatch — professor.css
    Estilos específicos da área do professor
-   ========================================================================== */
+   ==========================================================================
+*/
 
 /* ==========================================================================
    CARDS DAS TURMAS
-   ========================================================================== */
+   ==========================================================================
+*/
 
 .class-card-footer {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 12px;
-
   margin-top: auto;
 }
 
@@ -29,39 +27,31 @@
 
 /* ==========================================================================
    MODAL DO ALUNO
-   ========================================================================== */
+   ==========================================================================
+*/
 
 .modal-section h3 {
   margin: 0;
-
   color: var(--text-strong);
-
   font-size: 14px;
-
   font-weight: var(--fw-bold);
 }
 
 .modal-observacao {
   font-size: 13.5px;
-
   line-height: 1.6;
-
   color: var(--text);
-
   background-color: var(--surface-muted);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-md);
-
   padding: 12px 14px;
-
   margin: 0;
 }
 
 /* ==========================================================================
    AVALIAÇÕES
-   ========================================================================== */
+   ==========================================================================
+*/
 
 #section-avaliacoes {
   width: 100%;
@@ -72,67 +62,42 @@
 
 .section-intro {
   display: flex;
-
   align-items: flex-start;
-
   justify-content: space-between;
-
   gap: 24px;
-
   margin-bottom: 2px;
 }
 
 .section-eyebrow {
   display: inline-flex;
-
   align-items: center;
-
   min-height: 26px;
-
   padding: 4px 9px;
-
   margin-bottom: 7px;
-
   color: var(--primary);
-
   background: var(--info-bg);
-
   border: 1px solid var(--info-border);
-
   border-radius: var(--radius-full);
-
   font-size: 11px;
-
   font-weight: var(--fw-bold);
-
   letter-spacing: 0.04em;
-
   text-transform: uppercase;
 }
 
 .section-main-title {
   margin: 0;
-
   color: var(--text-strong);
-
   font-size: clamp(24px, 2.5vw, 30px);
-
   font-weight: var(--fw-heavy);
-
   line-height: 1.2;
-
   letter-spacing: -0.025em;
 }
 
 .section-main-description {
   max-width: 700px;
-
   margin: 7px 0 0;
-
   color: var(--muted);
-
   font-size: 14px;
-
   line-height: 1.55;
 }
 
@@ -140,82 +105,55 @@
 
 .assessment-status {
   display: inline-flex;
-
   align-items: center;
-
   min-height: 30px;
-
   padding: 5px 10px;
-
   color: var(--primary);
-
   background: var(--info-bg);
-
   border: 1px solid var(--info-border);
-
   border-radius: var(--radius-full);
-
   font-size: 12px;
-
   font-weight: var(--fw-bold);
-
   white-space: nowrap;
 }
 
 /* ==========================================================================
    FORMULÁRIO
-   ========================================================================== */
+   ==========================================================================
+*/
 
 .assessment-form {
   display: grid;
-
   grid-template-columns: repeat(2, minmax(0, 1fr));
-
   gap: 18px 20px;
 }
 
 .form-field {
   display: flex;
-
   flex-direction: column;
-
   gap: 7px;
-
   min-width: 0;
 }
 
 .form-field label {
   color: var(--text-strong);
-
   font-size: 13px;
-
   font-weight: var(--fw-bold);
 }
 
 .form-field input,
 .form-field select {
   width: 100%;
-
   min-height: 44px;
-
   padding: 10px 12px;
-
   color: var(--text);
-
   background: #ffffff;
-
   border: 1px solid var(--border-strong);
-
   border-radius: var(--radius-md);
-
   font-family: inherit;
-
   font-size: 14px;
-
   outline: none;
-
-  transition:
-    border-color var(--transition-fast),
+  transition: border-color var(--transition-fast),
     box-shadow var(--transition-fast),
     background-color var(--transition-fast);
 }
@@ -232,25 +170,19 @@
 .form-field input:focus,
 .form-field select:focus {
   border-color: var(--primary);
-
   box-shadow: var(--ring-focus);
-
   background: #ffffff;
 }
 
 .form-field small {
   color: var(--muted);
-
   font-size: 11.5px;
-
   line-height: 1.4;
 }
 
 .input-with-suffix {
   position: relative;
-
   display: flex;
-
   align-items: center;
 }
 
@@ -260,15 +192,10 @@
 
 .input-with-suffix span {
   position: absolute;
-
   right: 13px;
-
   color: var(--muted);
-
   font-size: 12px;
-
   font-weight: var(--fw-semibold);
-
   pointer-events: none;
 }
 
@@ -276,133 +203,90 @@
 
 .assessment-form-actions {
   grid-column: 1 / -1;
-
   display: flex;
-
   align-items: center;
-
   justify-content: flex-end;
-
   gap: 10px;
-
   margin-top: 4px;
-
   padding-top: 17px;
-
   border-top: 1px solid var(--border);
 }
 
 /* ==========================================================================
    LANÇAMENTO DE NOTAS
-   ========================================================================== */
+   ==========================================================================
+*/
 
 .grade-toolbar {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 18px;
-
   padding: 13px 15px;
-
   background: var(--surface-muted);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-md);
 }
 
 .grade-info {
   display: flex;
-
   align-items: center;
-
   gap: 11px;
-
   min-width: 0;
 }
 
 .grade-info-icon {
   width: 36px;
-
   height: 36px;
-
   flex: 0 0 36px;
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   color: var(--primary);
-
   background: var(--info-bg);
-
   border: 1px solid var(--info-border);
-
   border-radius: var(--radius-md);
 }
 
 .grade-info-icon svg {
   width: 18px;
-
   height: 18px;
 }
 
 .grade-info div {
   display: flex;
-
   flex-direction: column;
-
   gap: 2px;
-
   min-width: 0;
 }
 
 .grade-info strong {
   color: var(--text-strong);
-
   font-size: 13px;
 }
 
 .grade-info div span {
   color: var(--muted);
-
   font-size: 12px;
-
   line-height: 1.4;
 }
 
 .grade-scale {
   display: inline-flex;
-
   align-items: center;
-
   gap: 5px;
-
   min-height: 30px;
-
   padding: 5px 10px;
-
   color: var(--muted);
-
   background: #ffffff;
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-full);
-
   font-size: 12px;
-
   white-space: nowrap;
 }
 
 .grade-scale strong {
   color: var(--text-strong);
-
   font-size: 13px;
 }
 
@@ -433,123 +317,90 @@
 
 /* ==========================================================================
    ESTADO VAZIO
-   ========================================================================== */
+   ==========================================================================
+*/
 
 .assessment-empty-state {
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 7px;
-
   min-height: 210px;
-
   padding: 30px 20px;
-
   text-align: center;
-
   background: var(--surface-muted);
-
   border: 1px dashed var(--border-strong);
-
   border-radius: var(--radius-md);
 }
 
 .assessment-empty-icon {
   width: 48px;
-
   height: 48px;
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   margin-bottom: 3px;
-
   color: var(--primary);
-
   background: #ffffff;
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-lg);
-
   box-shadow: var(--shadow-xs);
 }
 
 .assessment-empty-icon svg {
   width: 23px;
-
   height: 23px;
 }
 
 .assessment-empty-state strong {
   color: var(--text-strong);
-
   font-size: 14px;
-
   font-weight: var(--fw-bold);
 }
 
 .assessment-empty-state > span {
   max-width: 440px;
-
   color: var(--muted);
-
   font-size: 12.5px;
-
   line-height: 1.55;
 }
 
 /* ==========================================================================
    RODAPÉ DO LANÇAMENTO
-   ========================================================================== */
+   ==========================================================================
+*/
 
 .assessment-footer {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 18px;
-
   padding-top: 4px;
 }
 
 .assessment-footer-info {
   display: flex;
-
   flex-direction: column;
-
   gap: 3px;
-
   min-width: 0;
 }
 
 .assessment-footer-info strong {
   color: var(--text-strong);
-
   font-size: 13px;
 }
 
 .assessment-footer-info span {
   color: var(--muted);
-
   font-size: 11.5px;
-
   line-height: 1.45;
 }
 
 /* ==========================================================================
    RESPONSIVIDADE
-   ========================================================================== */
+   ==========================================================================
+*/
 
 @media (max-width: 800px) {
   .assessment-form {
@@ -562,7 +413,6 @@
 
   .grade-toolbar {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -572,7 +422,6 @@
 
   .assessment-footer {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -584,7 +433,6 @@
 @media (max-width: 620px) {
   .class-card-footer {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -602,7 +450,6 @@
 
   .assessment-form-actions {
     align-items: stretch;
-
     flex-direction: column;
   }
 
@@ -621,41 +468,167 @@
 
 /* ========================================================================
    FREQUÊNCIA / CHAMADA
-   ======================================================================== */
+   ========================================================================
+*/
+
 .attendance-form-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   margin-top: 18px;
 }
-.attendance-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; color: var(--text-strong); font-size: 13px; font-weight: var(--fw-semibold, 600); }
-.attendance-field input, .attendance-field select, .attendance-status-select {
-  width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-md, 8px);
-  background: var(--surface, #fff); color: var(--text-strong); font: inherit; font-weight: 400;
+
+.attendance-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  color: var(--text-strong);
+  font-size: 13px;
+  font-weight: var(--fw-semibold, 600);
 }
-.attendance-field--wide { grid-column: span 2; }
-.attendance-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 18px; }
-.attendance-actions button { min-height: 40px; padding: 9px 15px; border: 1px solid var(--border); border-radius: var(--radius-md, 8px); cursor: pointer; font: inherit; font-weight: 600; }
-.attendance-actions button:disabled { opacity: .55; cursor: not-allowed; }
-.attendance-actions .btn-primary { background: var(--primary, #075b50); color: #fff; border-color: transparent; }
-.attendance-actions .btn-secondary { background: var(--surface-muted, #f3f5f4); color: var(--text-strong); }
-.attendance-panel { margin-top: 20px; }
-.academic-section-description { margin: 6px 0 0; color: var(--text-muted, #697773); font-size: 13px; line-height: 1.5; }
-.attendance-lesson-picker { max-width: 650px; margin: 14px 0 18px; }
-.attendance-lesson-summary { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; padding: 12px 14px; margin-bottom: 14px; border: 1px solid var(--border); border-radius: var(--radius-md, 8px); background: var(--surface-muted, #f7f8f7); font-size: 13px; }
-.attendance-message { padding: 11px 13px; margin-top: 12px; border-radius: var(--radius-md, 8px); font-size: 13px; line-height: 1.5; }
-.attendance-message[hidden] { display: none; }
-.attendance-message--info { background: var(--surface-muted, #f3f5f4); color: var(--text); }
-.attendance-message--sucesso { background: #e8f5ee; color: #17643b; }
-.attendance-message--erro { background: #fff0ef; color: #9b2828; }
-.attendance-table-wrapper { overflow-x: auto; }
-.attendance-table { width: 100%; }
-.attendance-table th:last-child, .attendance-table td:last-child { width: min(320px, 45%); }
-.attendance-table td { vertical-align: middle; }
-.attendance-status-select { max-width: 300px; min-height: 38px; }
+
+.attendance-field input, .attendance-field select, .attendance-status-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  background: var(--surface, #fff);
+  color: var(--text-strong);
+  font: inherit;
+  font-weight: 400;
+}
+
+.attendance-field--wide {
+  grid-column: span 2;
+}
+
+.attendance-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.attendance-actions button {
+  min-height: 40px;
+  padding: 9px 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.attendance-actions button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.attendance-actions .btn-primary {
+  background: var(--primary, #075b50);
+  color: #fff;
+  border-color: transparent;
+}
+
+.attendance-actions .btn-secondary {
+  background: var(--surface-muted, #f3f5f4);
+  color: var(--text-strong);
+}
+
+.attendance-panel {
+  margin-top: 20px;
+}
+
+.academic-section-description {
+  margin: 6px 0 0;
+  color: var(--text-muted, #697773);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.attendance-lesson-picker {
+  max-width: 650px;
+  margin: 14px 0 18px;
+}
+
+.attendance-lesson-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  background: var(--surface-muted, #f7f8f7);
+  font-size: 13px;
+}
+
+.attendance-message {
+  padding: 11px 13px;
+  margin-top: 12px;
+  border-radius: var(--radius-md, 8px);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.attendance-message[hidden] {
+  display: none;
+}
+
+.attendance-message--info {
+  background: var(--surface-muted, #f3f5f4);
+  color: var(--text);
+}
+
+.attendance-message--sucesso {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.attendance-message--erro {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.attendance-table-wrapper {
+  overflow-x: auto;
+}
+
+.attendance-table {
+  width: 100%;
+}
+
+.attendance-table th:last-child, .attendance-table td:last-child {
+  width: min(320px, 45%);
+}
+
+.attendance-table td {
+  vertical-align: middle;
+}
+
+.attendance-status-select {
+  max-width: 300px;
+  min-height: 38px;
+}
+
 @media (max-width: 760px) {
-  .attendance-form-grid { grid-template-columns: minmax(0, 1fr); }
-  .attendance-field--wide { grid-column: auto; }
-  .attendance-actions { justify-content: stretch; }
-  .attendance-actions button { flex: 1 1 100%; }
+  .attendance-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .attendance-field--wide {
+    grid-column: auto;
+  }
+
+  .attendance-actions {
+    justify-content: stretch;
+  }
+
+  .attendance-actions button {
+    flex: 1 1 100%;
+  }
 }

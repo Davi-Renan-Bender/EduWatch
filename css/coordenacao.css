@@ -1,11 +1,13 @@
 /* ==========================================================================
    EduWatch — Ajustes específicos da página da Coordenação
    Depende de variables.css e dashboard.css.
-   ========================================================================== */
+   ==========================================================================
+*/
 
 /* ==========================================================================
    KPIs
-   ========================================================================== */
+   ==========================================================================
+*/
 
 #kpi-resumo-escola .kpi-card,
 #kpi-situacao-escola .kpi-card {
@@ -19,7 +21,8 @@
 
 /* ==========================================================================
    TABELAS
-   ========================================================================== */
+   ==========================================================================
+*/
 
 #section-alunos .data-table td:first-child,
 #section-professores .data-table td:first-child {
@@ -27,24 +30,22 @@
 }
 
 #section-alunos .data-table tbody tr.is-clickable {
-  transition:
-    background-color var(--transition-fast),
+  transition: background-color var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
 #section-alunos .data-table tbody tr.is-clickable:focus-visible {
   outline: 3px solid rgba(77, 163, 255, 0.28);
-
   outline-offset: -3px;
 }
 
 /* ==========================================================================
    CARDS DE TURMA
-   ========================================================================== */
+   ==========================================================================
+*/
 
 #grade-turmas-coord .class-card {
-  transition:
-    border-color var(--transition-base),
+  transition: border-color var(--transition-base),
     box-shadow var(--transition-base),
     transform var(--transition-base);
 }
@@ -55,34 +56,31 @@
 
 #grade-turmas-coord .class-card-footer {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 12px;
-
   margin-top: auto;
 }
 
 /* ==========================================================================
    INDICADORES
-   ========================================================================== */
+   ==========================================================================
+*/
 
 #section-indicadores .mini-chart {
   min-height: 250px;
 }
 
 #section-indicadores .mini-chart-fill {
-  transition:
-    height 0.28s ease,
+  transition: height 0.28s ease,
     transform 0.2s ease,
     filter 0.2s ease;
 }
 
 /* ==========================================================================
    CADASTROS
-   ========================================================================== */
+   ==========================================================================
+*/
 
 #section-cadastros {
   min-width: 0;
@@ -135,8 +133,7 @@
   background-color: var(--surface);
   color: var(--text);
   font: inherit;
-  transition:
-    border-color var(--transition-fast),
+  transition: border-color var(--transition-fast),
     box-shadow var(--transition-fast),
     background-color var(--transition-fast);
   box-sizing: border-box;
@@ -180,11 +177,11 @@
 }
 
 #cadastro-mensagem.form-message--success {
-  color: #167547;
+  color: var(--success-text);
 }
 
 #cadastro-mensagem.form-message--error {
-  color: #b42318;
+  color: var(--danger-text);
 }
 
 #cadastro-mensagem.form-message--info {
@@ -220,7 +217,8 @@
 
 /* ==========================================================================
    MODAL
-   ========================================================================== */
+   ==========================================================================
+*/
 
 #section-alunos {
   min-width: 0;
@@ -228,53 +226,42 @@
 
 .modal-section h3 {
   margin: 0;
-
   color: var(--text-strong);
-
   font-size: 14px;
-
   font-weight: var(--fw-bold);
 }
 
 .modal-observacao {
   font-size: 13.5px;
-
   line-height: 1.6;
-
   color: var(--text);
-
   background-color: var(--surface-muted);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-md);
-
   padding: 12px 14px;
-
   margin: 0;
 }
 
 /* ==========================================================================
    RELATÓRIOS INDISPONÍVEIS
-   ========================================================================== */
+   ==========================================================================
+*/
 
 .class-card--disabled {
   cursor: default;
-
   opacity: 0.78;
 }
 
 .class-card--disabled:hover {
   border-color: var(--border);
-
   transform: none;
-
   box-shadow: var(--shadow-xs);
 }
 
 /* ==========================================================================
    RESPONSIVIDADE
-   ========================================================================== */
+   ==========================================================================
+*/
 
 @media (max-width: 760px) {
   #kpi-resumo-escola .kpi-card,
@@ -284,9 +271,7 @@
 
   #grade-turmas-coord .class-card-footer {
     align-items: flex-start;
-
     flex-direction: column;
-
     gap: 8px;
   }
 }
@@ -303,7 +288,8 @@
 
 /* =====================================
    TABELAS DA VISÃO GERAL - TELA TODA
-===================================== */
+=====================================
+*/
 
 #section-visao-geral .card-grid {
   width: 100%;
@@ -313,6 +299,7 @@
 }
 
 /* Cada painel ocupa toda a largura */
+
 #section-visao-geral .card-grid .panel {
   width: 100%;
   max-width: none;
@@ -320,6 +307,7 @@
 }
 
 /* Tabela ocupa toda a largura */
+
 #section-visao-geral .table-wrapper {
   width: 100%;
   overflow: hidden;
@@ -329,7 +317,6 @@
   width: 100%;
   min-width: 0;
 }
-
 
 /* ==========================================================================\n   GRÁFICOS CHART.JS\n   ========================================================================== */
 
@@ -385,7 +372,8 @@
    EduWatch - Estilo para Gerenciar atribuicoes de professores
    Cole este arquivo no FINAL de css/coordenacao.css.
    Regras isoladas: nao alteram outros formularios ou telas.
-   ====================================================================== */
+   ======================================================================
+*/
 
 #painel-atribuicoes-professor {
   margin-top: 24px;
@@ -464,11 +452,9 @@
   -webkit-appearance: none;
   color: var(--text, #14263d);
   background-color: var(--surface, #ffffff);
-  background-image:
-    linear-gradient(45deg, transparent 50%, #61758b 50%),
+  background-image: linear-gradient(45deg, transparent 50%, #61758b 50%),
     linear-gradient(135deg, #61758b 50%, transparent 50%);
-  background-position:
-    calc(100% - 17px) 20px,
+  background-position: calc(100% - 17px) 20px,
     calc(100% - 12px) 20px;
   background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
