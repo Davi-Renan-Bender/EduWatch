@@ -130,6 +130,42 @@ function exibirMensagemCadastroUsuario(mensagem, tipo = "info") {
   elemento.classList.toggle("form-message--info", tipo === "info");
 }
 
+async function carregarTurmasParaCadastro(campoTurma) {
+  if (!campoTurma) return;
+  campoTurma.disabled = true;
+  campoTurma.innerHTML = '<option value="">Carregando turmas...</option>';
+  try {
+    const resposta = await fetch("api/usuarios/turmas-disponiveis.php", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    let dados;
+    try { dados = await resposta.json(); }
+    catch { throw new Error("O servidor retornou uma resposta inválida ao carregar turmas."); }
+    if (!resposta.ok || dados.sucesso !== true) {
+      throw new Error(dados.mensagem || "Não foi possível carregar as turmas.");
+    }
+    const turmas = Array.isArray(dados.turmas) ? dados.turmas : [];
+    campoTurma.innerHTML = '<option value="">Selecione a turma...</option>';
+    turmas.forEach((turma) => {
+      const opcao = document.createElement("option");
+      opcao.value = String(turma.id);
+      opcao.textContent = String(turma.nome || "Turma");
+      campoTurma.appendChild(opcao);
+    });
+    if (turmas.length === 0) {
+      campoTurma.innerHTML = '<option value="">Nenhuma turma ativa encontrada</option>';
+    }
+  } catch (erro) {
+    campoTurma.innerHTML = '<option value="">Falha ao carregar turmas</option>';
+    console.error("EduWatch: falha ao carregar turmas para matrícula.", erro);
+  } finally {
+    campoTurma.disabled = false;
+  }
+}
+
 function inicializarCadastroUsuarios(usuarioSessao) {
   const formulario = document.getElementById("form-cadastro-usuario");
   const campoTipo = document.getElementById("cadastro-tipo");
@@ -138,10 +174,25 @@ function inicializarCadastroUsuarios(usuarioSessao) {
   const campoCpf = document.getElementById("cadastro-cpf");
   const campoSenha = document.getElementById("cadastro-senha");
   const campoConfirmarSenha = document.getElementById("cadastro-confirmar-senha");
+  const campoTurmaGrupo = document.getElementById("cadastro-turma-grupo");
+  const campoTurma = document.getElementById("cadastro-turma");
+
   const botao = document.getElementById("btn-cadastrar-usuario");
 
   if (!formulario || !campoTipo || !campoNome || !campoEmail || !campoSenha || !campoConfirmarSenha || !botao) {
     return;
+  }
+
+  if (campoTurma && campoTurmaGrupo) {
+    const atualizarCampoTurma = function () {
+      const ehAluno = campoTipo.value === "aluno";
+      campoTurmaGrupo.hidden = !ehAluno;
+      campoTurma.required = ehAluno;
+      if (!ehAluno) campoTurma.value = "";
+    };
+    campoTipo.addEventListener("change", atualizarCampoTurma);
+    atualizarCampoTurma();
+    carregarTurmasParaCadastro(campoTurma);
   }
 
   // O administrador pode criar outros administradores. A coordenação não.
@@ -188,6 +239,13 @@ function inicializarCadastroUsuarios(usuarioSessao) {
       return;
     }
 
+    const turmaId = tipoUsuario === "aluno" ? Number(campoTurma?.value || 0) : null;
+    if (tipoUsuario === "aluno" && (!Number.isInteger(turmaId) || turmaId <= 0)) {
+      exibirMensagemCadastroUsuario("Selecione a turma do aluno antes de cadastrar.", "erro");
+      if (campoTurma) campoTurma.focus();
+      return;
+    }
+
     const textoOriginal = botao.textContent;
     botao.disabled = true;
     botao.textContent = "Cadastrando...";
@@ -207,6 +265,7 @@ function inicializarCadastroUsuarios(usuarioSessao) {
           cpf,
           senha,
           confirmarSenha,
+          turmaId,
         }),
       });
 

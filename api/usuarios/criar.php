@@ -34,6 +34,8 @@ $entrada = eduwatch_ler_json();
 $email = strtolower(trim((string) ($entrada['email'] ?? '')));
 $nome = trim((string) ($entrada['nome'] ?? ''));
 $tipoSolicitado = strtolower(trim((string) ($entrada['tipoUsuario'] ?? '')));
+$turmaId = (int) ($entrada['turmaId'] ?? 0);
+
 $cpfInformado = trim((string) ($entrada['cpf'] ?? ''));
 $senha = (string) ($entrada['senha'] ?? '');
 $confirmarSenha = (string) ($entrada['confirmarSenha'] ?? '');
@@ -125,6 +127,28 @@ try {
         eduwatch_json(422, ['sucesso' => false, 'mensagem' => 'O tipo de usuário selecionado não existe no banco.']);
     }
     $tipoUsuarioId = (int) $tipos[0]['id'];
+    // Alunos precisam ser associados a uma turma ativa antes da conta ser concluida.
+    $nomeTurma = '';
+    if ($tipoSolicitado === 'aluno') {
+        if ($turmaId <= 0) {
+            eduwatch_json(422, ['sucesso' => false, 'mensagem' => 'Selecione uma turma para o aluno.']);
+        }
+        $turmaResposta = eduwatch_supabase_request(
+            'GET',
+            '/rest/v1/turmas?select=id,nome,status&id=eq.' . rawurlencode((string) $turmaId) . '&status=eq.ativa&limit=1',
+            $config['secret_key']
+        );
+        $turmasValidas = $turmaResposta['dados'];
+        if ($turmaResposta['status'] < 200 || $turmaResposta['status'] >= 300 || !is_array($turmasValidas)) {
+            eduwatch_json(502, ['sucesso' => false, 'mensagem' => 'Não foi possível validar a turma selecionada.']);
+        }
+        if (!isset($turmasValidas[0]['id'], $turmasValidas[0]['nome'])) {
+            eduwatch_json(422, ['sucesso' => false, 'mensagem' => 'A turma selecionada não existe ou está inativa.']);
+        }
+        $nomeTurma = (string) $turmasValidas[0]['nome'];
+    }
+
+
 
     // Evita criar a identidade de Auth quando o perfil já ocupa o e-mail ou CPF.
     $emailExistente = eduwatch_supabase_request(
@@ -226,6 +250,49 @@ try {
         eduwatch_json(500, ['sucesso' => false, 'mensagem' => 'A conta de autenticação foi criada, mas não foi possível concluir o perfil. O sistema tentou desfazer a criação; se o problema persistir, a equipe técnica deverá conferir o cadastro.']);
     }
 
+    // Cria a matricula depois do perfil. Se falhar, tenta desfazer perfil e conta Auth.
+    if ($tipoSolicitado === 'aluno') {
+        try {
+            $criarMatricula = eduwatch_supabase_request(
+                'POST',
+                '/rest/v1/matriculas',
+                $config['secret_key'],
+                [
+                    'aluno_id' => $novoAuthId,
+                    'turma_id' => $turmaId,
+                    'data_matricula' => date('Y-m-d'),
+                    'status' => 'ativa',
+                ]
+            );
+        } catch (Throwable $erroMatricula) {
+            error_log('EduWatch create user: exception while creating student enrollment.');
+            $criarMatricula = ['status' => 0, 'dados' => null];
+        }
+
+        if ($criarMatricula['status'] < 200 || $criarMatricula['status'] >= 300) {
+            error_log('EduWatch create user: enrollment creation failed; HTTP ' . (int) $criarMatricula['status'] . '. Rolling back account.');
+            try {
+                eduwatch_supabase_request(
+                    'DELETE',
+                    '/rest/v1/usuarios?id=eq.' . rawurlencode($novoAuthId),
+                    $config['secret_key']
+                );
+            } catch (Throwable $erroRemoverPerfil) {
+                error_log('EduWatch create user: profile rollback failed.');
+            }
+            try {
+                eduwatch_supabase_request(
+                    'DELETE',
+                    '/auth/v1/admin/users/' . rawurlencode($novoAuthId),
+                    $config['secret_key']
+                );
+            } catch (Throwable $erroRemoverAuth) {
+                error_log('EduWatch create user: Auth rollback failed.');
+            }
+            eduwatch_json(500, ['sucesso' => false, 'mensagem' => 'A conta foi criada, mas a matrícula falhou. O sistema tentou desfazer a conta para evitar cadastro incompleto. Confira as turmas e tente novamente.']);
+        }
+    }
+
     eduwatch_json(201, [
         'sucesso' => true,
         'mensagem' => 'Usuário cadastrado com sucesso. Ele já pode entrar com o e-mail e a senha definidos.',
@@ -235,6 +302,8 @@ try {
             'nome' => $nome,
             'tipoUsuario' => $tipoSolicitado,
             'tipoUsuarioId' => $tipoUsuarioId,
+            'turmaId' => $tipoSolicitado === 'aluno' ? $turmaId : null,
+            'turmaNome' => $tipoSolicitado === 'aluno' ? $nomeTurma : null,
         ],
     ]);
 } catch (Throwable $erro) {
