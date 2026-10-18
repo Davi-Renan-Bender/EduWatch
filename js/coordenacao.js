@@ -166,6 +166,55 @@ async function carregarTurmasParaCadastro(campoTurma) {
   }
 }
 
+async function carregarOpcoesProfessorParaCadastro(campoTurma, campoDisciplina) {
+  if (!campoTurma || !campoDisciplina) return;
+  campoTurma.disabled = true;
+  campoDisciplina.disabled = true;
+  campoTurma.innerHTML = '<option value="">Carregando turmas...</option>';
+  campoDisciplina.innerHTML = '<option value="">Carregando disciplinas...</option>';
+  try {
+    const resposta = await fetch("api/usuarios/opcoes-professor.php", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    let dados;
+    try { dados = await resposta.json(); }
+    catch { throw new Error("O servidor retornou uma resposta inválida ao carregar as atribuições."); }
+    if (!resposta.ok || dados.sucesso !== true) {
+      throw new Error(dados.mensagem || "Não foi possível carregar turmas e disciplinas.");
+    }
+    const turmas = Array.isArray(dados.turmas) ? dados.turmas : [];
+    const disciplinas = Array.isArray(dados.disciplinas) ? dados.disciplinas : [];
+    campoTurma.innerHTML = '<option value="">Selecione a turma...</option>';
+    campoDisciplina.innerHTML = '<option value="">Selecione a disciplina...</option>';
+    turmas.forEach((turma) => {
+      const opcao = document.createElement("option");
+      opcao.value = String(turma.id);
+      opcao.textContent = String(turma.nome || "Turma");
+      campoTurma.appendChild(opcao);
+    });
+    disciplinas.forEach((disciplina) => {
+      const opcao = document.createElement("option");
+      opcao.value = String(disciplina.id);
+      opcao.textContent = String(disciplina.nome || "Disciplina");
+      campoDisciplina.appendChild(opcao);
+    });
+    campoTurma.disabled = turmas.length === 0;
+    campoDisciplina.disabled = disciplinas.length === 0;
+    if (turmas.length === 0) campoTurma.innerHTML = '<option value="">Nenhuma turma ativa encontrada</option>';
+    if (disciplinas.length === 0) campoDisciplina.innerHTML = '<option value="">Nenhuma disciplina ativa encontrada</option>';
+  } catch (erro) {
+    campoTurma.innerHTML = '<option value="">Falha ao carregar turmas</option>';
+    campoDisciplina.innerHTML = '<option value="">Falha ao carregar disciplinas</option>';
+    campoTurma.disabled = true;
+    campoDisciplina.disabled = true;
+    console.error("EduWatch: falha ao carregar atribuições do professor.", erro);
+    exibirMensagemCadastroUsuario(erro instanceof Error ? erro.message : "Não foi possível carregar turmas e disciplinas.", "erro");
+  }
+}
+
 function inicializarCadastroUsuarios(usuarioSessao) {
   const formulario = document.getElementById("form-cadastro-usuario");
   const campoTipo = document.getElementById("cadastro-tipo");
@@ -176,6 +225,11 @@ function inicializarCadastroUsuarios(usuarioSessao) {
   const campoConfirmarSenha = document.getElementById("cadastro-confirmar-senha");
   const campoTurmaGrupo = document.getElementById("cadastro-turma-grupo");
   const campoTurma = document.getElementById("cadastro-turma");
+  const campoProfessorTurmaGrupo = document.getElementById("cadastro-professor-turma-grupo");
+  const campoProfessorDisciplinaGrupo = document.getElementById("cadastro-professor-disciplina-grupo");
+  const campoProfessorTurma = document.getElementById("cadastro-professor-turma");
+  const campoProfessorDisciplina = document.getElementById("cadastro-professor-disciplina");
+
 
   const botao = document.getElementById("btn-cadastrar-usuario");
 
@@ -193,6 +247,22 @@ function inicializarCadastroUsuarios(usuarioSessao) {
     campoTipo.addEventListener("change", atualizarCampoTurma);
     atualizarCampoTurma();
     carregarTurmasParaCadastro(campoTurma);
+  }
+  if (campoProfessorTurmaGrupo && campoProfessorDisciplinaGrupo && campoProfessorTurma && campoProfessorDisciplina) {
+    const atualizarCamposProfessor = function () {
+      const ehProfessor = campoTipo.value === "professor";
+      campoProfessorTurmaGrupo.hidden = !ehProfessor;
+      campoProfessorDisciplinaGrupo.hidden = !ehProfessor;
+      campoProfessorTurma.required = ehProfessor;
+      campoProfessorDisciplina.required = ehProfessor;
+      if (!ehProfessor) {
+        campoProfessorTurma.value = "";
+        campoProfessorDisciplina.value = "";
+      }
+    };
+    campoTipo.addEventListener("change", atualizarCamposProfessor);
+    atualizarCamposProfessor();
+    carregarOpcoesProfessorParaCadastro(campoProfessorTurma, campoProfessorDisciplina);
   }
 
   // O administrador pode criar outros administradores. A coordenação não.
@@ -246,6 +316,14 @@ function inicializarCadastroUsuarios(usuarioSessao) {
       return;
     }
 
+    const professorTurmaId = tipoUsuario === "professor" ? Number(campoProfessorTurma?.value || 0) : null;
+    const professorDisciplinaId = tipoUsuario === "professor" ? Number(campoProfessorDisciplina?.value || 0) : null;
+    if (tipoUsuario === "professor" && (!Number.isInteger(professorTurmaId) || professorTurmaId <= 0 || !Number.isInteger(professorDisciplinaId) || professorDisciplinaId <= 0)) {
+      exibirMensagemCadastroUsuario("Selecione a turma e a disciplina do professor antes de cadastrar.", "erro");
+      if (campoProfessorTurma && (!Number.isInteger(professorTurmaId) || professorTurmaId <= 0)) campoProfessorTurma.focus();
+      else if (campoProfessorDisciplina) campoProfessorDisciplina.focus();
+      return;
+    }
     const textoOriginal = botao.textContent;
     botao.disabled = true;
     botao.textContent = "Cadastrando...";
@@ -266,6 +344,8 @@ function inicializarCadastroUsuarios(usuarioSessao) {
           senha,
           confirmarSenha,
           turmaId,
+          professorTurmaId,
+          professorDisciplinaId,
         }),
       });
 
@@ -281,6 +361,7 @@ function inicializarCadastroUsuarios(usuarioSessao) {
       }
 
       formulario.reset();
+      campoTipo.dispatchEvent(new Event("change", { bubbles: true }));
       exibirMensagemCadastroUsuario(
         "Usuário cadastrado com sucesso: " + resultado.usuario.email + ". A conta já pode fazer login.",
         "sucesso"

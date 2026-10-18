@@ -69,7 +69,68 @@ try {
             'return=minimal'
         );
     }
-    ew_acad_json(200, ['sucesso' => true, 'mensagem' => 'Notas salvas. A avaliação está publicada para consulta dos alunos.', 'quantidade' => count($rows)]);
+    // Notifica o aluno quando a nota fica abaixo de 60% do valor máximo.
+    // O título inclui o ID da avaliação; a consulta prévia evita duplicatas
+    // quando o professor salva novamente as notas da mesma avaliação.
+    $notificacoesCriadas = 0;
+    $avisoNotificacoes = null;
+    try {
+        $alunoPorMatricula = [];
+        foreach ($roster as $alunoMatriculado) {
+            $alunoPorMatricula[(int) $alunoMatriculado['matricula_id']] = $alunoMatriculado;
+        }
+        $notificacoesNovas = [];
+        $tituloBaseNotificacao = 'Atenção ao desempenho - avaliação ' . (int) $evaluationId;
+        foreach ($rows as $notaSalva) {
+            if (($notaSalva['situacao'] ?? '') !== 'lancada' || $notaSalva['nota_obtida'] === null) {
+                continue;
+            }
+            $notaNumerica = (float) $notaSalva['nota_obtida'];
+            if ($notaNumerica >= ($max * 0.60)) {
+                continue;
+            }
+            $alunoNotificado = $alunoPorMatricula[(int) $notaSalva['matricula_id']] ?? null;
+            if (!$alunoNotificado || empty($alunoNotificado['aluno_id'])) {
+                continue;
+            }
+            $alunoIdNotificado = (string) $alunoNotificado['aluno_id'];
+            $notificacaoExistente = ew_acad_rows(
+                '/rest/v1/notificacoes?select=id&usuario_id=eq.' . rawurlencode($alunoIdNotificado)
+                    . '&titulo=eq.' . rawurlencode($tituloBaseNotificacao) . '&limit=1',
+                'notificações anteriores da avaliação'
+            );
+            if ($notificacaoExistente) {
+                continue;
+            }
+            $notificacoesNovas[] = [
+                'usuario_id' => $alunoIdNotificado,
+                'titulo' => $tituloBaseNotificacao,
+                'mensagem' => 'Sua nota em "' . (string) $evaluation['titulo'] . '" foi '
+                    . number_format($notaNumerica, 1, '.', '') . ' de ' . number_format($max, 1, '.', '')
+                    . '. O resultado ficou abaixo de 60% da pontuação possível. Revise o conteúdo e converse com seu professor.',
+                'link_destino' => 'aluno.html',
+            ];
+        }
+        if ($notificacoesNovas) {
+            ew_acad_write('POST', '/rest/v1/notificacoes', $notificacoesNovas, 'as notificações de desempenho', 'return=minimal');
+            $notificacoesCriadas = count($notificacoesNovas);
+        }
+    } catch (Throwable $erroNotificacoes) {
+        error_log('EduWatch save grades notification error: ' . get_class($erroNotificacoes) . ': ' . $erroNotificacoes->getMessage());
+        $avisoNotificacoes = 'As notas foram salvas, mas não foi possível gerar as notificações de desempenho. Verifique a configuração de notificações.';
+    }
+    $respostaSalvarNotas = [
+        'sucesso' => true,
+        'mensagem' => 'Notas salvas. A avaliação está publicada para consulta dos alunos.',
+        'quantidade' => count($rows),
+        'notificacoes_criadas' => $notificacoesCriadas,
+    ];
+    if ($avisoNotificacoes !== null) {
+        $respostaSalvarNotas['aviso_notificacoes'] = $avisoNotificacoes;
+        $respostaSalvarNotas['mensagem'] .= ' Atenção: as notificações não puderam ser geradas.';
+    }
+    ew_acad_json(200, $respostaSalvarNotas);
+
 } catch (Throwable $error) {
     error_log('EduWatch save grades error: ' . $error->getMessage());
     ew_acad_json(500, ['sucesso' => false, 'mensagem' => $error instanceof RuntimeException ? $error->getMessage() : 'Não foi possível salvar as notas.']);

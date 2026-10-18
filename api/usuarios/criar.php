@@ -35,6 +35,9 @@ $email = strtolower(trim((string) ($entrada['email'] ?? '')));
 $nome = trim((string) ($entrada['nome'] ?? ''));
 $tipoSolicitado = strtolower(trim((string) ($entrada['tipoUsuario'] ?? '')));
 $turmaId = (int) ($entrada['turmaId'] ?? 0);
+$professorTurmaId = (int) ($entrada['professorTurmaId'] ?? 0);
+$professorDisciplinaId = (int) ($entrada['professorDisciplinaId'] ?? 0);
+
 
 $cpfInformado = trim((string) ($entrada['cpf'] ?? ''));
 $senha = (string) ($entrada['senha'] ?? '');
@@ -150,6 +153,56 @@ try {
 
 
 
+    // Professores precisam receber uma atribuição acadêmica válida no ato do cadastro.
+    $nomeTurmaProfessor = '';
+    $nomeDisciplinaProfessor = '';
+    $atribuicaoProfessorExistente = null;
+    if ($tipoSolicitado === 'professor') {
+        if ($professorTurmaId <= 0 || $professorDisciplinaId <= 0) {
+            eduwatch_json(422, ['sucesso' => false, 'mensagem' => 'Selecione a turma e a disciplina do professor.']);
+        }
+        $turmaProfessorResposta = eduwatch_supabase_request(
+            'GET',
+            '/rest/v1/turmas?select=id,nome,status&id=eq.' . rawurlencode((string) $professorTurmaId) . '&status=eq.ativa&limit=1',
+            $config['secret_key']
+        );
+        $turmasProfessor = $turmaProfessorResposta['dados'];
+        if ($turmaProfessorResposta['status'] < 200 || $turmaProfessorResposta['status'] >= 300 || !is_array($turmasProfessor)) {
+            eduwatch_json(502, ['sucesso' => false, 'mensagem' => 'Não foi possível validar a turma selecionada para o professor.']);
+        }
+        if (!isset($turmasProfessor[0]['id'], $turmasProfessor[0]['nome'])) {
+            eduwatch_json(422, ['sucesso' => false, 'mensagem' => 'A turma do professor não existe ou está inativa.']);
+        }
+        $nomeTurmaProfessor = (string) $turmasProfessor[0]['nome'];
+
+        $disciplinaProfessorResposta = eduwatch_supabase_request(
+            'GET',
+            '/rest/v1/disciplinas?select=id,nome,ativo&id=eq.' . rawurlencode((string) $professorDisciplinaId) . '&ativo=eq.true&limit=1',
+            $config['secret_key']
+        );
+        $disciplinasProfessor = $disciplinaProfessorResposta['dados'];
+        if ($disciplinaProfessorResposta['status'] < 200 || $disciplinaProfessorResposta['status'] >= 300 || !is_array($disciplinasProfessor)) {
+            eduwatch_json(502, ['sucesso' => false, 'mensagem' => 'Não foi possível validar a disciplina selecionada para o professor.']);
+        }
+        if (!isset($disciplinasProfessor[0]['id'], $disciplinasProfessor[0]['nome'])) {
+            eduwatch_json(422, ['sucesso' => false, 'mensagem' => 'A disciplina do professor não existe ou está inativa.']);
+        }
+        $nomeDisciplinaProfessor = (string) $disciplinasProfessor[0]['nome'];
+
+        // Há um único responsável por turma+disciplina. Se já existir vínculo,
+        // ele será transferido para o novo professor sem apagar avaliações.
+        $atribuicaoResposta = eduwatch_supabase_request(
+            'GET',
+            '/rest/v1/turma_disciplinas?select=id,professor_id&turma_id=eq.' . rawurlencode((string) $professorTurmaId)
+                . '&disciplina_id=eq.' . rawurlencode((string) $professorDisciplinaId) . '&limit=1',
+            $config['secret_key']
+        );
+        $atribuicoesEncontradas = $atribuicaoResposta['dados'];
+        if ($atribuicaoResposta['status'] < 200 || $atribuicaoResposta['status'] >= 300 || !is_array($atribuicoesEncontradas)) {
+            eduwatch_json(502, ['sucesso' => false, 'mensagem' => 'Não foi possível verificar a atribuição atual da turma e disciplina.']);
+        }
+        $atribuicaoProfessorExistente = $atribuicoesEncontradas[0] ?? null;
+    }
     // Evita criar a identidade de Auth quando o perfil já ocupa o e-mail ou CPF.
     $emailExistente = eduwatch_supabase_request(
         'GET',
@@ -293,6 +346,78 @@ try {
         }
     }
 
+    // Vincula o professor recém-criado à turma e disciplina selecionadas.
+    if ($tipoSolicitado === 'professor') {
+        $atribuicaoHttpStatus = 0;
+        try {
+            if (is_array($atribuicaoProfessorExistente) && !empty($atribuicaoProfessorExistente['id'])) {
+                $atribuicaoEscrita = eduwatch_supabase_request(
+                    'PATCH',
+                    '/rest/v1/turma_disciplinas?id=eq.' . rawurlencode((string) $atribuicaoProfessorExistente['id']),
+                    $config['secret_key'],
+                    ['professor_id' => $novoAuthId]
+                );
+            } else {
+                $atribuicaoEscrita = eduwatch_supabase_request(
+                    'POST',
+                    '/rest/v1/turma_disciplinas',
+                    $config['secret_key'],
+                    [
+                        'turma_id' => $professorTurmaId,
+                        'disciplina_id' => $professorDisciplinaId,
+                        'professor_id' => $novoAuthId,
+                    ]
+                );
+            }
+            $atribuicaoHttpStatus = (int) ($atribuicaoEscrita['status'] ?? 0);
+        } catch (Throwable $erroAtribuicao) {
+            error_log('EduWatch create user: exception while assigning professor to class/subject.');
+            $atribuicaoEscrita = ['status' => 0, 'dados' => null];
+        }
+
+        if ($atribuicaoHttpStatus < 200 || $atribuicaoHttpStatus >= 300) {
+            // Tenta restaurar o vínculo anterior ou remover um vínculo recém-criado
+            // antes de excluir a conta, respeitando as chaves estrangeiras.
+            try {
+                if (is_array($atribuicaoProfessorExistente) && !empty($atribuicaoProfessorExistente['id'])) {
+                    eduwatch_supabase_request(
+                        'PATCH',
+                        '/rest/v1/turma_disciplinas?id=eq.' . rawurlencode((string) $atribuicaoProfessorExistente['id']),
+                        $config['secret_key'],
+                        ['professor_id' => (string) ($atribuicaoProfessorExistente['professor_id'] ?? '')]
+                    );
+                } else {
+                    $vinculoPossivel = eduwatch_supabase_request(
+                        'GET',
+                        '/rest/v1/turma_disciplinas?select=id,professor_id&turma_id=eq.' . rawurlencode((string) $professorTurmaId)
+                            . '&disciplina_id=eq.' . rawurlencode((string) $professorDisciplinaId) . '&professor_id=eq.' . rawurlencode($novoAuthId) . '&limit=1',
+                        $config['secret_key']
+                    );
+                    $linhasPossiveis = $vinculoPossivel['dados'];
+                    if ($vinculoPossivel['status'] >= 200 && $vinculoPossivel['status'] < 300 && is_array($linhasPossiveis) && !empty($linhasPossiveis[0]['id'])) {
+                        eduwatch_supabase_request(
+                            'DELETE',
+                            '/rest/v1/turma_disciplinas?id=eq.' . rawurlencode((string) $linhasPossiveis[0]['id']),
+                            $config['secret_key']
+                        );
+                    }
+                }
+            } catch (Throwable $erroReverterAtribuicao) {
+                error_log('EduWatch create user: failed to roll back the professor assignment.');
+            }
+            try {
+                eduwatch_supabase_request('DELETE', '/rest/v1/usuarios?id=eq.' . rawurlencode($novoAuthId), $config['secret_key']);
+            } catch (Throwable $erroRemoverPerfilProfessor) {
+                error_log('EduWatch create user: failed to roll back the professor profile.');
+            }
+            try {
+                eduwatch_supabase_request('DELETE', '/auth/v1/admin/users/' . rawurlencode($novoAuthId), $config['secret_key']);
+            } catch (Throwable $erroRemoverAuthProfessor) {
+                error_log('EduWatch create user: failed to roll back the professor auth account.');
+            }
+            eduwatch_json(500, ['sucesso' => false, 'mensagem' => 'Não foi possível atribuir turma e disciplina ao professor. O sistema tentou desfazer o cadastro; confira a mensagem e tente novamente.']);
+        }
+    }
     eduwatch_json(201, [
         'sucesso' => true,
         'mensagem' => 'Usuário cadastrado com sucesso. Ele já pode entrar com o e-mail e a senha definidos.',
@@ -304,6 +429,12 @@ try {
             'tipoUsuarioId' => $tipoUsuarioId,
             'turmaId' => $tipoSolicitado === 'aluno' ? $turmaId : null,
             'turmaNome' => $tipoSolicitado === 'aluno' ? $nomeTurma : null,
+            'atribuicaoProfessor' => $tipoSolicitado === 'professor' ? [
+                'turmaId' => $professorTurmaId,
+                'turmaNome' => $nomeTurmaProfessor,
+                'disciplinaId' => $professorDisciplinaId,
+                'disciplinaNome' => $nomeDisciplinaProfessor,
+            ] : null,
         ],
     ]);
 } catch (Throwable $erro) {
