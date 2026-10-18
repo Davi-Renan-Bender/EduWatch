@@ -380,3 +380,299 @@
     height: 300px;
   }
 }
+
+/* ======================================================================
+   EduWatch - Estilo para Gerenciar atribuicoes de professores
+   Cole este arquivo no FINAL de css/coordenacao.css.
+   Regras isoladas: nao alteram outros formularios ou telas.
+   ====================================================================== */
+
+#painel-atribuicoes-professor {
+  margin-top: 24px;
+  padding: 26px;
+  overflow: hidden;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #d4e0ec);
+  border-radius: var(--radius-lg, 15px);
+  box-shadow: var(--shadow-sm, 0 3px 10px rgba(0, 29, 74, 0.08));
+}
+
+#painel-atribuicoes-professor .panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border, #d4e0ec);
+}
+
+#painel-atribuicoes-professor .panel-header h2 {
+  margin: 0;
+  color: var(--text-strong, #0f2742);
+  font-size: clamp(18px, 2vw, 21px);
+  font-weight: var(--fw-bold, 700);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+#painel-atribuicoes-professor .section-subheading {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--muted, #61758b);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+#form-atribuicao-professor {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 18px;
+  margin: 0;
+  padding: 22px;
+  background: var(--surface-muted, #f4f8fc);
+  border: 1px solid var(--border, #d4e0ec);
+  border-radius: var(--radius-lg, 15px);
+}
+
+#form-atribuicao-professor .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+}
+
+#form-atribuicao-professor label {
+  display: block;
+  margin: 0;
+  color: var(--text-strong, #0f2742);
+  font-size: 13px;
+  font-weight: var(--fw-bold, 700);
+  line-height: 1.4;
+}
+
+#form-atribuicao-professor select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 11px 40px 11px 13px;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--text, #14263d);
+  background-color: var(--surface, #ffffff);
+  background-image:
+    linear-gradient(45deg, transparent 50%, #61758b 50%),
+    linear-gradient(135deg, #61758b 50%, transparent 50%);
+  background-position:
+    calc(100% - 17px) 20px,
+    calc(100% - 12px) 20px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-strong, #9eb3c8);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: 0 1px 2px rgba(0, 29, 74, 0.04);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+#form-atribuicao-professor select:hover:not(:disabled) {
+  border-color: var(--primary, #0b5fae);
+}
+
+#form-atribuicao-professor select:focus-visible {
+  outline: none;
+  border-color: var(--primary, #0b5fae);
+  box-shadow: var(--shadow-focus, 0 0 0 4px rgba(47, 128, 237, 0.16));
+}
+
+#form-atribuicao-professor select:disabled {
+  color: var(--color-text-muted, #61758b);
+  background-color: #edf2f7;
+  border-color: var(--border, #d4e0ec);
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+#form-atribuicao-professor select option {
+  color: var(--text, #14263d);
+  background: #ffffff;
+}
+
+#form-atribuicao-professor .form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 2px 0 0;
+  padding-top: 2px;
+}
+
+#btn-salvar-atribuicao-professor {
+  min-width: 190px;
+  min-height: 46px;
+  padding: 11px 20px;
+  border-radius: var(--radius-md, 10px);
+  font-weight: var(--fw-bold, 700);
+  box-shadow: 0 4px 10px rgba(11, 95, 174, 0.16);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+}
+
+#btn-salvar-atribuicao-professor:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 16px rgba(11, 95, 174, 0.2);
+}
+
+#btn-salvar-atribuicao-professor:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+#atribuicao-professor-mensagem {
+  grid-column: 1 / -1;
+  min-height: 0;
+  margin: -2px 0 0;
+  padding: 0;
+  color: var(--muted, #61758b);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#atribuicao-professor-mensagem:empty {
+  display: none;
+}
+
+#atribuicao-professor-mensagem.form-message--success,
+#atribuicao-professor-mensagem.form-message--error,
+#atribuicao-professor-mensagem.form-message--info:not(:empty) {
+  padding: 10px 12px;
+  border-radius: var(--radius-md, 10px);
+}
+
+#atribuicao-professor-mensagem.form-message--success {
+  color: var(--success-text, #1f7147);
+  background: var(--success-bg, #e8f6ee);
+  border: 1px solid var(--success-border, #b2dcc3);
+}
+
+#atribuicao-professor-mensagem.form-message--error {
+  color: var(--danger-text, #b42318);
+  background: var(--danger-bg, #fdebea);
+  border: 1px solid var(--danger-border, #e7aca6);
+}
+
+#atribuicao-professor-mensagem.form-message--info:not(:empty) {
+  color: var(--info, #176fc1);
+  background: var(--info-bg, #eaf3fc);
+  border: 1px solid var(--info-border, #b9d6ef);
+}
+
+#painel-atribuicoes-professor .table-wrapper {
+  width: 100%;
+  margin-top: 22px;
+  overflow-x: auto;
+  border: 1px solid var(--border, #d4e0ec);
+  border-radius: var(--radius-md, 10px);
+  background: #ffffff;
+  scrollbar-width: thin;
+}
+
+#painel-atribuicoes-professor .data-table {
+  width: 100%;
+  min-width: 560px;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#painel-atribuicoes-professor .data-table thead th {
+  padding: 14px 16px;
+  color: #425870;
+  background: #f0f6fc;
+  border-bottom: 1px solid var(--border, #d4e0ec);
+  font-size: 12px;
+  font-weight: var(--fw-bold, 700);
+  letter-spacing: 0.035em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+#painel-atribuicoes-professor .data-table tbody td {
+  padding: 14px 16px;
+  color: var(--text, #14263d);
+  background: #ffffff;
+  border-bottom: 1px solid #e7eef5;
+  font-size: 13.5px;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+#painel-atribuicoes-professor .data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+#painel-atribuicoes-professor .data-table tbody tr:hover td {
+  background: #f7fbff;
+}
+
+#painel-atribuicoes-professor .data-table tbody td:first-child {
+  color: var(--text-strong, #0f2742);
+  font-weight: var(--fw-semibold, 600);
+}
+
+@media (max-width: 900px) {
+  #form-atribuicao-professor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #form-atribuicao-professor .form-actions,
+  #atribuicao-professor-mensagem {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  #painel-atribuicoes-professor {
+    margin-top: 18px;
+    padding: 17px;
+  }
+
+  #painel-atribuicoes-professor .panel-header {
+    margin-bottom: 16px;
+    padding-bottom: 15px;
+  }
+
+  #form-atribuicao-professor {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding: 15px;
+  }
+
+  #form-atribuicao-professor .form-actions,
+  #atribuicao-professor-mensagem {
+    grid-column: auto;
+  }
+
+  #btn-salvar-atribuicao-professor {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #painel-atribuicoes-professor .table-wrapper {
+    margin-top: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #form-atribuicao-professor select,
+  #btn-salvar-atribuicao-professor {
+    transition: none;
+  }
+}
