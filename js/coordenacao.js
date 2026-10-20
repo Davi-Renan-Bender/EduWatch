@@ -10,19 +10,31 @@ let graficoSituacaoEscola = null;
 let graficoEvolucaoEscola = null;
 
 function escaparHTMLCoordenacao(valor) {
-  return String(valor ?? "").replace(/[&<>"\']/g, (caractere) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "\'": "&#39;",
-  })[caractere]);
+  return String(valor ?? "").replace(
+    /[&<>"\']/g,
+    (caractere) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "\'": "&#39;",
+      })[caractere],
+  );
 }
 
 function formatarMediaCoordenacao(valor) {
-  return valor === null || valor === undefined || !Number.isFinite(Number(valor))
+  return valor === null ||
+    valor === undefined ||
+    !Number.isFinite(Number(valor))
     ? "—"
     : Number(valor).toFixed(1);
 }
 
 function formatarFrequenciaCoordenacao(valor) {
-  return valor === null || valor === undefined || !Number.isFinite(Number(valor))
+  return valor === null ||
+    valor === undefined ||
+    !Number.isFinite(Number(valor))
     ? "Sem dados"
     : Number(valor) + "%";
 }
@@ -51,7 +63,9 @@ document.addEventListener("DOMContentLoaded", async function () {
   ewInicializarAtribuicoesProfessor();
 
   if (window.location.hash === "#cadastros") {
-    const linkCadastros = document.querySelector('.sidebar-link[data-section="cadastros"]');
+    const linkCadastros = document.querySelector(
+      '.sidebar-link[data-section="cadastros"]',
+    );
     if (linkCadastros) linkCadastros.click();
   }
 
@@ -68,8 +82,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 async function carregarDadosCoordenacao() {
   const kpis = document.getElementById("kpi-resumo-escola");
   const corpoAlunos = document.getElementById("tabela-alunos-coord-corpo");
-  if (kpis) kpis.innerHTML = estadoCarregandoHTML("Carregando indicadores da escola...");
-  if (corpoAlunos) corpoAlunos.innerHTML = '<tr><td colspan="5">' + estadoCarregandoHTML("Carregando alunos...") + "</td></tr>";
+  if (kpis)
+    kpis.innerHTML = estadoCarregandoHTML(
+      "Carregando indicadores da escola...",
+    );
+  if (corpoAlunos)
+    corpoAlunos.innerHTML =
+      '<tr><td colspan="5">' +
+      estadoCarregandoHTML("Carregando alunos...") +
+      "</td></tr>";
 
   try {
     const resposta = await fetch("api/academico/painel-coordenacao.php", {
@@ -79,10 +100,17 @@ async function carregarDadosCoordenacao() {
       cache: "no-store",
     });
     let dados;
-    try { dados = await resposta.json(); }
-    catch { throw new Error("O servidor retornou uma resposta inválida. Verifique o Apache e a API."); }
+    try {
+      dados = await resposta.json();
+    } catch {
+      throw new Error(
+        "O servidor retornou uma resposta inválida. Verifique o Apache e a API.",
+      );
+    }
     if (!resposta.ok || dados.sucesso !== true) {
-      throw new Error(dados.mensagem || "Não foi possível carregar os dados da coordenação.");
+      throw new Error(
+        dados.mensagem || "Não foi possível carregar os dados da coordenação.",
+      );
     }
 
     const resumo = dados.resumo || {};
@@ -95,7 +123,9 @@ async function carregarDadosCoordenacao() {
     const filtroTurma = document.getElementById("filtro-turma-coord");
     if (filtroTurma) {
       filtroTurma.innerHTML = '<option value="">Todas as turmas</option>';
-      const turmas = (dados.turmas || []).slice().sort((a, b) => String(a.nome).localeCompare(String(b.nome), "pt-BR"));
+      const turmas = (dados.turmas || [])
+        .slice()
+        .sort((a, b) => String(a.nome).localeCompare(String(b.nome), "pt-BR"));
       turmas.forEach((turma) => {
         const opcao = document.createElement("option");
         opcao.value = String(turma.id);
@@ -109,13 +139,15 @@ async function carregarDadosCoordenacao() {
     renderEvolucaoEscola(dados.evolucao || []);
     renderAcompanhamentoCoordenacao(alunosCoordenacaoTodos);
   } catch (erro) {
-    const mensagem = erro instanceof Error ? erro.message : "Falha ao carregar o painel.";
+    const mensagem =
+      erro instanceof Error ? erro.message : "Falha ao carregar o painel.";
     if (kpis) kpis.innerHTML = estadoErroHTML(mensagem);
-    if (corpoAlunos) corpoAlunos.innerHTML = '<tr><td colspan="5">' + estadoErroHTML(mensagem) + "</td></tr>";
+    if (corpoAlunos)
+      corpoAlunos.innerHTML =
+        '<tr><td colspan="5">' + estadoErroHTML(mensagem) + "</td></tr>";
     console.error("EduWatch coordenação:", erro);
   }
 }
-
 
 // --------------------------------------------------------------------------
 // CADASTRO ADMINISTRATIVO DE USUÁRIOS
@@ -143,8 +175,13 @@ async function carregarTurmasParaCadastro(campoTurma) {
       cache: "no-store",
     });
     let dados;
-    try { dados = await resposta.json(); }
-    catch { throw new Error("O servidor retornou uma resposta inválida ao carregar turmas."); }
+    try {
+      dados = await resposta.json();
+    } catch {
+      throw new Error(
+        "O servidor retornou uma resposta inválida ao carregar turmas.",
+      );
+    }
     if (!resposta.ok || dados.sucesso !== true) {
       throw new Error(dados.mensagem || "Não foi possível carregar as turmas.");
     }
@@ -157,7 +194,8 @@ async function carregarTurmasParaCadastro(campoTurma) {
       campoTurma.appendChild(opcao);
     });
     if (turmas.length === 0) {
-      campoTurma.innerHTML = '<option value="">Nenhuma turma ativa encontrada</option>';
+      campoTurma.innerHTML =
+        '<option value="">Nenhuma turma ativa encontrada</option>';
     }
   } catch (erro) {
     campoTurma.innerHTML = '<option value="">Falha ao carregar turmas</option>';
@@ -167,12 +205,16 @@ async function carregarTurmasParaCadastro(campoTurma) {
   }
 }
 
-async function carregarOpcoesProfessorParaCadastro(campoTurma, campoDisciplina) {
+async function carregarOpcoesProfessorParaCadastro(
+  campoTurma,
+  campoDisciplina,
+) {
   if (!campoTurma || !campoDisciplina) return;
   campoTurma.disabled = true;
   campoDisciplina.disabled = true;
   campoTurma.innerHTML = '<option value="">Carregando turmas...</option>';
-  campoDisciplina.innerHTML = '<option value="">Carregando disciplinas...</option>';
+  campoDisciplina.innerHTML =
+    '<option value="">Carregando disciplinas...</option>';
   try {
     const resposta = await fetch("api/usuarios/opcoes-professor.php", {
       method: "GET",
@@ -181,15 +223,25 @@ async function carregarOpcoesProfessorParaCadastro(campoTurma, campoDisciplina) 
       cache: "no-store",
     });
     let dados;
-    try { dados = await resposta.json(); }
-    catch { throw new Error("O servidor retornou uma resposta inválida ao carregar as atribuições."); }
+    try {
+      dados = await resposta.json();
+    } catch {
+      throw new Error(
+        "O servidor retornou uma resposta inválida ao carregar as atribuições.",
+      );
+    }
     if (!resposta.ok || dados.sucesso !== true) {
-      throw new Error(dados.mensagem || "Não foi possível carregar turmas e disciplinas.");
+      throw new Error(
+        dados.mensagem || "Não foi possível carregar turmas e disciplinas.",
+      );
     }
     const turmas = Array.isArray(dados.turmas) ? dados.turmas : [];
-    const disciplinas = Array.isArray(dados.disciplinas) ? dados.disciplinas : [];
+    const disciplinas = Array.isArray(dados.disciplinas)
+      ? dados.disciplinas
+      : [];
     campoTurma.innerHTML = '<option value="">Selecione a turma...</option>';
-    campoDisciplina.innerHTML = '<option value="">Selecione a disciplina...</option>';
+    campoDisciplina.innerHTML =
+      '<option value="">Selecione a disciplina...</option>';
     turmas.forEach((turma) => {
       const opcao = document.createElement("option");
       opcao.value = String(turma.id);
@@ -204,15 +256,28 @@ async function carregarOpcoesProfessorParaCadastro(campoTurma, campoDisciplina) 
     });
     campoTurma.disabled = turmas.length === 0;
     campoDisciplina.disabled = disciplinas.length === 0;
-    if (turmas.length === 0) campoTurma.innerHTML = '<option value="">Nenhuma turma ativa encontrada</option>';
-    if (disciplinas.length === 0) campoDisciplina.innerHTML = '<option value="">Nenhuma disciplina ativa encontrada</option>';
+    if (turmas.length === 0)
+      campoTurma.innerHTML =
+        '<option value="">Nenhuma turma ativa encontrada</option>';
+    if (disciplinas.length === 0)
+      campoDisciplina.innerHTML =
+        '<option value="">Nenhuma disciplina ativa encontrada</option>';
   } catch (erro) {
     campoTurma.innerHTML = '<option value="">Falha ao carregar turmas</option>';
-    campoDisciplina.innerHTML = '<option value="">Falha ao carregar disciplinas</option>';
+    campoDisciplina.innerHTML =
+      '<option value="">Falha ao carregar disciplinas</option>';
     campoTurma.disabled = true;
     campoDisciplina.disabled = true;
-    console.error("EduWatch: falha ao carregar atribuições do professor.", erro);
-    exibirMensagemCadastroUsuario(erro instanceof Error ? erro.message : "Não foi possível carregar turmas e disciplinas.", "erro");
+    console.error(
+      "EduWatch: falha ao carregar atribuições do professor.",
+      erro,
+    );
+    exibirMensagemCadastroUsuario(
+      erro instanceof Error
+        ? erro.message
+        : "Não foi possível carregar turmas e disciplinas.",
+      "erro",
+    );
   }
 }
 
@@ -223,18 +288,35 @@ function inicializarCadastroUsuarios(usuarioSessao) {
   const campoEmail = document.getElementById("cadastro-email");
   const campoCpf = document.getElementById("cadastro-cpf");
   const campoSenha = document.getElementById("cadastro-senha");
-  const campoConfirmarSenha = document.getElementById("cadastro-confirmar-senha");
+  const campoConfirmarSenha = document.getElementById(
+    "cadastro-confirmar-senha",
+  );
   const campoTurmaGrupo = document.getElementById("cadastro-turma-grupo");
   const campoTurma = document.getElementById("cadastro-turma");
-  const campoProfessorTurmaGrupo = document.getElementById("cadastro-professor-turma-grupo");
-  const campoProfessorDisciplinaGrupo = document.getElementById("cadastro-professor-disciplina-grupo");
-  const campoProfessorTurma = document.getElementById("cadastro-professor-turma");
-  const campoProfessorDisciplina = document.getElementById("cadastro-professor-disciplina");
-
+  const campoProfessorTurmaGrupo = document.getElementById(
+    "cadastro-professor-turma-grupo",
+  );
+  const campoProfessorDisciplinaGrupo = document.getElementById(
+    "cadastro-professor-disciplina-grupo",
+  );
+  const campoProfessorTurma = document.getElementById(
+    "cadastro-professor-turma",
+  );
+  const campoProfessorDisciplina = document.getElementById(
+    "cadastro-professor-disciplina",
+  );
 
   const botao = document.getElementById("btn-cadastrar-usuario");
 
-  if (!formulario || !campoTipo || !campoNome || !campoEmail || !campoSenha || !campoConfirmarSenha || !botao) {
+  if (
+    !formulario ||
+    !campoTipo ||
+    !campoNome ||
+    !campoEmail ||
+    !campoSenha ||
+    !campoConfirmarSenha ||
+    !botao
+  ) {
     return;
   }
 
@@ -249,7 +331,12 @@ function inicializarCadastroUsuarios(usuarioSessao) {
     atualizarCampoTurma();
     carregarTurmasParaCadastro(campoTurma);
   }
-  if (campoProfessorTurmaGrupo && campoProfessorDisciplinaGrupo && campoProfessorTurma && campoProfessorDisciplina) {
+  if (
+    campoProfessorTurmaGrupo &&
+    campoProfessorDisciplinaGrupo &&
+    campoProfessorTurma &&
+    campoProfessorDisciplina
+  ) {
     const atualizarCamposProfessor = function () {
       const ehProfessor = campoTipo.value === "professor";
       campoProfessorTurmaGrupo.hidden = !ehProfessor;
@@ -263,13 +350,23 @@ function inicializarCadastroUsuarios(usuarioSessao) {
     };
     campoTipo.addEventListener("change", atualizarCamposProfessor);
     atualizarCamposProfessor();
-    carregarOpcoesProfessorParaCadastro(campoProfessorTurma, campoProfessorDisciplina);
+    carregarOpcoesProfessorParaCadastro(
+      campoProfessorTurma,
+      campoProfessorDisciplina,
+    );
   }
 
   // O administrador pode criar outros administradores. A coordenação não.
   // Esta opção é apenas de interface: o PHP verifica a autorização novamente.
-  const ehAdministrador = usuarioSessao?.tipoUsuario === "administrador" || usuarioSessao?.nivel === "admin";
-  if (ehAdministrador && !Array.from(campoTipo.options).some((opcao) => opcao.value === "administrador")) {
+  const ehAdministrador =
+    usuarioSessao?.tipoUsuario === "administrador" ||
+    usuarioSessao?.nivel === "admin";
+  if (
+    ehAdministrador &&
+    !Array.from(campoTipo.options).some(
+      (opcao) => opcao.value === "administrador",
+    )
+  ) {
     const opcaoAdmin = document.createElement("option");
     opcaoAdmin.value = "administrador";
     opcaoAdmin.textContent = "Administrador";
@@ -289,12 +386,18 @@ function inicializarCadastroUsuarios(usuarioSessao) {
     const cpf = cpfOriginal ? cpfOriginal.replace(/\D/g, "") : "";
 
     if (!tipoUsuario || !nome || !email || !campoEmail.validity.valid) {
-      exibirMensagemCadastroUsuario("Preencha o tipo, o nome e um e-mail válido.", "erro");
+      exibirMensagemCadastroUsuario(
+        "Preencha o tipo, o nome e um e-mail válido.",
+        "erro",
+      );
       return;
     }
 
     if (senha.length < 6) {
-      exibirMensagemCadastroUsuario("A senha deve ter pelo menos 6 caracteres.", "erro");
+      exibirMensagemCadastroUsuario(
+        "A senha deve ter pelo menos 6 caracteres.",
+        "erro",
+      );
       return;
     }
 
@@ -305,23 +408,52 @@ function inicializarCadastroUsuarios(usuarioSessao) {
     }
 
     if (cpfOriginal && cpf.length !== 11) {
-      exibirMensagemCadastroUsuario("Se informar CPF, digite 11 números. Você também pode deixar o campo vazio.", "erro");
+      exibirMensagemCadastroUsuario(
+        "Se informar CPF, digite 11 números. Você também pode deixar o campo vazio.",
+        "erro",
+      );
       campoCpf.focus();
       return;
     }
 
-    const turmaId = tipoUsuario === "aluno" ? Number(campoTurma?.value || 0) : null;
-    if (tipoUsuario === "aluno" && (!Number.isInteger(turmaId) || turmaId <= 0)) {
-      exibirMensagemCadastroUsuario("Selecione a turma do aluno antes de cadastrar.", "erro");
+    const turmaId =
+      tipoUsuario === "aluno" ? Number(campoTurma?.value || 0) : null;
+    if (
+      tipoUsuario === "aluno" &&
+      (!Number.isInteger(turmaId) || turmaId <= 0)
+    ) {
+      exibirMensagemCadastroUsuario(
+        "Selecione a turma do aluno antes de cadastrar.",
+        "erro",
+      );
       if (campoTurma) campoTurma.focus();
       return;
     }
 
-    const professorTurmaId = tipoUsuario === "professor" ? Number(campoProfessorTurma?.value || 0) : null;
-    const professorDisciplinaId = tipoUsuario === "professor" ? Number(campoProfessorDisciplina?.value || 0) : null;
-    if (tipoUsuario === "professor" && (!Number.isInteger(professorTurmaId) || professorTurmaId <= 0 || !Number.isInteger(professorDisciplinaId) || professorDisciplinaId <= 0)) {
-      exibirMensagemCadastroUsuario("Selecione a turma e a disciplina do professor antes de cadastrar.", "erro");
-      if (campoProfessorTurma && (!Number.isInteger(professorTurmaId) || professorTurmaId <= 0)) campoProfessorTurma.focus();
+    const professorTurmaId =
+      tipoUsuario === "professor"
+        ? Number(campoProfessorTurma?.value || 0)
+        : null;
+    const professorDisciplinaId =
+      tipoUsuario === "professor"
+        ? Number(campoProfessorDisciplina?.value || 0)
+        : null;
+    if (
+      tipoUsuario === "professor" &&
+      (!Number.isInteger(professorTurmaId) ||
+        professorTurmaId <= 0 ||
+        !Number.isInteger(professorDisciplinaId) ||
+        professorDisciplinaId <= 0)
+    ) {
+      exibirMensagemCadastroUsuario(
+        "Selecione a turma e a disciplina do professor antes de cadastrar.",
+        "erro",
+      );
+      if (
+        campoProfessorTurma &&
+        (!Number.isInteger(professorTurmaId) || professorTurmaId <= 0)
+      )
+        campoProfessorTurma.focus();
       else if (campoProfessorDisciplina) campoProfessorDisciplina.focus();
       return;
     }
@@ -354,23 +486,31 @@ function inicializarCadastroUsuarios(usuarioSessao) {
       try {
         resultado = await resposta.json();
       } catch {
-        throw new Error("O servidor retornou uma resposta inesperada. Confirme se está usando o Apache do XAMPP.");
+        throw new Error(
+          "O servidor retornou uma resposta inesperada. Confirme se está usando o Apache do XAMPP.",
+        );
       }
 
       if (!resposta.ok || resultado.sucesso !== true) {
-        throw new Error(resultado.mensagem || "Não foi possível cadastrar o usuário.");
+        throw new Error(
+          resultado.mensagem || "Não foi possível cadastrar o usuário.",
+        );
       }
 
       formulario.reset();
       campoTipo.dispatchEvent(new Event("change", { bubbles: true }));
       exibirMensagemCadastroUsuario(
-        "Usuário cadastrado com sucesso: " + resultado.usuario.email + ". A conta já pode fazer login.",
-        "sucesso"
+        "Usuário cadastrado com sucesso: " +
+          resultado.usuario.email +
+          ". A conta já pode fazer login.",
+        "sucesso",
       );
     } catch (erro) {
       exibirMensagemCadastroUsuario(
-        erro instanceof Error ? erro.message : "Não foi possível concluir o cadastro. Tente novamente.",
-        "erro"
+        erro instanceof Error
+          ? erro.message
+          : "Não foi possível concluir o cadastro. Tente novamente.",
+        "erro",
       );
     } finally {
       botao.disabled = false;
@@ -411,10 +551,19 @@ function renderResumoCoordenacao(resumo) {
 
   container.innerHTML =
     kpiCardCoordenacaoHTML("Alunos", String(resumo.totalAlunos ?? 0)) +
-    kpiCardCoordenacaoHTML("Professores", String(resumo.totalProfessores ?? 0)) +
+    kpiCardCoordenacaoHTML(
+      "Professores",
+      String(resumo.totalProfessores ?? 0),
+    ) +
     kpiCardCoordenacaoHTML("Turmas", String(resumo.totalTurmas ?? 0)) +
-    kpiCardCoordenacaoHTML("Média geral", formatarMediaCoordenacao(resumo.mediaGeral)) +
-    kpiCardCoordenacaoHTML("Frequência média", formatarFrequenciaCoordenacao(resumo.frequenciaMedia)) +
+    kpiCardCoordenacaoHTML(
+      "Média geral",
+      formatarMediaCoordenacao(resumo.mediaGeral),
+    ) +
+    kpiCardCoordenacaoHTML(
+      "Frequência média",
+      formatarFrequenciaCoordenacao(resumo.frequenciaMedia),
+    ) +
     kpiCardCoordenacaoHTML(
       "Alunos em atenção",
       String(resumo.alunosAtencao ?? 0),
@@ -442,12 +591,22 @@ function renderMenoresMedias(turmas) {
     return;
   }
 
-  const comMedia = turmas.filter((turma) => turma.media !== null && turma.media !== undefined);
+  const comMedia = turmas.filter(
+    (turma) => turma.media !== null && turma.media !== undefined,
+  );
   if (comMedia.length === 0) {
-    corpo.innerHTML = '<tr><td colspan="2">' + estadoVazioHTML("Ainda não há notas suficientes para calcular médias por turma.") + "</td></tr>";
+    corpo.innerHTML =
+      '<tr><td colspan="2">' +
+      estadoVazioHTML(
+        "Ainda não há notas suficientes para calcular médias por turma.",
+      ) +
+      "</td></tr>";
     return;
   }
-  const menores = comMedia.slice().sort((a, b) => a.media - b.media).slice(0, 3);
+  const menores = comMedia
+    .slice()
+    .sort((a, b) => a.media - b.media)
+    .slice(0, 3);
 
   corpo.innerHTML = menores
     .map(function (turma) {
@@ -480,13 +639,32 @@ function renderMenoresFrequencias(turmas) {
     return;
   }
 
-  const comFrequencia = (turmas || []).filter((turma) => turma.frequencia !== null && turma.frequencia !== undefined);
+  const comFrequencia = (turmas || []).filter(
+    (turma) => turma.frequencia !== null && turma.frequencia !== undefined,
+  );
   if (comFrequencia.length === 0) {
-    corpo.innerHTML = '<tr><td colspan="2">' + estadoVazioHTML("Ainda não há dados de frequência registrados no banco.") + "</td></tr>";
+    corpo.innerHTML =
+      '<tr><td colspan="2">' +
+      estadoVazioHTML(
+        "Ainda não há dados de frequência registrados no banco.",
+      ) +
+      "</td></tr>";
     return;
   }
-  const menores = comFrequencia.slice().sort((a, b) => a.frequencia - b.frequencia).slice(0, 3);
-  corpo.innerHTML = menores.map((turma) => "<tr><td>" + escaparHTMLCoordenacao(turma.nome) + "</td><td>" + formatarFrequenciaCoordenacao(turma.frequencia) + "</td></tr>").join("");
+  const menores = comFrequencia
+    .slice()
+    .sort((a, b) => a.frequencia - b.frequencia)
+    .slice(0, 3);
+  corpo.innerHTML = menores
+    .map(
+      (turma) =>
+        "<tr><td>" +
+        escaparHTMLCoordenacao(turma.nome) +
+        "</td><td>" +
+        formatarFrequenciaCoordenacao(turma.frequencia) +
+        "</td></tr>",
+    )
+    .join("");
 }
 
 // --------------------------------------------------------------------------
@@ -531,13 +709,20 @@ function aplicarFiltrosAlunosCoordenacao() {
   const turmaEl = document.getElementById("filtro-turma-coord");
   const situacaoEl = document.getElementById("filtro-situacao-coord");
 
-  const termo = buscaEl ? (buscaEl.value || "").trim().toLocaleLowerCase("pt-BR") : "";
+  const termo = buscaEl
+    ? (buscaEl.value || "").trim().toLocaleLowerCase("pt-BR")
+    : "";
   const turmaId = turmaEl ? turmaEl.value : "";
   const situacao = situacaoEl ? situacaoEl.value : "";
 
   alunosFiltradosCoordenacao = alunosCoordenacaoTodos.filter((aluno) => {
-    const correspondeBusca = !termo || String(aluno.nome || "").toLocaleLowerCase("pt-BR").includes(termo);
-    const correspondeTurma = !turmaId || String(aluno.turmaId) === String(turmaId);
+    const correspondeBusca =
+      !termo ||
+      String(aluno.nome || "")
+        .toLocaleLowerCase("pt-BR")
+        .includes(termo);
+    const correspondeTurma =
+      !turmaId || String(aluno.turmaId) === String(turmaId);
     const correspondeSituacao = !situacao || aluno.situacao === situacao;
     return correspondeBusca && correspondeTurma && correspondeSituacao;
   });
@@ -669,7 +854,8 @@ function renderTurmasCoordenacao(turmas) {
         '<span class="class-card-footer">' +
         '<span class="class-card-meta">' +
         "<span>Frequência " +
-        formatarFrequenciaCoordenacao(turma.frequencia) + "</span>" +
+        formatarFrequenciaCoordenacao(turma.frequencia) +
+        "</span>" +
         "</span>" +
         selosituacaoHTML(turma.situacao) +
         "</span>" +
@@ -742,7 +928,11 @@ function renderGraficoSituacoesEscola(resumo, alunos) {
   if (!canvas) return;
 
   if (typeof Chart === "undefined") {
-    mostrarEstadoGrafico(canvas, mensagem, "Não foi possível carregar o Chart.js. Verifique a conexão com a internet e recarregue a página.");
+    mostrarEstadoGrafico(
+      canvas,
+      mensagem,
+      "Não foi possível carregar o Chart.js. Verifique a conexão com a internet e recarregue a página.",
+    );
     return;
   }
 
@@ -761,7 +951,11 @@ function renderGraficoSituacoesEscola(resumo, alunos) {
       graficoSituacaoEscola.destroy();
       graficoSituacaoEscola = null;
     }
-    mostrarEstadoGrafico(canvas, mensagem, "Ainda não há alunos suficientes para gerar este gráfico.");
+    mostrarEstadoGrafico(
+      canvas,
+      mensagem,
+      "Ainda não há alunos suficientes para gerar este gráfico.",
+    );
     return;
   }
 
@@ -772,26 +966,39 @@ function renderGraficoSituacoesEscola(resumo, alunos) {
     type: "doughnut",
     data: {
       labels: ["Normal", "Atenção", "Crítico", "Sem dados"],
-      datasets: [{
-        data: valores,
-        backgroundColor: ["#16845b", "#d99a16", "#c83d4d", "#8a94a6"],
-        borderColor: "#ffffff",
-        borderWidth: 2,
-        hoverOffset: 6,
-      }],
+      datasets: [
+        {
+          data: valores,
+          backgroundColor: ["#16845b", "#d99a16", "#c83d4d", "#8a94a6"],
+          borderColor: "#ffffff",
+          borderWidth: 2,
+          hoverOffset: 6,
+        },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       cutout: "62%",
       plugins: {
-        legend: { position: "bottom", labels: { usePointStyle: true, padding: 18 } },
+        legend: {
+          position: "bottom",
+          labels: { usePointStyle: true, padding: 18 },
+        },
         tooltip: {
           callbacks: {
             label(context) {
-              const total = context.dataset.data.reduce((soma, valor) => soma + Number(valor || 0), 0);
+              const total = context.dataset.data.reduce(
+                (soma, valor) => soma + Number(valor || 0),
+                0,
+              );
               const valor = Number(context.raw || 0);
-              const percentual = total > 0 ? (valor / total * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) : "0";
+              const percentual =
+                total > 0
+                  ? ((valor / total) * 100).toLocaleString("pt-BR", {
+                      maximumFractionDigits: 1,
+                    })
+                  : "0";
               return ` ${context.label}: ${valor} (${percentual}%)`;
             },
           },
@@ -815,12 +1022,22 @@ function renderEvolucaoEscola(evolucao) {
   if (!canvas) return;
 
   if (typeof Chart === "undefined") {
-    mostrarEstadoGrafico(canvas, mensagem, "Não foi possível carregar o Chart.js. Verifique a conexão com a internet e recarregue a página.");
+    mostrarEstadoGrafico(
+      canvas,
+      mensagem,
+      "Não foi possível carregar o Chart.js. Verifique a conexão com a internet e recarregue a página.",
+    );
     return;
   }
 
   const pontos = (Array.isArray(evolucao) ? evolucao : [])
-    .filter((item) => item && item.valor !== null && item.valor !== undefined && Number.isFinite(Number(item.valor)))
+    .filter(
+      (item) =>
+        item &&
+        item.valor !== null &&
+        item.valor !== undefined &&
+        Number.isFinite(Number(item.valor)),
+    )
     .slice()
     .sort((a, b) => Number(a.ordem || 0) - Number(b.ordem || 0));
 
@@ -829,7 +1046,11 @@ function renderEvolucaoEscola(evolucao) {
       graficoEvolucaoEscola.destroy();
       graficoEvolucaoEscola = null;
     }
-    mostrarEstadoGrafico(canvas, mensagem, "Ainda não há histórico de notas suficiente para exibir a evolução.");
+    mostrarEstadoGrafico(
+      canvas,
+      mensagem,
+      "Ainda não há histórico de notas suficiente para exibir a evolução.",
+    );
     return;
   }
 
@@ -840,20 +1061,22 @@ function renderEvolucaoEscola(evolucao) {
     type: "line",
     data: {
       labels: pontos.map((item) => String(item.rotulo || "Período")),
-      datasets: [{
-        label: "Média da escola",
-        data: pontos.map((item) => Number(item.valor)),
-        borderColor: "#087f72",
-        backgroundColor: "rgba(8, 127, 114, 0.13)",
-        pointBackgroundColor: "#087f72",
-        pointBorderColor: "#ffffff",
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        borderWidth: 3,
-        tension: 0.28,
-        fill: true,
-      }],
+      datasets: [
+        {
+          label: "Média da escola",
+          data: pontos.map((item) => Number(item.valor)),
+          borderColor: "#087f72",
+          backgroundColor: "rgba(8, 127, 114, 0.13)",
+          pointBackgroundColor: "#087f72",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 3,
+          tension: 0.28,
+          fill: true,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -990,7 +1213,9 @@ function abrirDetalheAlunoCoordenacao(alunoId) {
 
   if (!titulo || !corpo) return;
 
-  const aluno = alunosCoordenacaoTodos.find((item) => Number(item.id) === Number(alunoId));
+  const aluno = alunosCoordenacaoTodos.find(
+    (item) => Number(item.id) === Number(alunoId),
+  );
   if (!aluno) return;
   titulo.textContent = aluno.nome;
   corpo.replaceChildren();
@@ -1029,9 +1254,17 @@ function carregarNotificacoes() {
 
 // Gerenciamento de múltiplas atribuições para cada professor.
 function ewAtribEscapar(valor) {
-  return String(valor ?? "").replace(/[&<>"']/g, (caractere) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  })[caractere]);
+  return String(valor ?? "").replace(
+    /[&<>"']/g,
+    (caractere) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[caractere],
+  );
 }
 
 function ewAtribMostrarMensagem(mensagem, tipo = "info") {
@@ -1051,10 +1284,17 @@ async function ewAtribBuscarOpcoes() {
     cache: "no-store",
   });
   let dados;
-  try { dados = await resposta.json(); }
-  catch { throw new Error("O servidor retornou uma resposta inválida ao carregar as atribuições."); }
+  try {
+    dados = await resposta.json();
+  } catch {
+    throw new Error(
+      "O servidor retornou uma resposta inválida ao carregar as atribuições.",
+    );
+  }
   if (!resposta.ok || dados.sucesso !== true) {
-    throw new Error(dados.mensagem || "Não foi possível carregar as atribuições.");
+    throw new Error(
+      dados.mensagem || "Não foi possível carregar as atribuições.",
+    );
   }
   return dados;
 }
@@ -1084,27 +1324,58 @@ function ewAtribRenderizarLista(dados) {
   const corpo = document.getElementById("tabela-atribuicoes-professor-corpo");
   if (!corpo) return;
 
-  const turmas = new Map((dados.turmas || []).map((item) => [String(item.id), item.nome]));
-  const disciplinas = new Map((dados.disciplinas || []).map((item) => [String(item.id), item.nome]));
-  const professores = new Map((dados.todosProfessores || dados.professores || []).map((item) => [String(item.id), item.nome]));
+  const turmas = new Map(
+    (dados.turmas || []).map((item) => [String(item.id), item.nome]),
+  );
+  const disciplinas = new Map(
+    (dados.disciplinas || []).map((item) => [String(item.id), item.nome]),
+  );
+  const professores = new Map(
+    (dados.todosProfessores || dados.professores || []).map((item) => [
+      String(item.id),
+      item.nome,
+    ]),
+  );
+  const compararNomes = (nomeA, nomeB) =>
+    String(nomeA || "").localeCompare(String(nomeB || ""), "pt-BR", {
+      sensitivity: "base",
+    });
+
   const lista = (dados.atribuicoes || []).slice().sort((a, b) => {
+    const professorA = professores.get(String(a.professorId)) || "";
+    const professorB = professores.get(String(b.professorId)) || "";
+
     const turmaA = turmas.get(String(a.turmaId)) || "";
     const turmaB = turmas.get(String(b.turmaId)) || "";
-    return turmaA.localeCompare(turmaB, "pt-BR") ||
-      (disciplinas.get(String(a.disciplinaId)) || "").localeCompare(disciplinas.get(String(b.disciplinaId)) || "", "pt-BR") ||
-      (professores.get(String(a.professorId)) || "").localeCompare(professores.get(String(b.professorId)) || "", "pt-BR");
+
+    const disciplinaA = disciplinas.get(String(a.disciplinaId)) || "";
+    const disciplinaB = disciplinas.get(String(b.disciplinaId)) || "";
+
+    return (
+      compararNomes(professorA, professorB) ||
+      compararNomes(turmaA, turmaB) ||
+      compararNomes(disciplinaA, disciplinaB)
+    );
   });
 
   if (lista.length === 0) {
-    corpo.innerHTML = '<tr><td colspan="3">Nenhuma atribuição encontrada.</td></tr>';
+    corpo.innerHTML =
+      '<tr><td colspan="3">Nenhuma atribuição encontrada.</td></tr>';
     return;
   }
-  corpo.innerHTML = lista.map((item) => {
-    const prof = professores.get(String(item.professorId)) || "Professor não encontrado/inativo";
-    const turma = turmas.get(String(item.turmaId)) || "Turma não encontrada/inativa";
-    const disciplina = disciplinas.get(String(item.disciplinaId)) || "Disciplina não encontrada/inativa";
-    return `<tr><td>${ewAtribEscapar(prof)}</td><td>${ewAtribEscapar(turma)}</td><td>${ewAtribEscapar(disciplina)}</td></tr>`;
-  }).join("");
+  corpo.innerHTML = lista
+    .map((item) => {
+      const prof =
+        professores.get(String(item.professorId)) ||
+        "Professor não encontrado/inativo";
+      const turma =
+        turmas.get(String(item.turmaId)) || "Turma não encontrada/inativa";
+      const disciplina =
+        disciplinas.get(String(item.disciplinaId)) ||
+        "Disciplina não encontrada/inativa";
+      return `<tr><td>${ewAtribEscapar(prof)}</td><td>${ewAtribEscapar(turma)}</td><td>${ewAtribEscapar(disciplina)}</td></tr>`;
+    })
+    .join("");
 }
 
 async function ewAtribCarregarTudo() {
@@ -1113,16 +1384,29 @@ async function ewAtribCarregarTudo() {
   const selectDisciplina = document.getElementById("atribuicao-disciplina");
   try {
     const dados = await ewAtribBuscarOpcoes();
-    ewAtribPopularSelect(selectProfessor, dados.professores, "Nenhum professor ativo");
+    ewAtribPopularSelect(
+      selectProfessor,
+      dados.professores,
+      "Nenhum professor ativo",
+    );
     ewAtribPopularSelect(selectTurma, dados.turmas, "Nenhuma turma ativa");
-    ewAtribPopularSelect(selectDisciplina, dados.disciplinas, "Nenhuma disciplina ativa");
+    ewAtribPopularSelect(
+      selectDisciplina,
+      dados.disciplinas,
+      "Nenhuma disciplina ativa",
+    );
     ewAtribRenderizarLista(dados);
   } catch (erro) {
-    const mensagem = erro instanceof Error ? erro.message : "Falha ao carregar atribuições.";
+    const mensagem =
+      erro instanceof Error ? erro.message : "Falha ao carregar atribuições.";
     ewAtribMostrarMensagem(mensagem, "erro");
     const corpo = document.getElementById("tabela-atribuicoes-professor-corpo");
-    if (corpo) corpo.innerHTML = `<tr><td colspan="3">${ewAtribEscapar(mensagem)}</td></tr>`;
-    console.error("EduWatch: falha ao carregar atribuições de professores.", erro);
+    if (corpo)
+      corpo.innerHTML = `<tr><td colspan="3">${ewAtribEscapar(mensagem)}</td></tr>`;
+    console.error(
+      "EduWatch: falha ao carregar atribuições de professores.",
+      erro,
+    );
   }
 }
 
@@ -1134,11 +1418,16 @@ function ewInicializarAtribuicoesProfessor() {
   formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
     ewAtribMostrarMensagem("");
-    const professorId = document.getElementById("atribuicao-professor")?.value || "";
+    const professorId =
+      document.getElementById("atribuicao-professor")?.value || "";
     const turmaId = document.getElementById("atribuicao-turma")?.value || "";
-    const disciplinaId = document.getElementById("atribuicao-disciplina")?.value || "";
+    const disciplinaId =
+      document.getElementById("atribuicao-disciplina")?.value || "";
     if (!professorId || !turmaId || !disciplinaId) {
-      ewAtribMostrarMensagem("Selecione professor, turma e disciplina.", "erro");
+      ewAtribMostrarMensagem(
+        "Selecione professor, turma e disciplina.",
+        "erro",
+      );
       return;
     }
 
@@ -1149,21 +1438,34 @@ function ewInicializarAtribuicoesProfessor() {
       const resposta = await fetch("api/usuarios/atribuir-professor.php", {
         method: "POST",
         credentials: "same-origin",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({ professorId, turmaId, disciplinaId }),
       });
       let dados;
-      try { dados = await resposta.json(); }
-      catch { throw new Error("O servidor retornou uma resposta inválida ao salvar a atribuição."); }
+      try {
+        dados = await resposta.json();
+      } catch {
+        throw new Error(
+          "O servidor retornou uma resposta inválida ao salvar a atribuição.",
+        );
+      }
       if (!resposta.ok || dados.sucesso !== true) {
-        throw new Error(dados.mensagem || "Não foi possível salvar a atribuição.");
+        throw new Error(
+          dados.mensagem || "Não foi possível salvar a atribuição.",
+        );
       }
       ewAtribMostrarMensagem(dados.mensagem || "Atribuição salva.", "sucesso");
       document.getElementById("atribuicao-turma").value = "";
       document.getElementById("atribuicao-disciplina").value = "";
       await ewAtribCarregarTudo();
     } catch (erro) {
-      ewAtribMostrarMensagem(erro instanceof Error ? erro.message : "Falha ao salvar atribuição.", "erro");
+      ewAtribMostrarMensagem(
+        erro instanceof Error ? erro.message : "Falha ao salvar atribuição.",
+        "erro",
+      );
     } finally {
       botao.disabled = false;
       botao.textContent = textoOriginal;
