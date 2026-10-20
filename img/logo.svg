@@ -3,10 +3,7 @@
      width="128"
      height="128">
 
-  <!-- Fundo azul-escuro -->
-  <rect width="128" height="128" rx="22" fill="#001d4a"/>
-
-  <!-- Escudo -->
+  <!-- Escudo: azul somente na parte interna -->
   <path
     d="M64 10
        L108 25
@@ -15,7 +12,7 @@
        C37 106 20 85 20 59
        V25
        Z"
-    fill="none"
+    fill="#001d4a"
     stroke="#ffffff"
     stroke-width="10"
     stroke-linecap="round"
