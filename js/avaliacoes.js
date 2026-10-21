@@ -523,21 +523,93 @@ document.addEventListener("DOMContentLoaded", () => {
         row.append(cell);
       });
 
+      const statusCell = document.createElement("td");
+
+      const statusLabels = {
+        rascunho: "Rascunho",
+        publicada: "Publicada",
+        encerrada: "Encerrada",
+        cancelada: "Cancelada",
+      };
+
+      statusCell.textContent =
+        statusLabels[avaliacao.status] || avaliacao.status || "—";
+
+      row.append(statusCell);
+
       const actionCell = document.createElement("td");
-      const button = document.createElement("button");
 
-      button.type = "button";
-      button.className = "btn btn-primary";
-      button.textContent = "Retomar";
+      if (["rascunho", "publicada"].includes(avaliacao.status)) {
+        const btnRetomar = document.createElement("button");
 
-      button.addEventListener("click", () => {
-        retomarAvaliacao(avaliacao);
+        btnRetomar.type = "button";
+        btnRetomar.className = "btn btn-primary";
+        btnRetomar.textContent = "Retomar";
+
+        btnRetomar.addEventListener("click", () => {
+          retomarAvaliacao(avaliacao);
+        });
+
+        actionCell.append(btnRetomar);
+      }
+
+      const btnExcluir = document.createElement("button");
+
+      btnExcluir.type = "button";
+      btnExcluir.className = "btn btn-danger";
+      btnExcluir.textContent = "Excluir";
+
+      btnExcluir.addEventListener("click", () => {
+        excluirAvaliacao(avaliacao, btnExcluir);
       });
 
-      actionCell.append(button);
+      actionCell.append(btnExcluir);
       row.append(actionCell);
       tbodyAbertas.append(row);
     });
+  }
+
+  async function excluirAvaliacao(avaliacao, botao) {
+    const confirmado = window.confirm(
+      `Deseja excluir permanentemente a avaliação "${avaliacao.titulo}"?\n\n` +
+        "Todas as notas, os resultados dos itens e as notificações " +
+        "relacionadas serão apagados. Essa ação não pode ser desfeita.",
+    );
+
+    if (!confirmado) return;
+
+    botao.disabled = true;
+    botao.textContent = "Excluindo...";
+
+    try {
+      const endpoint = new URL(
+        "api/academico/excluir-avaliacao.php",
+        document.baseURI,
+      ).toString();
+
+      await request(endpoint, {
+        method: "POST",
+        body: JSON.stringify({
+          avaliacao_id: Number(avaliacao.id),
+        }),
+      });
+
+      // Se era a avaliação aberta no formulário, limpa a tela.
+      if (
+        avaliacaoAtual &&
+        String(avaliacaoAtual.id) === String(avaliacao.id)
+      ) {
+        form.reset();
+      }
+
+      await carregarAvaliacoesAbertas();
+
+      feedback("Avaliação excluída com sucesso.", "success");
+    } catch (error) {
+      feedback(error.message, "error");
+      botao.disabled = false;
+      botao.textContent = "Excluir";
+    }
   }
 
   async function carregarAvaliacoesAbertas() {

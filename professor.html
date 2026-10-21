@@ -464,8 +464,8 @@
             <div class="panel section-block" id="panel-avaliacoes-abertas">
               <div class="panel-header">
                 <div>
-                  <h2>Avaliações em aberto</h2>
-                  <p>Retome avaliações que ainda estão em rascunho.</p>
+                  <h2>Avaliações cadastradas</h2>
+                  <p>Retome rascunhos ou exclua avaliações já cadastradas.</p>
                 </div>
                 <button
                   type="button"
@@ -480,17 +480,18 @@
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>Avaliação</th>
-                      <th>Turma e disciplina</th>
-                      <th>Bimestre</th>
-                      <th>Data</th>
-                      <th>Nota máxima</th>
-                      <th>Ação</th>
+                      <th scope="col">Avaliação</th>
+                      <th scope="col">Turma e disciplina</th>
+                      <th scope="col">Bimestre</th>
+                      <th scope="col">Data</th>
+                      <th scope="col">Nota máxima</th>
+                      <th scope="col">Situação</th>
+                      <th scope="col">Ação</th>
                     </tr>
                   </thead>
                   <tbody id="tabela-avaliacoes-abertas">
                     <tr>
-                      <td colspan="6">Carregando avaliações...</td>
+                      <td colspan="7">Carregando avaliações...</td>
                     </tr>
                   </tbody>
                 </table>
@@ -652,6 +653,7 @@
                       <th scope="col">Matrícula</th>
                       <th scope="col">Nota</th>
                       <th scope="col">Situação</th>
+                      <th scope="col">Ação</th>
                     </tr>
                   </thead>
 

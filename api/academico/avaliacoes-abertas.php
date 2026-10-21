@@ -32,7 +32,6 @@ try {
     $avaliacoes = ew_acad_rows(
         '/rest/v1/avaliacoes?select=id,turma_disciplina_id,'
         . 'periodo_letivo_id,titulo,data_aplicacao,nota_maxima,status'
-        . '&status=eq.rascunho'
         . '&turma_disciplina_id=' . ew_acad_in_filter($ids)
         . '&order=data_aplicacao.asc,id.asc',
         'as avaliações em aberto do professor'

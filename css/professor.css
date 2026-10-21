@@ -153,7 +153,8 @@
   font-family: inherit;
   font-size: 14px;
   outline: none;
-  transition: border-color var(--transition-fast),
+  transition:
+    border-color var(--transition-fast),
     box-shadow var(--transition-fast),
     background-color var(--transition-fast);
 }
@@ -488,7 +489,9 @@
   font-weight: var(--fw-semibold, 600);
 }
 
-.attendance-field input, .attendance-field select, .attendance-status-select {
+.attendance-field input,
+.attendance-field select,
+.attendance-status-select {
   width: 100%;
   min-height: 42px;
   padding: 9px 11px;
@@ -523,7 +526,7 @@
 }
 
 .attendance-actions button:disabled {
-  opacity: .55;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -602,7 +605,8 @@
   width: 100%;
 }
 
-.attendance-table th:last-child, .attendance-table td:last-child {
+.attendance-table th:last-child,
+.attendance-table td:last-child {
   width: min(320px, 45%);
 }
 
@@ -631,4 +635,481 @@
   .attendance-actions button {
     flex: 1 1 100%;
   }
+}
+
+/* =========================================================
+   EDUWATCH — AVALIAÇÕES CADASTRADAS
+   Estilo exclusivo da tabela de avaliações do professor
+   ========================================================= */
+
+#panel-avaliacoes-abertas {
+  position: relative;
+  margin: 24px 0;
+  padding: 24px;
+  overflow: hidden;
+
+  background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
+
+  border: 1px solid #d8e6f4;
+  border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(0, 29, 74, 0.07);
+
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+#panel-avaliacoes-abertas::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+
+  background: linear-gradient(90deg, #0b5fae, #4da3ff, #75b7ed);
+}
+
+#panel-avaliacoes-abertas:hover {
+  border-color: #c4d9ee;
+  box-shadow: 0 12px 32px rgba(0, 29, 74, 0.1);
+}
+
+/* Cabeçalho da seção */
+
+#panel-avaliacoes-abertas > .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-bottom: 22px;
+  padding: 4px 0 18px;
+
+  border-bottom: 1px solid #e3edf7;
+}
+
+#panel-avaliacoes-abertas .panel-header h2 {
+  margin: 0;
+
+  color: #0f2742;
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 800;
+  letter-spacing: -0.45px;
+  line-height: 1.3;
+}
+
+#panel-avaliacoes-abertas .panel-header p {
+  margin: 7px 0 0;
+
+  color: #61758b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Botão Atualizar */
+
+#btn-atualizar-avaliacoes-abertas {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 8px;
+
+  min-height: 40px;
+  padding: 9px 15px;
+
+  color: #0b5fae;
+  background: #edf6ff;
+
+  border: 1px solid #c9e1f8;
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+#btn-atualizar-avaliacoes-abertas:hover:not(:disabled) {
+  color: #ffffff;
+  background: #0b5fae;
+  border-color: #0b5fae;
+  transform: translateY(-1px);
+}
+
+#btn-atualizar-avaliacoes-abertas:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Área da tabela */
+
+#panel-avaliacoes-abertas .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+
+  background: #ffffff;
+  border: 1px solid #dfe8f2;
+  border-radius: 12px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #b6cde3 #f4f8fc;
+}
+
+#panel-avaliacoes-abertas table {
+  width: 100%;
+  min-width: 900px;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  color: #243b53;
+  font-size: 13px;
+}
+
+/* Cabeçalho das colunas */
+
+#panel-avaliacoes-abertas thead th {
+  padding: 15px 16px;
+
+  color: #375573;
+  background: #eef5fc;
+
+  border-bottom: 1px solid #d7e4f1;
+
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.065em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#panel-avaliacoes-abertas thead th:first-child {
+  padding-left: 20px;
+}
+
+/* Linhas e células */
+
+#panel-avaliacoes-abertas tbody td {
+  padding: 15px 16px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #edf2f7;
+
+  color: #52677e;
+  font-size: 12.5px;
+  line-height: 1.55;
+
+  vertical-align: middle;
+
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease;
+}
+
+#panel-avaliacoes-abertas tbody td:first-child {
+  padding-left: 20px;
+
+  color: #163b60;
+  font-weight: 700;
+
+  overflow-wrap: anywhere;
+}
+
+#panel-avaliacoes-abertas tbody td:nth-child(2) {
+  color: #425c76;
+  font-weight: 600;
+}
+
+#panel-avaliacoes-abertas tbody td:nth-child(3),
+#panel-avaliacoes-abertas tbody td:nth-child(4),
+#panel-avaliacoes-abertas tbody td:nth-child(5) {
+  white-space: nowrap;
+}
+
+#panel-avaliacoes-abertas tbody tr:nth-child(even) td {
+  background: #f9fbfe;
+}
+
+#panel-avaliacoes-abertas tbody tr:hover td {
+  background: #edf6ff;
+}
+
+#panel-avaliacoes-abertas tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Situação da avaliação */
+
+#panel-avaliacoes-abertas tbody td:nth-child(6) {
+  color: #1763a0;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Área dos botões */
+
+#panel-avaliacoes-abertas th:last-child {
+  min-width: 220px;
+}
+
+#panel-avaliacoes-abertas td:last-child {
+  min-width: 220px;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+#panel-avaliacoes-abertas td:last-child .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 34px;
+  padding: 7px 11px;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+/* Retomar */
+
+#panel-avaliacoes-abertas td:last-child .btn-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0b5fae, #176fc1);
+
+  box-shadow: 0 3px 7px rgba(11, 95, 174, 0.16);
+}
+
+#panel-avaliacoes-abertas td:last-child .btn-primary:hover:not(:disabled) {
+  background: #064b8c;
+  box-shadow: 0 5px 12px rgba(11, 95, 174, 0.22);
+  transform: translateY(-1px);
+}
+
+/* Excluir */
+
+#panel-avaliacoes-abertas td:last-child .btn-danger {
+  color: #b42318;
+  background: #fff5f4;
+  border-color: #f0ceca;
+}
+
+#panel-avaliacoes-abertas td:last-child .btn-danger:hover:not(:disabled) {
+  color: #ffffff;
+  background: #b42318;
+  border-color: #b42318;
+  box-shadow: 0 4px 10px rgba(180, 35, 24, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Foco por teclado e carregamento */
+
+#panel-avaliacoes-abertas button:focus-visible {
+  outline: 3px solid rgba(77, 163, 255, 0.35);
+  outline-offset: 3px;
+}
+
+#panel-avaliacoes-abertas td:last-child .btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  transform: none;
+}
+
+/* Responsividade */
+
+@media (max-width: 700px) {
+  #panel-avaliacoes-abertas {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  #panel-avaliacoes-abertas > .panel-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  #btn-atualizar-avaliacoes-abertas {
+    width: 100%;
+  }
+
+  #panel-avaliacoes-abertas tbody td {
+    padding: 13px 12px;
+  }
+
+  #panel-avaliacoes-abertas tbody td:first-child {
+    padding-left: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panel-avaliacoes-abertas,
+  #panel-avaliacoes-abertas *,
+  #panel-avaliacoes-abertas::before {
+    transition: none !important;
+  }
+}
+
+/* EDUWATCH — Ajuste da tabela de avaliações para caber na tela */
+
+#panel-avaliacoes-abertas .table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#panel-avaliacoes-abertas table {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
+  font-size: 11px;
+}
+
+/* Distribuição do espaço entre as sete colunas */
+#panel-avaliacoes-abertas th:nth-child(1),
+#panel-avaliacoes-abertas td:nth-child(1) {
+  width: 21%;
+}
+
+#panel-avaliacoes-abertas th:nth-child(2),
+#panel-avaliacoes-abertas td:nth-child(2) {
+  width: 21%;
+}
+
+#panel-avaliacoes-abertas th:nth-child(3),
+#panel-avaliacoes-abertas td:nth-child(3) {
+  width: 10%;
+}
+
+#panel-avaliacoes-abertas th:nth-child(4),
+#panel-avaliacoes-abertas td:nth-child(4) {
+  width: 11%;
+}
+
+#panel-avaliacoes-abertas th:nth-child(5),
+#panel-avaliacoes-abertas td:nth-child(5) {
+  width: 8%;
+}
+
+#panel-avaliacoes-abertas th:nth-child(6),
+#panel-avaliacoes-abertas td:nth-child(6) {
+  width: 10%;
+}
+
+#panel-avaliacoes-abertas th:nth-child(7),
+#panel-avaliacoes-abertas td:nth-child(7) {
+  width: 19%;
+}
+
+/* Permite que títulos e nomes longos quebrem linha */
+#panel-avaliacoes-abertas th,
+#panel-avaliacoes-abertas tbody td {
+  padding: 10px 7px;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+}
+
+#panel-avaliacoes-abertas thead th {
+  font-size: 9px;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+/* Mantém os botões dentro da última coluna */
+#panel-avaliacoes-abertas td:last-child {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+
+#panel-avaliacoes-abertas td:last-child .btn {
+  min-height: 30px;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+/* Em telas menores, reduz os espaços */
+@media (max-width: 900px) {
+  #panel-avaliacoes-abertas {
+    padding: 14px;
+  }
+
+  #panel-avaliacoes-abertas th,
+  #panel-avaliacoes-abertas tbody td {
+    padding: 8px 4px;
+    font-size: 10px;
+  }
+
+  #panel-avaliacoes-abertas td:last-child .btn {
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+}
+/* Corrige o cabeçalho azul-claro da tabela */
+#panel-avaliacoes-abertas table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+#panel-avaliacoes-abertas th:last-child {
+  min-width: 0 !important;
+}
+
+#panel-avaliacoes-abertas thead,
+#panel-avaliacoes-abertas thead tr {
+  width: 100%;
+  background-color: #eef5fc;
+}
+
+#panel-avaliacoes-abertas thead th {
+  background-color: #eef5fc;
+  box-sizing: border-box;
+}
+
+/* Botões Retomar e Excluir com o mesmo tamanho */
+#panel-avaliacoes-abertas td:last-child .btn {
+  box-sizing: border-box;
+  width: 78px;
+  min-width: 78px;
+  height: 34px;
+  padding: 0 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  white-space: nowrap;
+  flex: 0 0 78px;
 }
