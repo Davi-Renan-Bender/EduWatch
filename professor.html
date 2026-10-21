@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/professor.css" />
     <link rel="stylesheet" href="css/academico.css" />
-      <link rel="stylesheet" href="css/notificacoes.css" />
-</head>
+    <link rel="stylesheet" href="css/notificacoes.css" />
+  </head>
 
   <body class="dashboard-body">
     <div class="app-shell">
@@ -460,6 +460,48 @@
               </div>
             </div>
 
+            <!-- AVALIAÇÕES EM ABERTO -->
+            <div class="panel section-block" id="panel-avaliacoes-abertas">
+              <div class="panel-header">
+                <div>
+                  <h2>Avaliações em aberto</h2>
+                  <p>
+                    Continue avaliações salvas como rascunho, mesmo após sair da
+                    conta.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn"
+                  id="btn-atualizar-avaliacoes-abertas"
+                >
+                  Atualizar
+                </button>
+              </div>
+
+              <div class="table-wrapper assessment-table-wrapper">
+                <table class="data-table assessment-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Avaliação</th>
+                      <th scope="col">Turma e disciplina</th>
+                      <th scope="col">Bimestre</th>
+                      <th scope="col">Data</th>
+                      <th scope="col">Nota máxima</th>
+                      <th scope="col">Ação</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="tabela-avaliacoes-abertas">
+                    <tr>
+                      <td colspan="6">Carregando avaliações...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             <!-- DADOS DA AVALIAÇÃO -->
             <div class="panel section-block">
               <div class="panel-header">
@@ -619,7 +661,7 @@
                   </thead>
 
                   <tbody id="tabela-notas-corpo">
-                  <!-- Preenchido com alunos ativos da turma selecionada. -->
+                    <!-- Preenchido com alunos ativos da turma selecionada. -->
                   </tbody>
                 </table>
               </div>
@@ -674,7 +716,11 @@
             <div class="panel section-block">
               <div class="panel-header"><h2>Média por turma</h2></div>
               <div class="chart-canvas-wrap">
-                <canvas id="grafico-medias-turmas" aria-label="Gráfico de médias por turma" role="img"></canvas>
+                <canvas
+                  id="grafico-medias-turmas"
+                  aria-label="Gráfico de médias por turma"
+                  role="img"
+                ></canvas>
                 <p class="chart-state" role="status" hidden></p>
               </div>
             </div>
@@ -730,30 +776,54 @@
               <div class="panel-header">
                 <div>
                   <h2>Registro de frequência</h2>
-                  <p class="academic-section-description">Crie uma aula, registre a situação de cada aluno e feche a chamada quando estiver completa.</p>
+                  <p class="academic-section-description">
+                    Crie uma aula, registre a situação de cada aluno e feche a
+                    chamada quando estiver completa.
+                  </p>
                 </div>
               </div>
-              <div id="frequencia-mensagem" class="attendance-message" role="status" aria-live="polite" hidden></div>
+              <div
+                id="frequencia-mensagem"
+                class="attendance-message"
+                role="status"
+                aria-live="polite"
+                hidden
+              ></div>
               <div class="attendance-form-grid">
                 <label class="attendance-field">
                   <span>Turma e disciplina</span>
-                  <select id="frequencia-atribuicao" required><option value="">Carregando opções...</option></select>
+                  <select id="frequencia-atribuicao" required>
+                    <option value="">Carregando opções...</option>
+                  </select>
                 </label>
                 <label class="attendance-field">
                   <span>Período letivo</span>
-                  <select id="frequencia-periodo" required><option value="">Selecione a turma primeiro</option></select>
+                  <select id="frequencia-periodo" required>
+                    <option value="">Selecione a turma primeiro</option>
+                  </select>
                 </label>
                 <label class="attendance-field">
                   <span>Data da aula</span>
-                  <input id="frequencia-data" type="date" required>
+                  <input id="frequencia-data" type="date" required />
                 </label>
                 <label class="attendance-field attendance-field--wide">
                   <span>Tema da aula (opcional)</span>
-                  <input id="frequencia-tema" type="text" maxlength="180" placeholder="Ex.: Introdução às funções">
+                  <input
+                    id="frequencia-tema"
+                    type="text"
+                    maxlength="180"
+                    placeholder="Ex.: Introdução às funções"
+                  />
                 </label>
               </div>
               <div class="attendance-actions">
-                <button type="button" class="btn-primary" id="frequencia-criar-aula">Criar aula</button>
+                <button
+                  type="button"
+                  class="btn-primary"
+                  id="frequencia-criar-aula"
+                >
+                  Criar aula
+                </button>
               </div>
             </div>
 
@@ -761,25 +831,64 @@
               <div class="panel-header">
                 <div>
                   <h2>Aulas registradas</h2>
-                  <p class="academic-section-description">Selecione uma aula para abrir ou revisar a chamada.</p>
+                  <p class="academic-section-description">
+                    Selecione uma aula para abrir ou revisar a chamada.
+                  </p>
                 </div>
               </div>
               <label class="attendance-field attendance-lesson-picker">
                 <span>Aula</span>
-                <select id="frequencia-aula" disabled><option value="">Selecione turma, disciplina e período</option></select>
+                <select id="frequencia-aula" disabled>
+                  <option value="">
+                    Selecione turma, disciplina e período
+                  </option>
+                </select>
               </label>
-              <div id="frequencia-resumo-aula" class="attendance-lesson-summary" hidden></div>
+              <div
+                id="frequencia-resumo-aula"
+                class="attendance-lesson-summary"
+                hidden
+              ></div>
               <div class="assessment-table-wrapper attendance-table-wrapper">
                 <table class="assessment-table attendance-table">
-                  <thead><tr><th scope="col">Aluno</th><th scope="col">Situação</th></tr></thead>
-                  <tbody id="frequencia-alunos-corpo"><tr><td colspan="2">Selecione uma aula para carregar os alunos.</td></tr></tbody>
+                  <thead>
+                    <tr>
+                      <th scope="col">Aluno</th>
+                      <th scope="col">Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="frequencia-alunos-corpo">
+                    <tr>
+                      <td colspan="2">
+                        Selecione uma aula para carregar os alunos.
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
               <div class="attendance-actions attendance-actions--bottom">
-                <button type="button" class="btn-secondary" id="frequencia-salvar" disabled>Salvar chamada</button>
-                <button type="button" class="btn-primary" id="frequencia-fechar" disabled>Fechar frequência</button>
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  id="frequencia-salvar"
+                  disabled
+                >
+                  Salvar chamada
+                </button>
+                <button
+                  type="button"
+                  class="btn-primary"
+                  id="frequencia-fechar"
+                  disabled
+                >
+                  Fechar frequência
+                </button>
               </div>
-              <p class="academic-section-description">Status disponíveis: presente, ausente, atraso e justificada. Ao fechar, a aula será marcada como realizada e a chamada ficará bloqueada.</p>
+              <p class="academic-section-description">
+                Status disponíveis: presente, ausente, atraso e justificada. Ao
+                fechar, a aula será marcada como realizada e a chamada ficará
+                bloqueada.
+              </p>
             </div>
           </section>
 
@@ -846,6 +955,6 @@
     <script src="js/professor.js"></script>
     <script src="js/avaliacoes.js"></script>
     <script src="js/frequencia.js"></script>
-      <script src="js/notificacoes.js"></script>
-</body>
+    <script src="js/notificacoes.js"></script>
+  </body>
 </html>

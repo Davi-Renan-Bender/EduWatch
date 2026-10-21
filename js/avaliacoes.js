@@ -11,17 +11,42 @@ document.addEventListener("DOMContentLoaded", () => {
   const tituloInput = document.getElementById("avaliacao-titulo");
   const dataInput = document.getElementById("avaliacao-data");
   const valorInput = document.getElementById("avaliacao-valor");
-  const btnContinuar = form.querySelector(".assessment-form-actions .btn-primary");
-  const btnSalvar = document.querySelector("#section-avaliacoes .assessment-footer .btn-primary");
+  const btnContinuar = form.querySelector(
+    ".assessment-form-actions .btn-primary",
+  );
+  const btnSalvar = document.querySelector(
+    "#section-avaliacoes .assessment-footer .btn-primary",
+  );
   const tbody = document.getElementById("tabela-notas-corpo");
-  const emptyState = document.querySelector("#section-avaliacoes .assessment-empty-state");
-  const scaleValue = document.querySelector("#section-avaliacoes .grade-scale strong");
-  const gradeHeading = document.querySelector("#section-avaliacoes .grade-info strong");
-  const gradeDescription = document.querySelector("#section-avaliacoes .grade-info div span");
-  const footerHeading = document.querySelector("#section-avaliacoes .assessment-footer-info strong");
-  const footerDescription = document.querySelector("#section-avaliacoes .assessment-footer-info span");
-  const statusBadge = document.querySelector("#section-avaliacoes .assessment-status");
+  const emptyState = document.querySelector(
+    "#section-avaliacoes .assessment-empty-state",
+  );
+  const scaleValue = document.querySelector(
+    "#section-avaliacoes .grade-scale strong",
+  );
+  const gradeHeading = document.querySelector(
+    "#section-avaliacoes .grade-info strong",
+  );
+  const gradeDescription = document.querySelector(
+    "#section-avaliacoes .grade-info div span",
+  );
+  const footerHeading = document.querySelector(
+    "#section-avaliacoes .assessment-footer-info strong",
+  );
+  const footerDescription = document.querySelector(
+    "#section-avaliacoes .assessment-footer-info span",
+  );
+  const statusBadge = document.querySelector(
+    "#section-avaliacoes .assessment-status",
+  );
 
+  const tbodyAbertas = document.getElementById("tabela-avaliacoes-abertas");
+
+  const btnAtualizarAbertas = document.getElementById(
+    "btn-atualizar-avaliacoes-abertas",
+  );
+
+  let avaliacoesAbertas = [];
   let atribuicoes = [];
   let periodos = [];
   let avaliacaoAtual = null;
@@ -29,6 +54,59 @@ document.addEventListener("DOMContentLoaded", () => {
   let mensagemEl = null;
 
   if (!btnContinuar || !btnSalvar || !tbody) return;
+
+  // Painel de avaliações em aberto.
+  const panelAvaliacao = form.closest(".panel");
+  const painelRascunhos = document.createElement("div");
+
+  painelRascunhos.className = "panel section-block";
+
+  painelRascunhos.innerHTML = `
+  <div class="panel-header">
+    <div>
+      <h2>Avaliações em aberto</h2>
+      <p>Retome avaliações salvas como rascunho.</p>
+    </div>
+    <button type="button" class="btn"
+      id="btn-atualizar-avaliacoes-abertas">
+      Atualizar
+    </button>
+  </div>
+
+  <div class="table-wrapper assessment-table-wrapper">
+    <table class="data-table assessment-table">
+      <thead>
+        <tr>
+          <th>Avaliação</th>
+          <th>Turma e disciplina</th>
+          <th>Bimestre</th>
+          <th>Data</th>
+          <th>Nota máxima</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-avaliacoes-abertas">
+        <tr>
+          <td colspan="6">Carregando avaliações...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+`;
+
+  if (panelAvaliacao) {
+    panelAvaliacao.insertAdjacentElement("beforebegin", painelRascunhos);
+  }
+
+  const tbodyRascunhos = painelRascunhos.querySelector(
+    "#tabela-avaliacoes-abertas",
+  );
+
+  const btnAtualizarRascunhos = painelRascunhos.querySelector(
+    "#btn-atualizar-avaliacoes-abertas",
+  );
+
+  let avaliacoesAbertas = [];
 
   function feedback(message, type = "info") {
     if (!mensagemEl) {
@@ -48,15 +126,26 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       response = await fetch(url, {
         credentials: "same-origin",
-        headers: { Accept: "application/json", ...(options.body ? { "Content-Type": "application/json" } : {}), ...(options.headers || {}) },
+        headers: {
+          Accept: "application/json",
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(options.headers || {}),
+        },
         ...options,
       });
     } catch (_error) {
-      throw new Error("Não foi possível conectar ao EduWatch. Confira o Apache e tente novamente.");
+      throw new Error(
+        "Não foi possível conectar ao EduWatch. Confira o Apache e tente novamente.",
+      );
     }
     let data;
-    try { data = await response.json(); }
-    catch (_error) { throw new Error("O servidor retornou uma resposta inválida. Confira os logs do PHP."); }
+    try {
+      data = await response.json();
+    } catch (_error) {
+      throw new Error(
+        "O servidor retornou uma resposta inválida. Confira os logs do PHP.",
+      );
+    }
     if (!response.ok || data.sucesso === false) {
       let message = data.mensagem || "Não foi possível concluir a operação.";
       const hostname = window.location.hostname.toLowerCase();
@@ -125,7 +214,9 @@ document.addEventListener("DOMContentLoaded", () => {
     resetSelect(periodoSelect, "Selecione o período");
 
     const disponiveis = periodos
-      .filter((item) => String(item.ano_letivo_id) === String(anoId) && anoId !== "")
+      .filter(
+        (item) => String(item.ano_letivo_id) === String(anoId) && anoId !== "",
+      )
       .sort((a, b) => Number(a.ordem) - Number(b.ordem));
 
     disponiveis.forEach((item) => {
@@ -137,20 +228,135 @@ document.addEventListener("DOMContentLoaded", () => {
     periodoSelect.disabled = disponiveis.length === 0;
   }
 
+  function formatarDataBR(valor) {
+    const partes = String(valor || "").split("-");
+
+    return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : "—";
+  }
+
+  function celula(texto) {
+    const td = document.createElement("td");
+    td.textContent = String(texto ?? "—");
+    return td;
+  }
+
+  function renderAvaliacoesAbertas() {
+    tbodyRascunhos.replaceChildren();
+
+    if (avaliacoesAbertas.length === 0) {
+      const row = document.createElement("tr");
+      const td = celula("Nenhuma avaliação em aberto.");
+      td.colSpan = 6;
+      row.append(td);
+      tbodyRascunhos.append(row);
+      return;
+    }
+
+    avaliacoesAbertas.forEach((avaliacao) => {
+      const atribuicao = atribuicoes.find(
+        (item) =>
+          String(item.turma_disciplina_id) ===
+          String(avaliacao.turma_disciplina_id),
+      );
+
+      const periodo = periodos.find(
+        (item) => String(item.id) === String(avaliacao.periodo_letivo_id),
+      );
+
+      const row = document.createElement("tr");
+
+      row.append(
+        celula(avaliacao.titulo),
+        celula(
+          atribuicao
+            ? `${atribuicao.turma} — ${atribuicao.disciplina}`
+            : "Turma/disciplina não disponível",
+        ),
+        celula(periodo?.nome || "—"),
+        celula(formatarDataBR(avaliacao.data_aplicacao)),
+        celula(avaliacao.nota_maxima),
+      );
+
+      const action = document.createElement("td");
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "btn btn-primary";
+      button.textContent = "Retomar";
+
+      button.addEventListener("click", () => {
+        retomarAvaliacao(avaliacao);
+      });
+
+      action.append(button);
+      row.append(action);
+      tbodyRascunhos.append(row);
+    });
+  }
+
+  async function carregarAvaliacoesAbertas() {
+    tbodyRascunhos.replaceChildren();
+
+    const row = document.createElement("tr");
+    const td = celula("Carregando avaliações...");
+    td.colSpan = 6;
+    row.append(td);
+    tbodyRascunhos.append(row);
+
+    btnAtualizarRascunhos.disabled = true;
+
+    try {
+      const endpoint = new URL(
+        "api/academico/avaliacoes-abertas.php",
+        document.baseURI,
+      ).toString();
+
+      const data = await request(endpoint, {
+        cache: "no-store",
+      });
+
+      avaliacoesAbertas = Array.isArray(data.avaliacoes) ? data.avaliacoes : [];
+
+      renderAvaliacoesAbertas();
+    } catch (error) {
+      const errorRow = document.createElement("tr");
+      const errorCell = celula(
+        "Não foi possível carregar os rascunhos. Clique em Atualizar.",
+      );
+
+      errorCell.colSpan = 6;
+      errorRow.append(errorCell);
+      tbodyRascunhos.replaceChildren(errorRow);
+
+      feedback(error.message, "error");
+    } finally {
+      btnAtualizarRascunhos.disabled = false;
+    }
+  }
+
   async function carregarOpcoes() {
     turmaSelect.disabled = true;
     disciplinaSelect.disabled = true;
     periodoSelect.disabled = true;
     try {
-      const endpoint = new URL("api/academico/opcoes-avaliacao.php", document.baseURI).toString();
+      const endpoint = new URL(
+        "api/academico/opcoes-avaliacao.php",
+        document.baseURI,
+      ).toString();
       const data = await request(endpoint, { cache: "no-store" });
       atribuicoes = Array.isArray(data.atribuicoes) ? data.atribuicoes : [];
       periodos = Array.isArray(data.periodos) ? data.periodos : [];
       renderTurmas();
       if (atribuicoes.length === 0) {
-        feedback("Você ainda não tem turmas e disciplinas atribuídas. Peça à coordenação para configurar essa relação.", "warning");
+        feedback(
+          "Você ainda não tem turmas e disciplinas atribuídas. Peça à coordenação para configurar essa relação.",
+          "warning",
+        );
       } else {
-        feedback("Turmas e disciplinas carregadas. Selecione uma turma e uma disciplina para ver os períodos disponíveis.", "success");
+        feedback(
+          "Turmas e disciplinas carregadas. Selecione uma turma e uma disciplina para ver os períodos disponíveis.",
+          "success",
+        );
       }
     } catch (error) {
       feedback(error.message, "error");
@@ -187,7 +393,10 @@ document.addEventListener("DOMContentLoaded", () => {
       grade.inputMode = "decimal";
       grade.placeholder = "—";
       grade.setAttribute("aria-label", "Nota de " + aluno.nome);
-      grade.value = aluno.nota === null || aluno.nota === undefined ? "" : String(aluno.nota);
+      grade.value =
+        aluno.nota === null || aluno.nota === undefined
+          ? ""
+          : String(aluno.nota);
       gradeCell.append(grade);
 
       const statusCell = document.createElement("td");
@@ -200,7 +409,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ["ausente", "Ausente"],
         ["dispensada", "Dispensada"],
       ].forEach(([value, label]) => status.append(option(value, label)));
-      status.value = aluno.situacao || (grade.value !== "" ? "lancada" : "pendente");
+      status.value =
+        aluno.situacao || (grade.value !== "" ? "lancada" : "pendente");
       if (grade.value !== "") status.value = "lancada";
       grade.disabled = ["ausente", "dispensada"].includes(status.value);
 
@@ -219,15 +429,347 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  async function retomarAvaliacao(resumo) {
+    const atribuicao = atribuicoes.find(
+      (item) =>
+        String(item.turma_disciplina_id) === String(resumo.turma_disciplina_id),
+    );
+
+    if (!atribuicao) {
+      feedback(
+        "A turma e a disciplina não estão mais atribuídas à sua conta.",
+        "error",
+      );
+      return;
+    }
+
+    turmaSelect.value = String(atribuicao.turma_id);
+    renderDisciplinas();
+
+    disciplinaSelect.value = String(resumo.turma_disciplina_id);
+    renderPeriodos();
+
+    periodoSelect.value = String(resumo.periodo_letivo_id);
+    tituloInput.value = String(resumo.titulo || "");
+    dataInput.value = String(resumo.data_aplicacao || "");
+    valorInput.value = String(resumo.nota_maxima ?? "");
+
+    btnContinuar.disabled = true;
+    btnContinuar.textContent = "Carregando rascunho...";
+    btnSalvar.disabled = true;
+
+    try {
+      const endpoint = new URL(
+        "api/academico/alunos-avaliacao.php",
+        document.baseURI,
+      );
+
+      endpoint.searchParams.set("avaliacao_id", String(resumo.id));
+
+      const data = await request(endpoint.toString(), {
+        cache: "no-store",
+      });
+
+      avaliacaoAtual = data.avaliacao;
+      maximoAtual = Number(avaliacaoAtual.nota_maxima);
+
+      renderAlunos(data.alunos || []);
+
+      if (scaleValue) {
+        scaleValue.textContent = String(maximoAtual);
+      }
+
+      if (statusBadge) {
+        statusBadge.textContent = "Rascunho recuperado";
+      }
+
+      if (gradeHeading) {
+        gradeHeading.textContent = "Retomada do lançamento das notas";
+      }
+
+      if (gradeDescription) {
+        gradeDescription.textContent =
+          "Continue preenchendo as notas e clique em Salvar notas.";
+      }
+
+      if (footerHeading) {
+        footerHeading.textContent = "Rascunho recuperado do Supabase";
+      }
+
+      if (footerDescription) {
+        footerDescription.textContent =
+          "As informações foram recuperadas. Salve as notas para publicar.";
+      }
+
+      btnContinuar.textContent = "Avaliação já criada";
+      btnContinuar.disabled = true;
+      btnSalvar.disabled = false;
+
+      feedback(
+        "Rascunho recuperado! Continue o lançamento das notas.",
+        "success",
+      );
+
+      form.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    } catch (error) {
+      avaliacaoAtual = null;
+      btnContinuar.disabled = false;
+      btnContinuar.textContent = "Continuar para as notas";
+      btnSalvar.disabled = true;
+
+      feedback(error.message, "error");
+    }
+  }
+
+  function formatarDataRascunho(data) {
+    const partes = String(data || "").split("-");
+
+    return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : "—";
+  }
+
+  function renderAvaliacoesAbertas() {
+    if (!tbodyAbertas) return;
+
+    tbodyAbertas.replaceChildren();
+
+    if (avaliacoesAbertas.length === 0) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+
+      cell.colSpan = 6;
+      cell.textContent = "Nenhuma avaliação em aberto.";
+
+      row.append(cell);
+      tbodyAbertas.append(row);
+      return;
+    }
+
+    avaliacoesAbertas.forEach((avaliacao) => {
+      const atribuicao = atribuicoes.find(
+        (item) =>
+          String(item.turma_disciplina_id) ===
+          String(avaliacao.turma_disciplina_id),
+      );
+
+      const periodo = periodos.find(
+        (item) => String(item.id) === String(avaliacao.periodo_letivo_id),
+      );
+
+      const row = document.createElement("tr");
+
+      const valores = [
+        avaliacao.titulo,
+        atribuicao
+          ? `${atribuicao.turma} — ${atribuicao.disciplina}`
+          : "Atribuição indisponível",
+        periodo?.nome || "—",
+        formatarDataRascunho(avaliacao.data_aplicacao),
+        avaliacao.nota_maxima,
+      ];
+
+      valores.forEach((valor) => {
+        const cell = document.createElement("td");
+        cell.textContent = String(valor ?? "—");
+        row.append(cell);
+      });
+
+      const actionCell = document.createElement("td");
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "btn btn-primary";
+      button.textContent = "Retomar";
+
+      button.addEventListener("click", () => {
+        retomarAvaliacao(avaliacao);
+      });
+
+      actionCell.append(button);
+      row.append(actionCell);
+      tbodyAbertas.append(row);
+    });
+  }
+
+  async function carregarAvaliacoesAbertas() {
+    if (!tbodyAbertas) return;
+
+    tbodyAbertas.replaceChildren();
+
+    const loadingRow = document.createElement("tr");
+    const loadingCell = document.createElement("td");
+
+    loadingCell.colSpan = 6;
+    loadingCell.textContent = "Carregando avaliações...";
+
+    loadingRow.append(loadingCell);
+    tbodyAbertas.append(loadingRow);
+
+    if (btnAtualizarAbertas) {
+      btnAtualizarAbertas.disabled = true;
+    }
+
+    try {
+      const endpoint = new URL(
+        "api/academico/avaliacoes-abertas.php",
+        document.baseURI,
+      ).toString();
+
+      const data = await request(endpoint, {
+        cache: "no-store",
+      });
+
+      avaliacoesAbertas = Array.isArray(data.avaliacoes) ? data.avaliacoes : [];
+
+      renderAvaliacoesAbertas();
+    } catch (error) {
+      tbodyAbertas.replaceChildren();
+
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+
+      cell.colSpan = 6;
+      cell.textContent =
+        "Erro ao carregar. Clique em Atualizar para tentar novamente.";
+
+      row.append(cell);
+      tbodyAbertas.append(row);
+
+      feedback(error.message, "error");
+    } finally {
+      if (btnAtualizarAbertas) {
+        btnAtualizarAbertas.disabled = false;
+      }
+    }
+  }
+
+  async function retomarAvaliacao(resumo) {
+    if (
+      avaliacaoAtual &&
+      String(avaliacaoAtual.id) !== String(resumo.id) &&
+      String(avaliacaoAtual.status || "rascunho") === "rascunho"
+    ) {
+      feedback(
+        "Você já está trabalhando em outro rascunho. Termine-o ou clique em Limpar antes de trocar.",
+        "warning",
+      );
+      return;
+    }
+
+    const atribuicao = atribuicoes.find(
+      (item) =>
+        String(item.turma_disciplina_id) === String(resumo.turma_disciplina_id),
+    );
+
+    if (!atribuicao) {
+      feedback(
+        "A turma e a disciplina desta avaliação não estão mais atribuídas à sua conta.",
+        "error",
+      );
+      return;
+    }
+
+    turmaSelect.value = String(atribuicao.turma_id);
+    renderDisciplinas();
+
+    disciplinaSelect.value = String(atribuicao.turma_disciplina_id);
+
+    renderPeriodos();
+
+    periodoSelect.value = String(resumo.periodo_letivo_id);
+    tituloInput.value = String(resumo.titulo || "");
+    dataInput.value = String(resumo.data_aplicacao || "");
+    valorInput.value = String(resumo.nota_maxima ?? "");
+
+    btnContinuar.disabled = true;
+    btnContinuar.textContent = "Carregando rascunho...";
+    btnSalvar.disabled = true;
+
+    try {
+      const endpoint = new URL(
+        "api/academico/alunos-avaliacao.php",
+        document.baseURI,
+      );
+
+      endpoint.searchParams.set("avaliacao_id", String(resumo.id));
+
+      const data = await request(endpoint.toString(), {
+        cache: "no-store",
+      });
+
+      avaliacaoAtual = data.avaliacao;
+      maximoAtual = Number(avaliacaoAtual.nota_maxima);
+
+      renderAlunos(data.alunos || []);
+
+      if (scaleValue) {
+        scaleValue.textContent = String(maximoAtual);
+      }
+
+      if (statusBadge) {
+        statusBadge.textContent = "Rascunho recuperado";
+      }
+
+      if (gradeHeading) {
+        gradeHeading.textContent = "Lançamento das notas";
+      }
+
+      if (gradeDescription) {
+        gradeDescription.textContent =
+          "Continue preenchendo as notas e clique em Salvar notas.";
+      }
+
+      if (footerHeading) {
+        footerHeading.textContent = "Rascunho recuperado";
+      }
+
+      if (footerDescription) {
+        footerDescription.textContent =
+          "Depois de salvar, a avaliação será publicada para os alunos.";
+      }
+
+      btnContinuar.disabled = true;
+      btnContinuar.textContent = "Avaliação recuperada";
+      btnSalvar.disabled = false;
+
+      feedback(
+        "Rascunho recuperado. Continue o lançamento das notas.",
+        "success",
+      );
+
+      document.getElementById("section-avaliacoes")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    } catch (error) {
+      btnContinuar.disabled = true;
+      btnContinuar.textContent = "Falha ao recuperar rascunho";
+      btnSalvar.disabled = true;
+
+      feedback(error.message, "error");
+    }
+  }
+
   async function continuarParaNotas() {
     if (avaliacaoAtual) {
-      feedback("Esta avaliação já foi criada. Lance as notas na tabela abaixo e clique em Salvar notas.", "info");
+      feedback(
+        "Esta avaliação já foi criada. Lance as notas na tabela abaixo e clique em Salvar notas.",
+        "info",
+      );
       return;
     }
     if (!form.reportValidity()) return;
     const assignmentOption = disciplinaSelect.selectedOptions[0];
-    if (!assignmentOption || assignmentOption.dataset.turmaId !== turmaSelect.value) {
-      feedback("Selecione uma disciplina válida para a turma escolhida.", "error");
+    if (
+      !assignmentOption ||
+      assignmentOption.dataset.turmaId !== turmaSelect.value
+    ) {
+      feedback(
+        "Selecione uma disciplina válida para a turma escolhida.",
+        "error",
+      );
       return;
     }
     const payload = {
@@ -241,7 +783,10 @@ document.addEventListener("DOMContentLoaded", () => {
     btnContinuar.disabled = true;
     btnContinuar.textContent = "Criando avaliação…";
     try {
-      const criarEndpoint = new URL("api/academico/criar-avaliacao.php", document.baseURI).toString();
+      const criarEndpoint = new URL(
+        "api/academico/criar-avaliacao.php",
+        document.baseURI,
+      ).toString();
       const result = await request(criarEndpoint, {
         method: "POST",
         body: JSON.stringify(payload),
@@ -254,14 +799,31 @@ document.addEventListener("DOMContentLoaded", () => {
       scaleValue && (scaleValue.textContent = String(maximoAtual));
       statusBadge && (statusBadge.textContent = "Rascunho");
       gradeHeading && (gradeHeading.textContent = "Lançamento das notas");
-      gradeDescription && (gradeDescription.textContent = "Preencha a nota de cada aluno. Deixe pendente ou escolha ausente/dispensada quando necessário.");
-      footerHeading && (footerHeading.textContent = "Avaliação criada como rascunho");
-      footerDescription && (footerDescription.textContent = "As notas serão salvas e a avaliação publicada quando você clicar em Salvar notas.");
-      const alunosEndpoint = new URL("api/academico/alunos-avaliacao.php", document.baseURI);
-      alunosEndpoint.searchParams.set("avaliacao_id", String(avaliacaoAtual.id));
-      const rosterData = await request(alunosEndpoint.toString(), { cache: "no-store" });
+      gradeDescription &&
+        (gradeDescription.textContent =
+          "Preencha a nota de cada aluno. Deixe pendente ou escolha ausente/dispensada quando necessário.");
+      footerHeading &&
+        (footerHeading.textContent = "Avaliação criada como rascunho");
+      footerDescription &&
+        (footerDescription.textContent =
+          "As notas serão salvas e a avaliação publicada quando você clicar em Salvar notas.");
+      const alunosEndpoint = new URL(
+        "api/academico/alunos-avaliacao.php",
+        document.baseURI,
+      );
+      alunosEndpoint.searchParams.set(
+        "avaliacao_id",
+        String(avaliacaoAtual.id),
+      );
+      const rosterData = await request(alunosEndpoint.toString(), {
+        cache: "no-store",
+      });
       renderAlunos(rosterData.alunos || []);
-      feedback("Avaliação criada. Agora lance as notas e salve para disponibilizá-las ao aluno.", "success");
+      await carregarAvaliacoesAbertas();
+      feedback(
+        "Avaliação criada. Agora lance as notas e salve para disponibilizá-las ao aluno.",
+        "success",
+      );
     } catch (error) {
       feedback(error.message, "error");
       btnContinuar.disabled = false;
@@ -271,7 +833,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function salvarNotas() {
     if (!avaliacaoAtual) {
-      feedback("Primeiro preencha os dados e clique em Continuar para as notas.", "warning");
+      feedback(
+        "Primeiro preencha os dados e clique em Continuar para as notas.",
+        "warning",
+      );
       return;
     }
     const rows = [...tbody.querySelectorAll("tr[data-matricula-id]")];
@@ -288,14 +853,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const value = Number(raw);
         if (!Number.isFinite(value) || value < 0 || value > maximoAtual) {
           gradeInput.focus();
-          feedback("Todas as notas devem estar entre 0 e " + maximoAtual + ".", "error");
+          feedback(
+            "Todas as notas devem estar entre 0 e " + maximoAtual + ".",
+            "error",
+          );
           return;
         }
       }
       const status = raw !== "" ? "lancada" : statusSelect.value;
       if (status === "lancada" && raw === "") {
         statusSelect.focus();
-        feedback("Informe a nota ou escolha Pendente, Ausente ou Dispensada.", "error");
+        feedback(
+          "Informe a nota ou escolha Pendente, Ausente ou Dispensada.",
+          "error",
+        );
         return;
       }
       notas.push({
@@ -309,15 +880,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const original = btnSalvar.textContent;
     btnSalvar.textContent = "Salvando notas…";
     try {
-      const salvarEndpoint = new URL("api/academico/salvar-notas.php", document.baseURI).toString();
+      const salvarEndpoint = new URL(
+        "api/academico/salvar-notas.php",
+        document.baseURI,
+      ).toString();
       await request(salvarEndpoint, {
         method: "POST",
-        body: JSON.stringify({ avaliacao_id: Number(avaliacaoAtual.id), notas }),
+        body: JSON.stringify({
+          avaliacao_id: Number(avaliacaoAtual.id),
+          notas,
+        }),
       });
+
+      if (avaliacaoAtual) {
+        avaliacaoAtual.status = "publicada";
+      }
+
+      await carregarAvaliacoesAbertas();
+
       statusBadge && (statusBadge.textContent = "Publicada");
       footerHeading && (footerHeading.textContent = "Notas salvas com sucesso");
-      footerDescription && (footerDescription.textContent = "A avaliação está publicada e os alunos poderão consultar os resultados na área Minhas notas.");
-      feedback("Notas salvas no Supabase e avaliação publicada. O aluno já pode consultar os resultados.", "success");
+      footerDescription &&
+        (footerDescription.textContent =
+          "A avaliação está publicada e os alunos poderão consultar os resultados na área Minhas notas.");
+      feedback(
+        "Notas salvas no Supabase e avaliação publicada. O aluno já pode consultar os resultados.",
+        "success",
+      );
     } catch (error) {
       feedback(error.message, "error");
     } finally {
@@ -338,8 +927,11 @@ document.addEventListener("DOMContentLoaded", () => {
       btnSalvar.textContent = "Salvar notas";
       scaleValue && (scaleValue.textContent = "—");
       statusBadge && (statusBadge.textContent = "Nova avaliação");
-      footerHeading && (footerHeading.textContent = "Avaliação ainda não registrada");
-      footerDescription && (footerDescription.textContent = "Preencha as informações e continue para carregar os alunos.");
+      footerHeading &&
+        (footerHeading.textContent = "Avaliação ainda não registrada");
+      footerDescription &&
+        (footerDescription.textContent =
+          "Preencha as informações e continue para carregar os alunos.");
       feedback("", "info");
       renderDisciplinas();
     }, 0);
@@ -350,5 +942,12 @@ document.addEventListener("DOMContentLoaded", () => {
   btnContinuar.addEventListener("click", continuarParaNotas);
   btnSalvar.addEventListener("click", salvarNotas);
   btnSalvar.disabled = true;
-  carregarOpcoes();
+
+  if (btnAtualizarAbertas) {
+    btnAtualizarAbertas.addEventListener("click", carregarAvaliacoesAbertas);
+  }
+
+  carregarOpcoes().then(() => {
+    carregarAvaliacoesAbertas();
+  });
 });
