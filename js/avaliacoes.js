@@ -55,59 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!btnContinuar || !btnSalvar || !tbody) return;
 
-  // Painel de avaliações em aberto.
-  const panelAvaliacao = form.closest(".panel");
-  const painelRascunhos = document.createElement("div");
-
-  painelRascunhos.className = "panel section-block";
-
-  painelRascunhos.innerHTML = `
-  <div class="panel-header">
-    <div>
-      <h2>Avaliações em aberto</h2>
-      <p>Retome avaliações salvas como rascunho.</p>
-    </div>
-    <button type="button" class="btn"
-      id="btn-atualizar-avaliacoes-abertas">
-      Atualizar
-    </button>
-  </div>
-
-  <div class="table-wrapper assessment-table-wrapper">
-    <table class="data-table assessment-table">
-      <thead>
-        <tr>
-          <th>Avaliação</th>
-          <th>Turma e disciplina</th>
-          <th>Bimestre</th>
-          <th>Data</th>
-          <th>Nota máxima</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody id="tabela-avaliacoes-abertas">
-        <tr>
-          <td colspan="6">Carregando avaliações...</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-`;
-
-  if (panelAvaliacao) {
-    panelAvaliacao.insertAdjacentElement("beforebegin", painelRascunhos);
-  }
-
-  const tbodyRascunhos = painelRascunhos.querySelector(
-    "#tabela-avaliacoes-abertas",
-  );
-
-  const btnAtualizarRascunhos = painelRascunhos.querySelector(
-    "#btn-atualizar-avaliacoes-abertas",
-  );
-
-  let avaliacoesAbertas = [];
-
   function feedback(message, type = "info") {
     if (!mensagemEl) {
       mensagemEl = document.createElement("p");

@@ -7,9 +7,11 @@ eduwatch_exigir_metodo('GET');
 $usuario = ew_acad_require_role(['professor']);
 
 try {
+    // Busca as disciplinas atualmente atribuídas ao professor.
     $atribuicoes = ew_acad_rows(
         '/rest/v1/turma_disciplinas?select=id&professor_id=eq.'
-        . rawurlencode($usuario['id']) . '&order=id.asc',
+        . rawurlencode($usuario['id'])
+        . '&order=id.asc',
         'as atribuições do professor'
     );
 
@@ -18,18 +20,19 @@ try {
         $atribuicoes
     )));
 
-    if (!$ids) {
+    if (count($ids) === 0) {
         ew_acad_json(200, [
             'sucesso' => true,
             'avaliacoes' => []
         ]);
     }
 
+    // Não filtra por criado_por, para recuperar rascunhos antigos.
+    // A consulta continua limitada às disciplinas atribuídas ao professor.
     $avaliacoes = ew_acad_rows(
         '/rest/v1/avaliacoes?select=id,turma_disciplina_id,'
         . 'periodo_letivo_id,titulo,data_aplicacao,nota_maxima,status'
         . '&status=eq.rascunho'
-        . '&criado_por=eq.' . rawurlencode($usuario['id'])
         . '&turma_disciplina_id=' . ew_acad_in_filter($ids)
         . '&order=data_aplicacao.asc,id.asc',
         'as avaliações em aberto do professor'
@@ -47,6 +50,7 @@ try {
 
     ew_acad_json(500, [
         'sucesso' => false,
-        'mensagem' => 'Não foi possível carregar as avaliações em aberto.'
+        'mensagem' =>
+            'Não foi possível carregar as avaliações em aberto.'
     ]);
 }
