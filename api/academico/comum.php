@@ -160,26 +160,136 @@ function ew_acad_require_role(array $allowedRoles): array
     ];
 }
 
+
 function ew_acad_rows(string $path, string $context): array
 {
-    $response = ew_acad_db('GET', $path);
-    if ($response['status'] < 200 || $response['status'] >= 300 || !is_array($response['data'])) {
-        $data = is_array($response['data']) ? $response['data'] : [];
-        $code = (string) ($data['code'] ?? '');
-        $details = (string) ($data['message'] ?? 'Resposta inesperada do PostgREST.');
-        error_log(
-            'EduWatch academic read failed (' . $context . '), HTTP ' . $response['status']
-            . ', code=' . ($code !== '' ? $code : 'n/a') . ': ' . $details
-        );
-        // O detalhe devolvido não contém a URL nem credenciais; a API de opções
-        // o inclui no JSON apenas quando executada em localhost.
-        throw new RuntimeException(
-            'Falha ao carregar ' . $context . ' (HTTP ' . $response['status']
-            . ($code !== '' ? ', código ' . $code : '') . ').'
-        );
+    $fetch = static function (string $requestPath) use ($context): array {
+        $response = ew_acad_db('GET', $requestPath);
+
+        if (
+            $response['status'] < 200
+            || $response['status'] >= 300
+            || !is_array($response['data'])
+        ) {
+            $data = is_array($response['data'])
+                ? $response['data']
+                : [];
+
+            $code = (string) ($data['code'] ?? '');
+            $details = (string) (
+                $data['message'] ?? 'Resposta inesperada do PostgREST.'
+            );
+
+            error_log(
+                'EduWatch academic read failed (' . $context
+                . '), HTTP ' . $response['status']
+                . ', code=' . ($code !== '' ? $code : 'n/a')
+                . ': ' . $details
+            );
+
+            throw new RuntimeException(
+                'Falha ao carregar ' . $context
+                . ' (HTTP ' . $response['status']
+                . ($code !== '' ? ', código ' . $code : '')
+                . ').'
+            );
+        }
+
+        return $response['data'];
+    };
+
+    $questionPosition = strpos($path, '?');
+
+    $basePath = $questionPosition === false
+        ? $path
+        : substr($path, 0, $questionPosition);
+
+    $queryString = $questionPosition === false
+        ? ''
+        : substr($path, $questionPosition + 1);
+
+    $params = [];
+
+    if ($queryString !== '') {
+        parse_str($queryString, $params);
     }
-    return $response['data'];
+
+    $requestedLimit = isset($params['limit'])
+        && is_numeric($params['limit'])
+        ? max(0, (int) $params['limit'])
+        : null;
+
+    $initialOffset = isset($params['offset'])
+        && is_numeric($params['offset'])
+        ? max(0, (int) $params['offset'])
+        : 0;
+
+    $pageSize = 1000;
+
+    // Consultas pequenas continuam sendo feitas normalmente.
+    if ($requestedLimit !== null && $requestedLimit <= $pageSize) {
+        return $fetch($path);
+    }
+
+    // Respeita o limite solicitado. Sem limite explícito, usa um teto
+    // de segurança para evitar carregar registros ilimitados.
+    $maxRows = $requestedLimit ?? 50000;
+
+    if ($maxRows <= 0) {
+        return [];
+    }
+
+    unset($params['limit'], $params['offset']);
+
+    // Garante uma ordem estável para a paginação.
+    $order = trim((string) ($params['order'] ?? ''));
+
+    if ($order === '') {
+        $params['order'] = 'id.asc';
+    } else {
+        $orderWithoutSpaces = preg_replace('/\s+/', '', $order) ?? $order;
+
+        if (!preg_match('/(^|,)id(?:\.|,|$)/i', $orderWithoutSpaces)) {
+            $params['order'] = $order . ',id.asc';
+        }
+    }
+
+    $allRows = [];
+    $fetched = 0;
+
+    while ($fetched < $maxRows) {
+        $pageLimit = min($pageSize, $maxRows - $fetched);
+
+        $pageParams = $params;
+        $pageParams['limit'] = $pageLimit;
+        $pageParams['offset'] = $initialOffset + $fetched;
+
+        $pagePath = $basePath . '?'
+            . http_build_query(
+                $pageParams,
+                '',
+                '&',
+                PHP_QUERY_RFC3986
+            );
+
+        $pageRows = $fetch($pagePath);
+        $received = count($pageRows);
+
+        if ($received === 0) {
+            break;
+        }
+
+        $allRows = array_merge($allRows, $pageRows);
+        $fetched += $received;
+
+        if ($received < $pageLimit) {
+            break;
+        }
+    }
+
+    return $allRows;
 }
+
 
 function ew_acad_write(string $method, string $path, array $body, string $context, string $prefer = 'return=representation'): array
 {

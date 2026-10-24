@@ -138,7 +138,15 @@ try {
         if ($aulaId > 0) $aulaTurma[$aulaId] = (int)$atribuicao['turma_id'];
     }
     if ($aulaTurma && $matriculaIds) {
-        $frequenciasDb = ew_acad_rows('/rest/v1/frequencias?select=aula_id,matricula_id,status&aula_id=' . ew_acad_in_filter(array_keys($aulaTurma)) . '&matricula_id=' . ew_acad_in_filter($matriculaIds) . '&limit=20000', 'os registros de frequência');
+               $frequenciasDb = ew_acad_rows(
+            '/rest/v1/frequencias?select=aula_id,matricula_id,status&aula_id='
+            . ew_acad_in_filter(array_keys($aulaTurma))
+            . '&matricula_id='
+            . ew_acad_in_filter($matriculaIds)
+            . '&limit=50000',
+            'as frequências'
+        );
+
         foreach ($frequenciasDb as $freq) {
             $matriculaId = (int)($freq['matricula_id'] ?? 0);
             $aulaId = (int)($freq['aula_id'] ?? 0);
