@@ -56,6 +56,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   preencherUsuarioNaSidebar(usuario, "Coordenação");
 
+  if (usuarioSessao.modoVisualizacaoAdmin) {
+    const formularioCadastro = document.getElementById("form-cadastro-usuario");
+    const formularioAtribuicoes = document.getElementById(
+      "form-atribuicao-professor",
+    );
+
+    if (formularioCadastro) {
+      formularioCadastro.hidden = true;
+    }
+
+    if (formularioAtribuicoes) {
+      formularioAtribuicoes.hidden = true;
+    }
+
+    const descricao = document.querySelector(
+      "#section-cadastros .panel-header .section-subheading",
+    );
+
+    if (descricao) {
+      descricao.textContent =
+        "Modo de visualização: a coordenação é responsável por modificar os cadastros e as atribuições da escola.";
+    }
+  }
+
   inicializarMenuMobile();
   inicializarNavegacaoPorSecao();
   inicializarNotificacoes();

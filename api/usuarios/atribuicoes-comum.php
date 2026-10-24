@@ -62,6 +62,12 @@ function ew_multi_require_gestao(string $method): array
     if (($typeResponse['status'] ?? 0) < 200 || ($typeResponse['status'] ?? 0) >= 300 || !in_array($typeCode, ['coordenacao', 'administrador'], true)) {
         ew_multi_fail(403, ['sucesso' => false, 'mensagem' => 'Somente coordenação e administração podem gerenciar atribuições de professores.']);
     }
+    if ($method === 'POST' && $typeCode !== 'coordenacao') {
+    ew_multi_fail(403, [
+        'sucesso' => false,
+        'mensagem' => 'Somente a coordenação pode modificar as atribuições de professores.'
+    ]);
+    }
 
     return $config;
 }

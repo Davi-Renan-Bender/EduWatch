@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/aluno.css" />
     <link rel="stylesheet" href="css/academico.css" />
-      <link rel="stylesheet" href="css/notificacoes.css" />
-</head>
+    <link rel="stylesheet" href="css/notificacoes.css" />
+  </head>
 
   <body class="dashboard-body">
     <div class="app-shell">
@@ -302,7 +302,11 @@
                 <h2>Desempenho por disciplina</h2>
               </div>
               <div class="chart-canvas-wrap chart-canvas-wrap--compact">
-                <canvas id="grafico-disciplinas" aria-label="Gráfico de médias por disciplina" role="img"></canvas>
+                <canvas
+                  id="grafico-disciplinas"
+                  aria-label="Gráfico de médias por disciplina"
+                  role="img"
+                ></canvas>
                 <p class="chart-state" role="status" hidden></p>
               </div>
               <div class="table-wrapper">
@@ -335,7 +339,10 @@
               <div class="panel-header">
                 <h2>Frequência por disciplina</h2>
               </div>
-              <p class="academic-empty-message" id="mensagem-frequencia-aluno">A frequência aparecerá aqui quando o registro de aulas e presenças estiver integrado.</p>
+              <p class="academic-empty-message" id="mensagem-frequencia-aluno">
+                A frequência aparecerá aqui quando o registro de aulas e
+                presenças estiver integrado.
+              </p>
             </div>
           </section>
 
@@ -351,7 +358,11 @@
                 <h2>Evolução da média geral por bimestre</h2>
               </div>
               <div class="chart-canvas-wrap">
-                <canvas id="grafico-evolucao" aria-label="Gráfico de evolução da média por bimestre" role="img"></canvas>
+                <canvas
+                  id="grafico-evolucao"
+                  aria-label="Gráfico de evolução da média por bimestre"
+                  role="img"
+                ></canvas>
                 <p class="chart-state" role="status" hidden></p>
               </div>
             </div>
@@ -398,7 +409,7 @@
     <script src="js/charts.js"></script>
     <script src="js/aluno.js"></script>
     <script src="js/notas-aluno.js"></script>
-      <script src="js/frequencia-aluno.js"></script>
+    <script src="js/frequencia-aluno.js"></script>
     <script src="js/notificacoes.js"></script>
-</body>
+  </body>
 </html>

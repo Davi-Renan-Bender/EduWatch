@@ -30,7 +30,8 @@
       }).format(date);
     };
 
-    const getEndpoint = () => new URL("api/academico/notificacoes.php", document.baseURI).toString();
+    const getEndpoint = () =>
+      new URL("api/academico/notificacoes.php", document.baseURI).toString();
 
     async function requisitar(url, options = {}) {
       let response;
@@ -46,13 +47,22 @@
           ...options,
         });
       } catch {
-        throw new Error("Não foi possível conectar ao EduWatch para carregar as notificações.");
+        throw new Error(
+          "Não foi possível conectar ao EduWatch para carregar as notificações.",
+        );
       }
       let data;
-      try { data = await response.json(); }
-      catch { throw new Error("O servidor retornou uma resposta inválida para as notificações."); }
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error(
+          "O servidor retornou uma resposta inválida para as notificações.",
+        );
+      }
       if (!response.ok || data.sucesso === false) {
-        throw new Error(data.mensagem || "Não foi possível atualizar as notificações.");
+        throw new Error(
+          data.mensagem || "Não foi possível atualizar as notificações.",
+        );
       }
       return data;
     }
@@ -61,7 +71,13 @@
       if (!raw || typeof raw !== "string") return null;
       try {
         const url = new URL(raw, document.baseURI);
-        if (!(["http:", "https:"].includes(url.protocol) && url.origin === window.location.origin)) return null;
+        if (
+          !(
+            ["http:", "https:"].includes(url.protocol) &&
+            url.origin === window.location.origin
+          )
+        )
+          return null;
         return url;
       } catch {
         return null;
@@ -78,12 +94,21 @@
       const target = id ? document.getElementById(id) : null;
       if (!target) return false;
 
-      const candidatos = Array.from(document.querySelectorAll("a, button, [role='button']"));
+      const candidatos = Array.from(
+        document.querySelectorAll("a, button, [role='button']"),
+      );
       const nav = candidatos.find((item) => {
         const href = item.getAttribute("href");
-        const dataTarget = item.getAttribute("data-target") || item.getAttribute("data-section-target");
+        const dataTarget =
+          item.getAttribute("data-target") ||
+          item.getAttribute("data-section-target");
         const dataSection = item.getAttribute("data-section");
-        return href === hash || dataTarget === id || dataSection === id || dataSection === id.replace(/^section-/, "");
+        return (
+          href === hash ||
+          dataTarget === id ||
+          dataSection === id ||
+          dataSection === id.replace(/^section-/, "")
+        );
       });
       if (nav) {
         nav.click();
@@ -100,12 +125,21 @@
     function definirEstadoBadge() {
       marcador.hidden = naoLidasAtual < 1;
       if (botao) {
-        botao.setAttribute("aria-label", naoLidasAtual > 0
-          ? `Notificações, ${naoLidasAtual} não lida(s)`
-          : "Notificações");
+        botao.setAttribute(
+          "aria-label",
+          naoLidasAtual > 0
+            ? `Notificações, ${naoLidasAtual} não lida(s)`
+            : "Notificações",
+        );
       }
-      marcador.setAttribute("aria-hidden", naoLidasAtual < 1 ? "true" : "false");
-      marcador.title = naoLidasAtual > 0 ? `${naoLidasAtual} notificação(ões) não lida(s)` : "";
+      marcador.setAttribute(
+        "aria-hidden",
+        naoLidasAtual < 1 ? "true" : "false",
+      );
+      marcador.title =
+        naoLidasAtual > 0
+          ? `${naoLidasAtual} notificação(ões) não lida(s)`
+          : "";
     }
 
     function garantirBarraAcoes() {
@@ -123,7 +157,11 @@
       if (toolbar) toolbar.replaceChildren();
 
       if (naoLidasAtual > 0 && toolbar) {
-        const allButton = el("button", "edu-notification-mark-all", "Marcar todas como lidas");
+        const allButton = el(
+          "button",
+          "edu-notification-mark-all",
+          "Marcar todas como lidas",
+        );
         allButton.type = "button";
         allButton.addEventListener("click", async () => {
           allButton.disabled = true;
@@ -143,17 +181,29 @@
       }
 
       if (!dadosAtuais.length) {
-        lista.append(el("p", "edu-notification-empty", "Você não tem notificações no momento."));
+        lista.append(
+          el(
+            "p",
+            "edu-notification-empty",
+            "Você não tem notificações no momento.",
+          ),
+        );
         return;
       }
 
       dadosAtuais.forEach((item) => {
         const unread = !item.lida_em;
-        const card = el("article", `edu-notification${unread ? " edu-notification--unread" : ""}`);
+        const card = el(
+          "article",
+          `edu-notification${unread ? " edu-notification--unread" : ""}`,
+        );
         card.dataset.notificationId = String(item.id);
         const header = el("div", "edu-notification__header");
-        header.append(el("h3", "edu-notification__title", item.titulo || "Notificação"));
-        if (unread) header.append(el("span", "edu-notification__unread-label", "Nova"));
+        header.append(
+          el("h3", "edu-notification__title", item.titulo || "Notificação"),
+        );
+        if (unread)
+          header.append(el("span", "edu-notification__unread-label", "Nova"));
         card.append(header);
         card.append(el("p", "edu-notification__message", item.mensagem || ""));
 
@@ -178,9 +228,16 @@
                 mostrarErro(error.message);
               }
             }
-            if (destination.pathname === window.location.pathname && destination.hash) {
+            if (
+              destination.pathname === window.location.pathname &&
+              destination.hash
+            ) {
               abrirSecaoPorHash(destination.hash);
-              window.history.replaceState(null, "", destination.pathname + destination.search + destination.hash);
+              window.history.replaceState(
+                null,
+                "",
+                destination.pathname + destination.search + destination.hash,
+              );
             } else {
               window.location.href = destination.href;
             }
@@ -188,13 +245,21 @@
           actions.append(link);
         }
         if (unread) {
-          const button = el("button", "edu-notification__mark", "Marcar como lida");
+          const button = el(
+            "button",
+            "edu-notification__mark",
+            "Marcar como lida",
+          );
           button.type = "button";
           button.addEventListener("click", async () => {
             button.disabled = true;
-            try { await marcarLida(item.id); }
-            catch (error) { mostrarErro(error.message); }
-            finally { button.disabled = false; }
+            try {
+              await marcarLida(item.id);
+            } catch (error) {
+              mostrarErro(error.message);
+            } finally {
+              button.disabled = false;
+            }
           });
           actions.append(button);
         } else {
@@ -212,11 +277,16 @@
     async function carregar() {
       if (carregando) return;
       carregando = true;
-      if (!dadosAtuais.length) lista.replaceChildren(el("p", "edu-notification-empty", "Carregando notificações…"));
+      if (!dadosAtuais.length)
+        lista.replaceChildren(
+          el("p", "edu-notification-empty", "Carregando notificações…"),
+        );
       try {
         const data = await requisitar(getEndpoint());
         dadosAtuais = Array.isArray(data.notificacoes) ? data.notificacoes : [];
-        naoLidasAtual = Number.isFinite(Number(data.nao_lidas)) ? Number(data.nao_lidas) : dadosAtuais.filter((item) => !item.lida_em).length;
+        naoLidasAtual = Number.isFinite(Number(data.nao_lidas))
+          ? Number(data.nao_lidas)
+          : dadosAtuais.filter((item) => !item.lida_em).length;
         definirEstadoBadge();
         render();
       } catch (error) {
@@ -236,10 +306,14 @@
     }
 
     // Atualiza ao abrir o menu para trazer avisos recentes sem recarregar a página.
-    if (botao) botao.addEventListener("click", () => { void carregar(); });
+    if (botao)
+      botao.addEventListener("click", () => {
+        void carregar();
+      });
 
     // Abre a seção apontada por links como aluno.html#notas, quando possível.
-    if (window.location.hash) window.setTimeout(() => abrirSecaoPorHash(window.location.hash), 0);
+    if (window.location.hash)
+      window.setTimeout(() => abrirSecaoPorHash(window.location.hash), 0);
     carregar();
   });
 })();

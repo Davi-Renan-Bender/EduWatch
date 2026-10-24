@@ -124,7 +124,8 @@
   font-weight: var(--fw-semibold);
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  transition: background-color var(--transition-fast),
+  transition:
+    background-color var(--transition-fast),
     border-color var(--transition-fast),
     color var(--transition-fast),
     transform var(--transition-fast);
@@ -249,7 +250,8 @@
   font-size: 14px;
   font-weight: var(--fw-semibold);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
+  transition:
+    background-color var(--transition-fast),
     border-color var(--transition-fast),
     color var(--transition-fast),
     box-shadow var(--transition-fast),
@@ -304,7 +306,8 @@
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
+  transition:
+    background-color var(--transition-fast),
     border-color var(--transition-fast),
     color var(--transition-fast);
 }
@@ -599,7 +602,8 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
   overflow: hidden;
-  transition: transform var(--transition-fast),
+  transition:
+    transform var(--transition-fast),
     box-shadow var(--transition-fast),
     border-color var(--transition-fast);
 }
@@ -695,7 +699,8 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
-  transition: border-color var(--transition-base),
+  transition:
+    border-color var(--transition-base),
     transform var(--transition-base),
     box-shadow var(--transition-base),
     background-color var(--transition-base);
@@ -796,7 +801,8 @@ button.class-card {
   font-size: 14px;
   line-height: 1.2;
   outline: none;
-  transition: border-color var(--transition-fast),
+  transition:
+    border-color var(--transition-fast),
     box-shadow var(--transition-fast),
     background-color var(--transition-fast);
 }
@@ -883,7 +889,8 @@ button.class-card {
 }
 
 .data-table tbody tr {
-  transition: background-color var(--transition-fast),
+  transition:
+    background-color var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
@@ -1092,7 +1099,8 @@ button.class-card {
   background: linear-gradient(180deg, #5fa8ff 0%, #176fc1 100%);
   border-radius: 7px 7px 3px 3px;
   box-shadow: 0 4px 10px rgba(23, 111, 193, 0.16);
-  transition: height 0.28s ease,
+  transition:
+    height 0.28s ease,
     filter 0.2s ease,
     transform 0.2s ease;
 }

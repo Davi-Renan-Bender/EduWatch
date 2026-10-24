@@ -11,6 +11,13 @@ if (!in_array($metodo, ['GET', 'POST'], true)) {
 if ($metodo === 'POST') eduwatch_validar_origem();
 $usuario = ew_acad_require_role(['coordenacao', 'administrador']);
 
+if ($metodo === 'POST' && $usuario['role'] !== 'coordenacao') {
+    ew_acad_json(403, [
+        'sucesso' => false,
+        'mensagem' => 'Somente a coordenação pode alterar regras e registros de acompanhamento.'
+    ]);
+}
+
 function ew_acomp_int(array $item, string $key, int $min = 0): int
 {
     $value = filter_var($item[$key] ?? null, FILTER_VALIDATE_INT);
@@ -155,10 +162,15 @@ function ew_acomp_criar_acao(array $input, array $usuario): never
 
 function ew_acomp_salvar_regra(array $input, array $usuario): never
 {
-    if ($usuario['role'] !== 'administrador') ew_acad_json(403, ['sucesso' => false, 'mensagem' => 'Somente a administração pode alterar as regras de acompanhamento.']);
+   if ($usuario['role'] !== 'coordenacao') {
+    ew_acad_json(403, [
+        'sucesso' => false,
+        'mensagem' => 'Somente a coordenação pode alterar as regras de acompanhamento.'
+    ]);
+}
 
     $codigo = trim((string) ($input['codigo'] ?? ''));
-    $existing = $codigo !== '' ? ew_acad_one('/rest/v1/configuracoes_acompanhamento?select=id,codigo&id=eq.' . rawurlencode($codigo), 'a regra selecionada') : null;
+    $existing = $codigo !== '' ? ew_acad_one('/rest/v1/configuracoes_acompanhamento?select=id,codigo&codigo=eq.' . rawurlencode($codigo), 'a regra selecionada') : null;
     if (!$existing) ew_acad_json(404, ['sucesso' => false, 'mensagem' => 'A regra de acompanhamento não foi encontrada no banco.']);
 
     $ativo = filter_var($input['ativo'] ?? false, FILTER_VALIDATE_BOOLEAN);

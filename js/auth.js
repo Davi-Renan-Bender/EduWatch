@@ -18,7 +18,10 @@ async function obterUsuarioLogado() {
     const resultado = await resposta.json();
     return resultado.autenticado === true ? resultado.usuario : null;
   } catch (erro) {
-    console.error("EduWatch: não foi possível validar a sessão no servidor.", erro);
+    console.error(
+      "EduWatch: não foi possível validar a sessão no servidor.",
+      erro,
+    );
     return null;
   }
 }
@@ -39,14 +42,11 @@ async function exigirPerfil(perfilEsperado) {
   const modo = parametros.get("modo");
   const modoVisualizacao = modo === "visualizacao";
 
-  // A administração possui um caminho explícito para gerenciar usuários pela
-  // tela de cadastros da coordenação. O endpoint PHP valida o papel real no
-  // banco; este modo só libera a interface correspondente.
-  if (usuario.nivel === "admin" && perfilEsperado === "coordenacao" && modo === "gestao") {
-    return { ...usuario, modoGestaoUsuariosAdmin: true };
-  }
-
-  if (usuario.nivel === "admin" && modoVisualizacao && ["aluno", "professor", "coordenacao"].includes(perfilEsperado)) {
+  if (
+    usuario.nivel === "admin" &&
+    modoVisualizacao &&
+    ["aluno", "professor", "coordenacao"].includes(perfilEsperado)
+  ) {
     return { ...usuario, modoVisualizacaoAdmin: true };
   }
 
@@ -83,7 +83,10 @@ async function encerrarSessao() {
       headers: { Accept: "application/json" },
     });
   } catch (erro) {
-    console.error("EduWatch: não foi possível confirmar o encerramento no servidor.", erro);
+    console.error(
+      "EduWatch: não foi possível confirmar o encerramento no servidor.",
+      erro,
+    );
   } finally {
     window.location.replace("index.html");
   }
@@ -95,8 +98,11 @@ function preencherUsuarioNaSidebar(usuario, rotuloPerfil) {
   const avatarEl = document.getElementById("sidebar-user-avatar");
 
   if (nomeEl) nomeEl.textContent = usuario.nome;
-  if (perfilEl) perfilEl.textContent = usuario.nivel === "admin" ? "Administrador" : rotuloPerfil;
-  if (avatarEl) avatarEl.textContent = (usuario.nome || "U").charAt(0).toUpperCase();
+  if (perfilEl)
+    perfilEl.textContent =
+      usuario.nivel === "admin" ? "Administrador" : rotuloPerfil;
+  if (avatarEl)
+    avatarEl.textContent = (usuario.nome || "U").charAt(0).toUpperCase();
 }
 
 document.addEventListener("DOMContentLoaded", function () {

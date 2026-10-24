@@ -105,13 +105,14 @@ try {
     }
 
     $tipoAtor = (string) $atorTipos[0]['codigo'];
-    if (!in_array($tipoAtor, ['coordenacao', 'administrador'], true)) {
-        eduwatch_json(403, ['sucesso' => false, 'mensagem' => 'Somente coordenação e administração podem cadastrar usuários.']);
-    }
+    if ($tipoAtor !== 'coordenacao') {
+    eduwatch_json(403, [
+        'sucesso' => false,
+        'mensagem' => 'Somente a coordenação pode cadastrar usuários.'
+    ]);
+}
 
-    $tiposPermitidos = $tipoAtor === 'administrador'
-        ? ['aluno', 'professor', 'coordenacao', 'administrador']
-        : ['aluno', 'professor', 'coordenacao'];
+    $tiposPermitidos = ['aluno', 'professor', 'coordenacao'];
 
     if (!in_array($tipoSolicitado, $tiposPermitidos, true)) {
         eduwatch_json(403, ['sucesso' => false, 'mensagem' => $tipoAtor === 'coordenacao'

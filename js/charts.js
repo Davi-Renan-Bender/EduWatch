@@ -41,7 +41,10 @@ window.EduWatchCharts = (() => {
   function create(canvasId, config) {
     const canvas = document.getElementById(canvasId);
     if (!canvas || typeof window.Chart !== "function") {
-      showMessage(canvasId, "Não foi possível carregar o componente de gráfico.");
+      showMessage(
+        canvasId,
+        "Não foi possível carregar o componente de gráfico.",
+      );
       return null;
     }
     const wrapper = canvas.closest(".chart-canvas-wrap");
@@ -81,32 +84,48 @@ window.EduWatchCharts = (() => {
 
   function renderLine(canvasId, points, label) {
     if (!Array.isArray(points) || points.length === 0) {
-      showMessage(canvasId, "Ainda não há notas publicadas suficientes para mostrar a evolução.");
+      showMessage(
+        canvasId,
+        "Ainda não há notas publicadas suficientes para mostrar a evolução.",
+      );
       return null;
     }
     return create(canvasId, {
       type: "line",
       data: {
         labels: points.map((point) => point.rotulo),
-        datasets: [{
-          label,
-          data: points.map((point) => point.media),
-          borderColor: palette.primary,
-          backgroundColor: palette.primarySoft,
-          borderWidth: 3,
-          pointBackgroundColor: palette.primary,
-          pointRadius: 4,
-          tension: 0.28,
-          fill: true,
-        }],
+        datasets: [
+          {
+            label,
+            data: points.map((point) => point.media),
+            borderColor: palette.primary,
+            backgroundColor: palette.primarySoft,
+            borderWidth: 3,
+            pointBackgroundColor: palette.primary,
+            pointRadius: 4,
+            tension: 0.28,
+            fill: true,
+          },
+        ],
       },
       options: baseOptions(10),
     });
   }
 
-  function renderBar(canvasId, entries, label, emptyMessage = "Ainda não há dados publicados para exibir neste gráfico.") {
+  function renderBar(
+    canvasId,
+    entries,
+    label,
+    emptyMessage = "Ainda não há dados publicados para exibir neste gráfico.",
+  ) {
     const validEntries = Array.isArray(entries)
-      ? entries.filter((entry) => entry && entry.media !== null && entry.media !== "" && Number.isFinite(Number(entry.media)))
+      ? entries.filter(
+          (entry) =>
+            entry &&
+            entry.media !== null &&
+            entry.media !== "" &&
+            Number.isFinite(Number(entry.media)),
+        )
       : [];
     if (!validEntries.length) {
       showMessage(canvasId, emptyMessage);
@@ -116,13 +135,22 @@ window.EduWatchCharts = (() => {
       type: "bar",
       data: {
         labels: validEntries.map((entry) => entry.nome),
-        datasets: [{
-          label,
-          data: validEntries.map((entry) => entry.media),
-          backgroundColor: validEntries.map((entry) => ({ normal: palette.success, atencao: palette.warning, critico: palette.danger }[entry.situacao] || palette.primary)),
-          borderRadius: 6,
-          maxBarThickness: 48,
-        }],
+        datasets: [
+          {
+            label,
+            data: validEntries.map((entry) => entry.media),
+            backgroundColor: validEntries.map(
+              (entry) =>
+                ({
+                  normal: palette.success,
+                  atencao: palette.warning,
+                  critico: palette.danger,
+                })[entry.situacao] || palette.primary,
+            ),
+            borderRadius: 6,
+            maxBarThickness: 48,
+          },
+        ],
       },
       options: baseOptions(10),
     });

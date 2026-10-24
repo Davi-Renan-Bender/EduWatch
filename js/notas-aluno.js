@@ -35,9 +35,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const bits = value.split("-");
     return bits.length === 3 ? `${bits[2]}/${bits[1]}/${bits[0]}` : value;
   };
-  const statusLabel = (status) => ({
-    lancada: "Lançada", pendente: "Aguardando lançamento", ausente: "Ausente", dispensada: "Dispensada",
-  }[status] || status || "—");
+  const statusLabel = (status) =>
+    ({
+      lancada: "Lançada",
+      pendente: "Aguardando lançamento",
+      ausente: "Ausente",
+      dispensada: "Dispensada",
+    })[status] ||
+    status ||
+    "—";
 
   try {
     const response = await fetch("api/academico/notas-aluno.php", {
@@ -45,17 +51,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       headers: { Accept: "application/json" },
     });
     const data = await response.json();
-    if (!response.ok || data.sucesso === false) throw new Error(data.mensagem || "Não foi possível carregar suas notas.");
+    if (!response.ok || data.sucesso === false)
+      throw new Error(data.mensagem || "Não foi possível carregar suas notas.");
     const notas = Array.isArray(data.notas) ? data.notas : [];
     tbody.replaceChildren();
     if (notas.length === 0) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
       cell.colSpan = 7;
-      cell.textContent = "Nenhuma avaliação publicada para suas matrículas ativas.";
+      cell.textContent =
+        "Nenhuma avaliação publicada para suas matrículas ativas.";
       row.append(cell);
       tbody.append(row);
-      setMessage("Suas avaliações aparecerão aqui quando os professores publicarem as notas.");
+      setMessage(
+        "Suas avaliações aparecerão aqui quando os professores publicarem as notas.",
+      );
       return;
     }
     notas.forEach((nota) => {
@@ -64,19 +74,26 @@ document.addEventListener("DOMContentLoaded", async () => {
       addCell(row, nota.periodo);
       addCell(row, nota.avaliacao);
       addCell(row, datePt(nota.data_aplicacao));
-      const score = nota.nota_obtida === null ? "—" : `${Number(nota.nota_obtida).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} / ${Number(nota.nota_maxima).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}`;
+      const score =
+        nota.nota_obtida === null
+          ? "—"
+          : `${Number(nota.nota_obtida).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} / ${Number(nota.nota_maxima).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}`;
       addCell(row, score);
       addCell(row, statusLabel(nota.situacao));
       addCell(row, nota.feedback);
       tbody.append(row);
     });
-    setMessage(`${notas.length} registro(s) de avaliação carregado(s) do banco.`, "success");
+    setMessage(
+      `${notas.length} registro(s) de avaliação carregado(s) do banco.`,
+      "success",
+    );
   } catch (error) {
     tbody.replaceChildren();
     const row = document.createElement("tr");
     const cell = document.createElement("td");
     cell.colSpan = 7;
-    cell.textContent = "Não foi possível carregar as notas. Atualize a página ou tente novamente mais tarde.";
+    cell.textContent =
+      "Não foi possível carregar as notas. Atualize a página ou tente novamente mais tarde.";
     row.append(cell);
     tbody.append(row);
     setMessage(error.message || "Erro ao carregar notas.", "error");

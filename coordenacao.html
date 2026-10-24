@@ -11,9 +11,9 @@
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/coordenacao.css" />
-      <link rel="stylesheet" href="css/notificacoes.css" />
+    <link rel="stylesheet" href="css/notificacoes.css" />
     <link rel="stylesheet" href="css/acompanhamento.css" />
-</head>
+  </head>
 
   <body class="dashboard-body">
     <div class="app-shell">
@@ -191,6 +191,33 @@
               <path d="M12 16.5h.01"></path>
             </svg>
             <span>Acompanhamento</span>
+          </a>
+
+          <a
+            class="sidebar-link"
+            href="#regras"
+            data-section="regras"
+            data-title="Regras de acompanhamento"
+            data-subtitle="Configurações pedagógicas da escola"
+          >
+            <svg
+              class="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 18h16"></path>
+              <circle cx="8" cy="6" r="2"></circle>
+              <circle cx="15" cy="12" r="2"></circle>
+              <circle cx="10" cy="18" r="2"></circle>
+            </svg>
+            <span>Regras de acompanhamento</span>
           </a>
 
           <a
@@ -554,6 +581,14 @@
             </div>
           </section>
 
+          <!-- ============ REGRAS DE ACOMPANHAMENTO ============ -->
+          <section
+            class="dashboard-section"
+            id="section-regras"
+            hidden
+            aria-labelledby="page-title"
+          ></section>
+
           <!-- ============ RELATÓRIOS ============ -->
           <section
             class="dashboard-section"
@@ -600,7 +635,8 @@
                 <div>
                   <h2>Cadastro de usuários</h2>
                   <p class="section-subheading">
-                    A coordenação e a administração podem criar contas com dados fictícios. Os usuários entram usando e-mail e senha.
+                    A coordenação e a administração podem criar contas com dados
+                    fictícios. Os usuários entram usando e-mail e senha.
                   </p>
                 </div>
               </div>
@@ -690,25 +726,47 @@
                 </div>
 
                 <div class="form-group" id="cadastro-turma-grupo" hidden>
-  <label for="cadastro-turma">Turma do aluno</label>
-  <select id="cadastro-turma" name="turmaId">
-    <option value="">Selecione a turma...</option>
-  </select>
-  <p class="section-subheading">Obrigatório para alunos. A matrícula será criada junto com a conta.</p>
-</div>
+                  <label for="cadastro-turma">Turma do aluno</label>
+                  <select id="cadastro-turma" name="turmaId">
+                    <option value="">Selecione a turma...</option>
+                  </select>
+                  <p class="section-subheading">
+                    Obrigatório para alunos. A matrícula será criada junto com a
+                    conta.
+                  </p>
+                </div>
 
-                <div class="form-group" id="cadastro-professor-turma-grupo" hidden>
-                  <label for="cadastro-professor-turma">Turma atribuída ao professor</label>
+                <div
+                  class="form-group"
+                  id="cadastro-professor-turma-grupo"
+                  hidden
+                >
+                  <label for="cadastro-professor-turma"
+                    >Turma atribuída ao professor</label
+                  >
                   <select id="cadastro-professor-turma" name="professorTurmaId">
                     <option value="">Selecione a turma...</option>
                   </select>
                 </div>
-                <div class="form-group" id="cadastro-professor-disciplina-grupo" hidden>
-                  <label for="cadastro-professor-disciplina">Disciplina atribuída ao professor</label>
-                  <select id="cadastro-professor-disciplina" name="professorDisciplinaId">
+                <div
+                  class="form-group"
+                  id="cadastro-professor-disciplina-grupo"
+                  hidden
+                >
+                  <label for="cadastro-professor-disciplina"
+                    >Disciplina atribuída ao professor</label
+                  >
+                  <select
+                    id="cadastro-professor-disciplina"
+                    name="professorDisciplinaId"
+                  >
                     <option value="">Selecione a disciplina...</option>
                   </select>
-                  <p class="section-subheading">Se essa combinação de turma e disciplina já tiver um responsável, a atribuição será transferida para o novo professor.</p>
+                  <p class="section-subheading">
+                    Se essa combinação de turma e disciplina já tiver um
+                    responsável, a atribuição será transferida para o novo
+                    professor.
+                  </p>
                 </div>
 
                 <div class="form-actions">
@@ -728,12 +786,14 @@
                 ></p>
               </form>
             </div>
-                      <div class="panel section-block" id="painel-atribuicoes-professor">
+            <div class="panel section-block" id="painel-atribuicoes-professor">
               <div class="panel-header">
                 <div>
                   <h2>Gerenciar atribuições de professores</h2>
                   <p class="section-subheading">
-                    Um professor pode ter várias combinações de turma e disciplina. Cada combinação só pode ter um professor responsável.
+                    Um professor pode ter várias combinações de turma e
+                    disciplina. Cada combinação só pode ter um professor
+                    responsável.
                   </p>
                 </div>
               </div>
@@ -752,19 +812,34 @@
                 </div>
                 <div class="form-group">
                   <label for="atribuicao-disciplina">Disciplina</label>
-                  <select id="atribuicao-disciplina" name="disciplinaId" required>
+                  <select
+                    id="atribuicao-disciplina"
+                    name="disciplinaId"
+                    required
+                  >
                     <option value="">Carregando disciplinas...</option>
                   </select>
                 </div>
                 <div class="form-actions">
-                  <button type="submit" class="btn btn-primary" id="btn-salvar-atribuicao-professor">
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="btn-salvar-atribuicao-professor"
+                  >
                     Adicionar atribuição
                   </button>
                 </div>
-                <p id="atribuicao-professor-mensagem" class="form-message" aria-live="polite"></p>
+                <p
+                  id="atribuicao-professor-mensagem"
+                  class="form-message"
+                  aria-live="polite"
+                ></p>
               </form>
               <div class="table-wrapper">
-                <table class="data-table" aria-label="Atribuições atuais dos professores">
+                <table
+                  class="data-table"
+                  aria-label="Atribuições atuais dos professores"
+                >
                   <thead>
                     <tr>
                       <th scope="col">Professor</th>
@@ -773,12 +848,13 @@
                     </tr>
                   </thead>
                   <tbody id="tabela-atribuicoes-professor-corpo">
-                    <tr><td colspan="3">Carregando atribuições...</td></tr>
+                    <tr>
+                      <td colspan="3">Carregando atribuições...</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             </div>
-
           </section>
         </main>
       </div>
@@ -825,7 +901,8 @@
     <!-- Chart.js: carregado antes do script que cria os gráficos. Requer internet. -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
     <script src="js/coordenacao.js"></script>
-      <script src="js/acompanhamento-pedagogico.js"></script>
+    <script src="js/acompanhamento-pedagogico.js"></script>
+    <script src="js/configuracao-regras.js"></script>
     <script src="js/notificacoes.js"></script>
-</body>
+  </body>
 </html>
