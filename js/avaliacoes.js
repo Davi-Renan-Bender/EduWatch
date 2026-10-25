@@ -45,8 +45,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAtualizarAbertas = document.getElementById(
     "btn-atualizar-avaliacoes-abertas",
   );
+  const filtroDataInicialAbertas = document.getElementById(
+    "filtro-avaliacoes-data-inicial",
+  );
+  const filtroDataFinalAbertas = document.getElementById(
+    "filtro-avaliacoes-data-final",
+  );
+  const btnLimparFiltrosAbertas = document.getElementById(
+    "btn-limpar-filtros-avaliacoes",
+  );
+  const resumoAvaliacoesAbertas = document.getElementById(
+    "resumo-avaliacoes-abertas",
+  );
+  const btnMostrarMaisAbertas = document.getElementById(
+    "btn-mostrar-mais-avaliacoes",
+  );
+  const btnMostrarMenosAbertas = document.getElementById(
+    "btn-mostrar-menos-avaliacoes",
+  );
+  const btnVoltarTopoAbertas = document.getElementById(
+    "btn-voltar-topo-avaliacoes",
+  );
 
   let avaliacoesAbertas = [];
+  const LIMITE_AVALIACOES_INICIAL = 5;
+  let mostrarTodasAvaliacoesAbertas = false;
   let atribuicoes = [];
   let periodos = [];
   let avaliacaoAtual = null;
@@ -188,18 +211,93 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderAvaliacoesAbertas() {
-    tbodyRascunhos.replaceChildren();
+    if (!tbodyAbertas) return;
 
-    if (avaliacoesAbertas.length === 0) {
+    tbodyAbertas.replaceChildren();
+
+    const dataInicial = filtroDataInicialAbertas?.value || "";
+    const dataFinal = filtroDataFinalAbertas?.value || "";
+
+    function mostrarMensagemTabela(mensagem) {
       const row = document.createElement("tr");
-      const td = celula("Nenhuma avaliação em aberto.");
-      td.colSpan = 6;
-      row.append(td);
-      tbodyRascunhos.append(row);
+      const cell = document.createElement("td");
+
+      cell.colSpan = 7;
+      cell.textContent = mensagem;
+
+      row.append(cell);
+      tbodyAbertas.append(row);
+    }
+
+    if (dataInicial && dataFinal && dataInicial > dataFinal) {
+      if (resumoAvaliacoesAbertas) {
+        resumoAvaliacoesAbertas.textContent =
+          "A data inicial deve ser anterior à data final.";
+      }
+
+      mostrarMensagemTabela("Corrija o intervalo de datas.");
+
+      if (btnMostrarMaisAbertas) btnMostrarMaisAbertas.hidden = true;
+      if (btnMostrarMenosAbertas) btnMostrarMenosAbertas.hidden = true;
+      if (btnVoltarTopoAbertas) btnVoltarTopoAbertas.hidden = true;
+
       return;
     }
 
-    avaliacoesAbertas.forEach((avaliacao) => {
+    const filtradas = avaliacoesAbertas.filter((avaliacao) => {
+      const data = String(avaliacao.data_aplicacao || "").slice(0, 10);
+
+      if (dataInicial && (!data || data < dataInicial)) return false;
+      if (dataFinal && (!data || data > dataFinal)) return false;
+
+      return true;
+    });
+
+    const total = filtradas.length;
+    const limite = mostrarTodasAvaliacoesAbertas
+      ? total
+      : LIMITE_AVALIACOES_INICIAL;
+
+    const visiveis = filtradas.slice(0, limite);
+
+    if (resumoAvaliacoesAbertas) {
+      if (total === 0) {
+        resumoAvaliacoesAbertas.textContent =
+          avaliacoesAbertas.length === 0
+            ? "Nenhuma avaliação cadastrada."
+            : "Nenhuma avaliação encontrada nesse intervalo de datas.";
+      } else {
+        resumoAvaliacoesAbertas.textContent =
+          `Exibindo ${visiveis.length} de ${total} ` +
+          (total === 1 ? "avaliação." : "avaliações.");
+      }
+    }
+
+    if (btnMostrarMaisAbertas) {
+      btnMostrarMaisAbertas.hidden =
+        total <= LIMITE_AVALIACOES_INICIAL || mostrarTodasAvaliacoesAbertas;
+    }
+
+    if (btnMostrarMenosAbertas) {
+      btnMostrarMenosAbertas.hidden =
+        total <= LIMITE_AVALIACOES_INICIAL || !mostrarTodasAvaliacoesAbertas;
+    }
+
+    if (btnVoltarTopoAbertas) {
+      btnVoltarTopoAbertas.hidden =
+        total <= LIMITE_AVALIACOES_INICIAL || !mostrarTodasAvaliacoesAbertas;
+    }
+
+    if (total === 0) {
+      mostrarMensagemTabela(
+        avaliacoesAbertas.length === 0
+          ? "Nenhuma avaliação cadastrada."
+          : "Nenhuma avaliação corresponde aos filtros selecionados.",
+      );
+      return;
+    }
+
+    visiveis.forEach((avaliacao) => {
       const atribuicao = atribuicoes.find(
         (item) =>
           String(item.turma_disciplina_id) ===
@@ -212,73 +310,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const row = document.createElement("tr");
 
-      row.append(
-        celula(avaliacao.titulo),
-        celula(
-          atribuicao
-            ? `${atribuicao.turma} — ${atribuicao.disciplina}`
-            : "Turma/disciplina não disponível",
-        ),
-        celula(periodo?.nome || "—"),
-        celula(formatarDataBR(avaliacao.data_aplicacao)),
-        celula(avaliacao.nota_maxima),
-      );
+      const valores = [
+        avaliacao.titulo,
+        atribuicao
+          ? `${atribuicao.turma} — ${atribuicao.disciplina}`
+          : "Atribuição indisponível",
+        periodo?.nome || "—",
+        formatarDataRascunho(avaliacao.data_aplicacao),
+        avaliacao.nota_maxima,
+      ];
 
-      const action = document.createElement("td");
-      const button = document.createElement("button");
-
-      button.type = "button";
-      button.className = "btn btn-primary";
-      button.textContent = "Retomar";
-
-      button.addEventListener("click", () => {
-        retomarAvaliacao(avaliacao);
+      valores.forEach((valor) => {
+        const cell = document.createElement("td");
+        cell.textContent = String(valor ?? "—");
+        row.append(cell);
       });
 
-      action.append(button);
-      row.append(action);
-      tbodyRascunhos.append(row);
+      const statusCell = document.createElement("td");
+
+      const statusLabels = {
+        rascunho: "Rascunho",
+        publicada: "Publicada",
+        encerrada: "Encerrada",
+        cancelada: "Cancelada",
+      };
+
+      statusCell.textContent =
+        statusLabels[avaliacao.status] || avaliacao.status || "—";
+
+      row.append(statusCell);
+
+      const actionCell = document.createElement("td");
+
+      if (["rascunho", "publicada"].includes(avaliacao.status)) {
+        const btnRetomar = document.createElement("button");
+
+        btnRetomar.type = "button";
+        btnRetomar.className = "btn btn-primary";
+        btnRetomar.textContent = "Retomar";
+
+        btnRetomar.addEventListener("click", () => {
+          retomarAvaliacao(avaliacao);
+        });
+
+        actionCell.append(btnRetomar);
+      }
+
+      const btnExcluir = document.createElement("button");
+
+      btnExcluir.type = "button";
+      btnExcluir.className = "btn btn-danger";
+      btnExcluir.textContent = "Excluir";
+
+      btnExcluir.addEventListener("click", () => {
+        excluirAvaliacao(avaliacao, btnExcluir);
+      });
+
+      actionCell.append(btnExcluir);
+      row.append(actionCell);
+      tbodyAbertas.append(row);
     });
-  }
-
-  async function carregarAvaliacoesAbertas() {
-    tbodyRascunhos.replaceChildren();
-
-    const row = document.createElement("tr");
-    const td = celula("Carregando avaliações...");
-    td.colSpan = 6;
-    row.append(td);
-    tbodyRascunhos.append(row);
-
-    btnAtualizarRascunhos.disabled = true;
-
-    try {
-      const endpoint = new URL(
-        "api/academico/avaliacoes-abertas.php",
-        document.baseURI,
-      ).toString();
-
-      const data = await request(endpoint, {
-        cache: "no-store",
-      });
-
-      avaliacoesAbertas = Array.isArray(data.avaliacoes) ? data.avaliacoes : [];
-
-      renderAvaliacoesAbertas();
-    } catch (error) {
-      const errorRow = document.createElement("tr");
-      const errorCell = celula(
-        "Não foi possível carregar os rascunhos. Clique em Atualizar.",
-      );
-
-      errorCell.colSpan = 6;
-      errorRow.append(errorCell);
-      tbodyRascunhos.replaceChildren(errorRow);
-
-      feedback(error.message, "error");
-    } finally {
-      btnAtualizarRascunhos.disabled = false;
-    }
   }
 
   async function carregarOpcoes() {
@@ -482,19 +573,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
     tbodyAbertas.replaceChildren();
 
-    if (avaliacoesAbertas.length === 0) {
+    const dataInicial =
+      document.getElementById("filtro-avaliacoes-data-inicial")?.value || "";
+
+    const dataFinal =
+      document.getElementById("filtro-avaliacoes-data-final")?.value || "";
+
+    const resumo = document.getElementById("resumo-avaliacoes-abertas");
+    const btnMais = document.getElementById("btn-mostrar-mais-avaliacoes");
+    const btnMenos = document.getElementById("btn-mostrar-menos-avaliacoes");
+    const btnTopo = document.getElementById("btn-voltar-topo-avaliacoes");
+
+    const limiteInicial = 5;
+
+    function exibirMensagem(mensagem) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
 
-      cell.colSpan = 6;
-      cell.textContent = "Nenhuma avaliação em aberto.";
+      cell.colSpan = 7;
+      cell.textContent = mensagem;
 
-      row.append(cell);
-      tbodyAbertas.append(row);
+      row.appendChild(cell);
+      tbodyAbertas.appendChild(row);
+    }
+
+    if (dataInicial && dataFinal && dataInicial > dataFinal) {
+      if (resumo) {
+        resumo.textContent =
+          "A data inicial não pode ser posterior à data final.";
+      }
+
+      exibirMensagem("Corrija o intervalo de datas.");
+
+      if (btnMais) btnMais.hidden = true;
+      if (btnMenos) btnMenos.hidden = true;
+      if (btnTopo) btnTopo.hidden = true;
+
       return;
     }
 
-    avaliacoesAbertas.forEach((avaliacao) => {
+    const filtradas = avaliacoesAbertas.filter((avaliacao) => {
+      const data = String(avaliacao.data_aplicacao || "").slice(0, 10);
+
+      if (dataInicial && (!data || data < dataInicial)) return false;
+      if (dataFinal && (!data || data > dataFinal)) return false;
+
+      return true;
+    });
+
+    const total = filtradas.length;
+    const mostrarTodas = mostrarTodasAvaliacoesAbertas;
+    const visiveis = mostrarTodas
+      ? filtradas
+      : filtradas.slice(0, limiteInicial);
+
+    if (resumo) {
+      resumo.textContent = `Exibindo ${visiveis.length} de ${total} avaliações.`;
+    }
+
+    if (btnMais) {
+      btnMais.hidden = total <= limiteInicial || mostrarTodas;
+    }
+
+    if (btnMenos) {
+      btnMenos.hidden = total <= limiteInicial || !mostrarTodas;
+    }
+
+    if (btnTopo) {
+      btnTopo.hidden = total <= limiteInicial || !mostrarTodas;
+    }
+
+    if (total === 0) {
+      exibirMensagem(
+        avaliacoesAbertas.length === 0
+          ? "Nenhuma avaliação cadastrada."
+          : "Nenhuma avaliação encontrada para as datas selecionadas.",
+      );
+      return;
+    }
+
+    visiveis.forEach((avaliacao) => {
       const atribuicao = atribuicoes.find(
         (item) =>
           String(item.turma_disciplina_id) ===
@@ -520,7 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
       valores.forEach((valor) => {
         const cell = document.createElement("td");
         cell.textContent = String(valor ?? "—");
-        row.append(cell);
+        row.appendChild(cell);
       });
 
       const statusCell = document.createElement("td");
@@ -535,7 +693,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statusCell.textContent =
         statusLabels[avaliacao.status] || avaliacao.status || "—";
 
-      row.append(statusCell);
+      row.appendChild(statusCell);
 
       const actionCell = document.createElement("td");
 
@@ -550,7 +708,7 @@ document.addEventListener("DOMContentLoaded", () => {
           retomarAvaliacao(avaliacao);
         });
 
-        actionCell.append(btnRetomar);
+        actionCell.appendChild(btnRetomar);
       }
 
       const btnExcluir = document.createElement("button");
@@ -563,9 +721,9 @@ document.addEventListener("DOMContentLoaded", () => {
         excluirAvaliacao(avaliacao, btnExcluir);
       });
 
-      actionCell.append(btnExcluir);
-      row.append(actionCell);
-      tbodyAbertas.append(row);
+      actionCell.appendChild(btnExcluir);
+      row.appendChild(actionCell);
+      tbodyAbertas.appendChild(row);
     });
   }
 
@@ -965,6 +1123,48 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnAtualizarAbertas) {
     btnAtualizarAbertas.addEventListener("click", carregarAvaliacoesAbertas);
   }
+
+  function voltarAoTopoAvaliacoes() {
+    document
+      .querySelector("#panel-avaliacoes-abertas .panel-header")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }
+
+  function aplicarFiltrosAvaliacoes() {
+    mostrarTodasAvaliacoesAbertas = false;
+    renderAvaliacoesAbertas();
+  }
+
+  filtroDataInicialAbertas?.addEventListener(
+    "change",
+    aplicarFiltrosAvaliacoes,
+  );
+
+  filtroDataFinalAbertas?.addEventListener("change", aplicarFiltrosAvaliacoes);
+
+  btnLimparFiltrosAbertas?.addEventListener("click", () => {
+    if (filtroDataInicialAbertas) filtroDataInicialAbertas.value = "";
+    if (filtroDataFinalAbertas) filtroDataFinalAbertas.value = "";
+
+    mostrarTodasAvaliacoesAbertas = false;
+    renderAvaliacoesAbertas();
+  });
+
+  btnMostrarMaisAbertas?.addEventListener("click", () => {
+    mostrarTodasAvaliacoesAbertas = true;
+    renderAvaliacoesAbertas();
+  });
+
+  btnMostrarMenosAbertas?.addEventListener("click", () => {
+    mostrarTodasAvaliacoesAbertas = false;
+    renderAvaliacoesAbertas();
+    voltarAoTopoAvaliacoes();
+  });
+
+  btnVoltarTopoAbertas?.addEventListener("click", voltarAoTopoAvaliacoes);
 
   carregarOpcoes().then(() => {
     carregarAvaliacoesAbertas();

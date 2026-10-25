@@ -476,7 +476,38 @@
                 </button>
               </div>
 
-              <div class="table-wrapper">
+              <div class="assessments-list-toolbar">
+                <div class="assessment-date-filters">
+                  <label for="filtro-avaliacoes-data-inicial">
+                    <span>Data inicial</span>
+                    <input type="date" id="filtro-avaliacoes-data-inicial" />
+                  </label>
+
+                  <label for="filtro-avaliacoes-data-final">
+                    <span>Data final</span>
+                    <input type="date" id="filtro-avaliacoes-data-final" />
+                  </label>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn"
+                  id="btn-limpar-filtros-avaliacoes"
+                >
+                  Limpar filtros
+                </button>
+              </div>
+
+              <p
+                id="resumo-avaliacoes-abertas"
+                class="assessment-list-summary"
+                role="status"
+                aria-live="polite"
+              >
+                Carregando avaliações...
+              </p>
+
+              <div class="table-wrapper assessment-open-table-wrapper">
                 <table class="data-table">
                   <thead>
                     <tr>
@@ -495,6 +526,36 @@
                     </tr>
                   </tbody>
                 </table>
+              </div>
+
+              <!-- CONTROLES DA LISTA DE AVALIAÇÕES -->
+              <div class="assessment-list-actions">
+                <button
+                  type="button"
+                  class="btn"
+                  id="btn-mostrar-mais-avaliacoes"
+                  hidden
+                >
+                  Mostrar mais
+                </button>
+
+                <button
+                  type="button"
+                  class="btn"
+                  id="btn-mostrar-menos-avaliacoes"
+                  hidden
+                >
+                  Mostrar menos
+                </button>
+
+                <button
+                  type="button"
+                  class="btn"
+                  id="btn-voltar-topo-avaliacoes"
+                  hidden
+                >
+                  Voltar ao início
+                </button>
               </div>
             </div>
 
