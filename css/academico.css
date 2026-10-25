@@ -90,3 +90,643 @@
     min-height: 240px;
   }
 }
+
+/* =========================================================
+   EDUWATCH — FREQUÊNCIA DO ALUNO
+   Painéis, indicadores, gráficos e histórico
+   ========================================================= */
+
+.student-attendance-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+/* Indicadores de frequência */
+
+.student-attendance-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.student-attendance-kpi {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 0;
+  min-height: 122px;
+  padding: 18px 16px 17px 19px;
+
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid var(--border, #dce5ef);
+  border-radius: var(--radius-lg, 14px);
+  box-shadow: 0 3px 12px rgba(0, 29, 74, 0.045);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.student-attendance-kpi::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  bottom: 15px;
+  left: 0;
+
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--primary, #176fc1);
+}
+
+.student-attendance-kpi:hover {
+  transform: translateY(-2px);
+  border-color: #b8cde2;
+  box-shadow: 0 7px 20px rgba(0, 29, 74, 0.08);
+}
+
+.student-attendance-kpi__label {
+  margin: 0;
+  color: var(--muted, #64748b);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.student-attendance-kpi__value {
+  color: var(--text-strong, #14263d);
+  font-size: clamp(23px, 2vw, 30px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.student-attendance-kpi__detail {
+  margin: 0;
+  color: var(--muted, #64748b);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Gráficos lado a lado */
+
+.student-attendance-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 20px;
+  min-width: 0;
+}
+
+.student-attendance-charts > .student-attendance-panel {
+  min-width: 0;
+  margin: 0;
+}
+
+.student-attendance-panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.student-attendance-panel .panel-header {
+  margin-bottom: 2px;
+}
+
+.student-attendance-panel .panel-header h2 {
+  color: var(--text-strong, #14263d);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.student-attendance-description {
+  margin: 0;
+  color: var(--muted, #64748b);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Canvas do Chart.js */
+
+.student-attendance-chart {
+  display: block;
+  width: 100% !important;
+  height: 300px !important;
+  max-width: 100%;
+}
+
+/* Alternativa SVG caso o Chart.js não carregue */
+
+.student-attendance-svg-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  min-width: 0;
+  color: var(--text, #14263d);
+}
+
+/* Mensagens de carregamento e ausência de dados */
+
+.student-attendance-chart-state,
+.student-attendance-message {
+  margin: 0;
+  padding: 18px;
+  color: var(--muted, #64748b);
+  background: var(--surface-muted, #edf4fb);
+  border: 1px solid var(--border, #dce5ef);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.student-attendance-message[data-type="error"] {
+  color: #a52635;
+  background: #fff3f3;
+  border-color: #f2c5ca;
+}
+
+/* Tabelas de frequência e histórico */
+
+.student-attendance-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  scrollbar-width: thin;
+}
+
+.student-attendance-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.student-attendance-table th {
+  white-space: nowrap;
+}
+
+.student-attendance-table td {
+  vertical-align: middle;
+}
+
+.student-attendance-empty {
+  padding: 22px 14px !important;
+  color: var(--muted, #64748b);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Etiquetas de situação */
+
+.student-attendance-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 9px;
+
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.student-attendance-badge--normal,
+.student-attendance-badge--presente {
+  color: #176a45;
+  background: #e7f6ed;
+  border-color: #c7e9d3;
+}
+
+.student-attendance-badge--atencao,
+.student-attendance-badge--atraso {
+  color: #8a5b00;
+  background: #fff4d7;
+  border-color: #f2dfaa;
+}
+
+.student-attendance-badge--critico,
+.student-attendance-badge--ausente {
+  color: #a52c3b;
+  background: #fdecef;
+  border-color: #f4cbd1;
+}
+
+.student-attendance-badge--justificada,
+.student-attendance-badge--sem_dados {
+  color: #53677e;
+  background: #edf2f7;
+  border-color: #d8e1eb;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .student-attendance-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .student-attendance-charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .student-attendance-dashboard {
+    gap: 16px;
+  }
+
+  .student-attendance-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .student-attendance-kpi {
+    min-height: 108px;
+    padding: 15px 12px 14px 15px;
+  }
+
+  .student-attendance-kpi__value {
+    font-size: 24px;
+  }
+
+  .student-attendance-chart {
+    height: 260px !important;
+  }
+
+  .student-attendance-panel {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  .student-attendance-kpis {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-attendance-kpi {
+    transition: none;
+  }
+
+  .student-attendance-kpi:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   EDUWATCH — HISTÓRICO DE FREQUÊNCIA DO ALUNO
+   Filtros, resumo, tabela e navegação
+   ========================================================= */
+
+/* Área dos filtros */
+
+.student-attendance-history-toolbar {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 2fr)
+    repeat(2, minmax(145px, 1fr))
+    minmax(155px, 1.2fr)
+    minmax(145px, 1fr)
+    auto;
+  align-items: end;
+  gap: 12px;
+
+  margin-bottom: 14px;
+  padding: 16px;
+
+  background: #f4f8fd;
+  border: 1px solid #dce7f3;
+  border-radius: 12px;
+}
+
+/* Rótulos dos campos */
+
+.student-attendance-history-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  min-width: 0;
+
+  color: #294762;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* Entradas de texto, datas e listas */
+
+.student-attendance-history-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px 11px;
+
+  color: #14263d;
+  background: #ffffff;
+
+  border: 1px solid #cbd9e8;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.student-attendance-history-input:hover {
+  border-color: #8bb2d8;
+}
+
+.student-attendance-history-input:focus {
+  outline: none;
+  border-color: #176fc1;
+  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.14);
+}
+
+.student-attendance-history-input::placeholder {
+  color: #8999ab;
+}
+
+/* Botão de limpar filtros */
+
+#btn-limpar-filtros-historico-frequencia {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;
+  padding: 10px 14px;
+
+  color: #245681;
+  background: #ffffff;
+  border: 1px solid #cbdced;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+#btn-limpar-filtros-historico-frequencia:hover {
+  color: #ffffff;
+  background: #0b5fae;
+  border-color: #0b5fae;
+}
+
+/* Resumo da quantidade de registros */
+
+.student-attendance-history-summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin: 0 0 12px;
+  padding: 11px 14px;
+
+  color: #47627d;
+  background: #f8fbff;
+  border: 1px solid #e1ebf5;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.student-attendance-history-summary::before {
+  content: "";
+  flex: 0 0 7px;
+
+  width: 7px;
+  height: 7px;
+
+  background: #2682c9;
+  border-radius: 50%;
+}
+
+/* Área da tabela */
+
+.student-attendance-history-toolbar ~ .table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0;
+  overflow-x: auto;
+
+  border: 1px solid #e0e9f2;
+  border-radius: 11px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #b8cadc transparent;
+}
+
+.student-attendance-history-toolbar ~ .table-wrapper table {
+  width: 100%;
+  min-width: 700px;
+  margin: 0;
+
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.student-attendance-history-toolbar ~ .table-wrapper thead th {
+  padding: 13px 15px;
+
+  color: #294762;
+  background: #f1f6fc;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-align: left;
+  white-space: nowrap;
+
+  border-bottom: 1px solid #dce7f3;
+}
+
+.student-attendance-history-toolbar ~ .table-wrapper tbody td {
+  padding: 13px 15px;
+
+  color: #334b63;
+  font-size: 12px;
+  line-height: 1.55;
+  vertical-align: middle;
+
+  border-bottom: 1px solid #edf2f7;
+}
+
+.student-attendance-history-toolbar ~ .table-wrapper tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.student-attendance-history-toolbar ~ .table-wrapper tbody tr {
+  transition: background 0.18s ease;
+}
+
+.student-attendance-history-toolbar ~ .table-wrapper tbody tr:hover {
+  background: #f5f9fe;
+}
+
+/* Botões de navegação */
+
+.student-attendance-history-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 14px;
+  padding-top: 14px;
+
+  border-top: 1px solid #e3edf7;
+}
+
+.student-attendance-history-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 39px;
+  padding: 9px 15px;
+
+  color: #17558b;
+  background: #ffffff;
+  border: 1px solid #cbdced;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+/* Mostrar mais: ação principal */
+
+#btn-mostrar-mais-historico-frequencia {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0b5fae, #176fc1);
+  border-color: #176fc1;
+  box-shadow: 0 3px 8px rgba(11, 95, 174, 0.16);
+}
+
+#btn-mostrar-mais-historico-frequencia:hover {
+  background: #064b8c;
+  border-color: #064b8c;
+  box-shadow: 0 5px 12px rgba(11, 95, 174, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Mostrar menos e voltar ao início */
+
+#btn-mostrar-menos-historico-frequencia:hover,
+#btn-voltar-topo-historico-frequencia:hover {
+  color: #0b5fae;
+  background: #edf6ff;
+  border-color: #9ec7ec;
+  transform: translateY(-1px);
+}
+
+/* Mantém o controle de visibilidade do JavaScript */
+
+.student-attendance-history-actions .btn[hidden] {
+  display: none !important;
+}
+
+/* Acessibilidade pelo teclado */
+
+.student-attendance-history-actions .btn:focus-visible,
+#btn-limpar-filtros-historico-frequencia:focus-visible {
+  outline: 3px solid rgba(47, 128, 237, 0.3);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .student-attendance-history-toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #btn-limpar-filtros-historico-frequencia {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .student-attendance-history-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 13px;
+  }
+
+  .student-attendance-history-field {
+    width: 100%;
+  }
+
+  .student-attendance-history-actions {
+    justify-content: stretch;
+  }
+
+  .student-attendance-history-actions .btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .student-attendance-history-toolbar ~ .table-wrapper table {
+    min-width: 680px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-attendance-history-input,
+  .student-attendance-history-actions .btn,
+  #btn-limpar-filtros-historico-frequencia {
+    transition: none;
+  }
+
+  .student-attendance-history-actions .btn:hover {
+    transform: none;
+  }
+}

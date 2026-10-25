@@ -292,25 +292,159 @@
 
       const historyPanel = makePanel(
         "Histórico de frequência",
-        "Registros individuais das chamadas já fechadas pelos professores.",
+        "Consulte suas chamadas por período, disciplina e situação.",
       );
+
+      // Filtros do histórico
+      const historyToolbar = el("div", "student-attendance-history-toolbar");
+
+      const historySearchLabel = el(
+        "label",
+        "student-attendance-history-field",
+      );
+      historySearchLabel.append(el("span", "", "Buscar"));
+
+      const historySearch = el("input", "student-attendance-history-input");
+      historySearch.type = "search";
+      historySearch.id = "filtro-historico-frequencia-busca";
+      historySearch.placeholder = "Disciplina ou tema da aula";
+      historySearch.setAttribute(
+        "aria-label",
+        "Buscar por disciplina ou tema da aula",
+      );
+
+      historySearchLabel.append(historySearch);
+
+      const historyStartLabel = el("label", "student-attendance-history-field");
+      historyStartLabel.append(el("span", "", "Data inicial"));
+
+      const historyStartDate = el("input", "student-attendance-history-input");
+      historyStartDate.type = "date";
+      historyStartDate.id = "filtro-historico-frequencia-inicial";
+      historyStartDate.setAttribute("aria-label", "Data inicial");
+      historyStartLabel.append(historyStartDate);
+
+      const historyEndLabel = el("label", "student-attendance-history-field");
+      historyEndLabel.append(el("span", "", "Data final"));
+
+      const historyEndDate = el("input", "student-attendance-history-input");
+      historyEndDate.type = "date";
+      historyEndDate.id = "filtro-historico-frequencia-final";
+      historyEndDate.setAttribute("aria-label", "Data final");
+      historyEndLabel.append(historyEndDate);
+
+      const historyDisciplineLabel = el(
+        "label",
+        "student-attendance-history-field",
+      );
+      historyDisciplineLabel.append(el("span", "", "Disciplina"));
+
+      const historyDiscipline = el(
+        "select",
+        "student-attendance-history-input",
+      );
+      historyDiscipline.id = "filtro-historico-frequencia-disciplina";
+      historyDiscipline.setAttribute("aria-label", "Filtrar por disciplina");
+
+      const allDisciplinesOption = el("option", "", "Todas as disciplinas");
+      allDisciplinesOption.value = "";
+      historyDiscipline.append(allDisciplinesOption);
+      historyDisciplineLabel.append(historyDiscipline);
+
+      const historyStatusLabel = el(
+        "label",
+        "student-attendance-history-field",
+      );
+      historyStatusLabel.append(el("span", "", "Situação"));
+
+      const historyStatus = el("select", "student-attendance-history-input");
+      historyStatus.id = "filtro-historico-frequencia-status";
+      historyStatus.setAttribute(
+        "aria-label",
+        "Filtrar por situação da frequência",
+      );
+
+      [
+        ["", "Todas as situações"],
+        ["presente", "Presente"],
+        ["atraso", "Atraso"],
+        ["ausente", "Ausente"],
+        ["justificada", "Falta justificada"],
+      ].forEach(([value, label]) => {
+        const option = el("option", "", label);
+        option.value = value;
+        historyStatus.append(option);
+      });
+
+      historyStatusLabel.append(historyStatus);
+
+      const clearHistoryFilters = el("button", "btn", "Limpar filtros");
+      clearHistoryFilters.type = "button";
+      clearHistoryFilters.id = "btn-limpar-filtros-historico-frequencia";
+
+      historyToolbar.append(
+        historySearchLabel,
+        historyStartLabel,
+        historyEndLabel,
+        historyDisciplineLabel,
+        historyStatusLabel,
+        clearHistoryFilters,
+      );
+
+      const historySummary = el(
+        "p",
+        "student-attendance-history-summary",
+        "Carregando histórico...",
+      );
+      historySummary.id = "resumo-historico-frequencia";
+      historySummary.setAttribute("role", "status");
+      historySummary.setAttribute("aria-live", "polite");
+
       const historyTable = makeTable(
         ["Data", "Período", "Disciplina", "Tema da aula", "Situação"],
         "Histórico de frequência",
       );
       historyTable.tbody.id = "tabela-historico-frequencia-corpo";
-      historyPanel.append(historyTable.wrapper);
+
+      const historyActions = el("div", "student-attendance-history-actions");
+
+      const showMoreHistory = el("button", "btn", "Mostrar mais");
+      showMoreHistory.type = "button";
+      showMoreHistory.id = "btn-mostrar-mais-historico-frequencia";
+      showMoreHistory.hidden = true;
+
+      const showLessHistory = el("button", "btn", "Mostrar menos");
+      showLessHistory.type = "button";
+      showLessHistory.id = "btn-mostrar-menos-historico-frequencia";
+      showLessHistory.hidden = true;
+
+      const backToHistoryTop = el("button", "btn", "Voltar ao início");
+      backToHistoryTop.type = "button";
+      backToHistoryTop.id = "btn-voltar-topo-historico-frequencia";
+      backToHistoryTop.hidden = true;
+
+      historyActions.append(showMoreHistory, showLessHistory, backToHistoryTop);
+
+      historyPanel.append(
+        historyToolbar,
+        historySummary,
+        historyTable.wrapper,
+        historyActions,
+      );
 
       const observationsPanel = makePanel(
         "Observações pedagógicas",
         "Observações que a equipe pedagógica marcou como visíveis para você.",
       );
+
       const observationsTable = makeTable(
         ["Data", "Categoria", "Observação"],
         "Observações pedagógicas visíveis ao aluno",
       );
       observationsTable.tbody.id = "tabela-observacoes-visiveis-corpo";
       observationsPanel.append(observationsTable.wrapper);
+
+      root.append(charts, historyPanel, observationsPanel);
 
       root.append(charts, historyPanel, observationsPanel);
       return {
@@ -322,12 +456,27 @@
         chartEvolucaoState,
         disciplinasBody: disciplineBody,
         historicoBody: historyTable.tbody,
+        historyPanel,
+        historySearch,
+        historyStartDate,
+        historyEndDate,
+        historyDiscipline,
+        historyStatus,
+        clearHistoryFilters,
+        historySummary,
+        showMoreHistory,
+        showLessHistory,
+        backToHistoryTop,
         observacoesBody: observationsTable.tbody,
       };
     }
 
     const ui = buildUi();
     section.replaceChildren(mensagem, ui.root);
+    const LIMITE_HISTORICO_INICIAL = 5;
+
+    let historicoFrequenciaCompleto = [];
+    let historicoFrequenciaExpandido = false;
 
     function showEmptyRow(body, colSpan, text) {
       const row = el("tr");
@@ -395,25 +544,208 @@
 
     function renderHistorico(items) {
       const body = ui.historicoBody;
+
+      if (!body) return;
+
+      // Atualiza a lista completa quando os dados chegam da API.
+      if (Array.isArray(items)) {
+        historicoFrequenciaCompleto = items
+          .slice()
+          .sort((a, b) =>
+            String(b.data_aula || "").localeCompare(String(a.data_aula || "")),
+          );
+
+        // Atualiza as opções de disciplina sem perder a seleção atual.
+        if (ui.historyDiscipline) {
+          const disciplinaSelecionada = ui.historyDiscipline.value;
+
+          const disciplinas = [
+            ...new Set(
+              historicoFrequenciaCompleto
+                .map((item) => String(item.disciplina || "").trim())
+                .filter(Boolean),
+            ),
+          ].sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+          ui.historyDiscipline.replaceChildren();
+
+          const opcaoTodas = document.createElement("option");
+          opcaoTodas.value = "";
+          opcaoTodas.textContent = "Todas as disciplinas";
+          ui.historyDiscipline.append(opcaoTodas);
+
+          disciplinas.forEach((disciplina) => {
+            const opcao = document.createElement("option");
+            opcao.value = disciplina;
+            opcao.textContent = disciplina;
+            ui.historyDiscipline.append(opcao);
+          });
+
+          ui.historyDiscipline.value = disciplinas.includes(
+            disciplinaSelecionada,
+          )
+            ? disciplinaSelecionada
+            : "";
+        }
+      }
+
+      const busca = String(ui.historySearch?.value || "")
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+
+      const dataInicial = ui.historyStartDate?.value || "";
+      const dataFinal = ui.historyEndDate?.value || "";
+      const disciplina = ui.historyDiscipline?.value || "";
+      const situacao = ui.historyStatus?.value || "";
+
+      function ocultarBotoesHistorico() {
+        if (ui.showMoreHistory) ui.showMoreHistory.hidden = true;
+        if (ui.showLessHistory) ui.showLessHistory.hidden = true;
+        if (ui.backToHistoryTop) ui.backToHistoryTop.hidden = true;
+      }
+
+      if (dataInicial && dataFinal && dataInicial > dataFinal) {
+        if (ui.historySummary) {
+          ui.historySummary.textContent =
+            "A data inicial não pode ser posterior à data final.";
+        }
+
+        showEmptyRow(body, 5, "Corrija o intervalo de datas.");
+        ocultarBotoesHistorico();
+        return;
+      }
+
+      const filtrados = historicoFrequenciaCompleto.filter((item) => {
+        const data = String(item.data_aula || "").slice(0, 10);
+
+        if (dataInicial && (!data || data < dataInicial)) return false;
+        if (dataFinal && (!data || data > dataFinal)) return false;
+
+        if (disciplina && String(item.disciplina || "") !== disciplina) {
+          return false;
+        }
+
+        if (situacao && String(item.status || "").toLowerCase() !== situacao) {
+          return false;
+        }
+
+        if (busca) {
+          const texto = [item.disciplina, item.tema, item.periodo]
+            .filter(Boolean)
+            .join(" ")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+
+          if (!texto.includes(busca)) return false;
+        }
+
+        return true;
+      });
+
+      const total = filtrados.length;
+
+      const visiveis = historicoFrequenciaExpandido
+        ? filtrados
+        : filtrados.slice(0, LIMITE_HISTORICO_INICIAL);
+
+      if (ui.historySummary) {
+        ui.historySummary.textContent =
+          `Exibindo ${visiveis.length} de ${total} ` +
+          (total === 1 ? "registro." : "registros.");
+      }
+
+      if (ui.showMoreHistory) {
+        ui.showMoreHistory.hidden =
+          total <= LIMITE_HISTORICO_INICIAL || historicoFrequenciaExpandido;
+      }
+
+      if (ui.showLessHistory) {
+        ui.showLessHistory.hidden =
+          total <= LIMITE_HISTORICO_INICIAL || !historicoFrequenciaExpandido;
+      }
+
+      if (ui.backToHistoryTop) {
+        ui.backToHistoryTop.hidden =
+          total <= LIMITE_HISTORICO_INICIAL || !historicoFrequenciaExpandido;
+      }
+
       body.replaceChildren();
-      if (!items.length) {
+
+      if (total === 0) {
         showEmptyRow(
           body,
           5,
-          "Seu histórico aparecerá aqui quando houver chamadas fechadas.",
+          historicoFrequenciaCompleto.length === 0
+            ? "Seu histórico aparecerá aqui quando houver chamadas fechadas."
+            : "Nenhum registro corresponde aos filtros selecionados.",
         );
+
         return;
       }
-      items.forEach((item) => {
+
+      visiveis.forEach((item) => {
         const row = el("tr");
+
         appendCell(row, formatDate(item.data_aula));
         appendCell(row, item.periodo);
         appendCell(row, item.disciplina);
         appendCell(row, item.tema || "Sem tema informado");
         appendCell(row, statusBadge(item.status));
+
         body.append(row);
       });
     }
+
+    function aplicarFiltrosHistorico() {
+      historicoFrequenciaExpandido = false;
+      renderHistorico();
+    }
+
+    ui.historySearch?.addEventListener("input", aplicarFiltrosHistorico);
+
+    ui.historyStartDate?.addEventListener("change", aplicarFiltrosHistorico);
+
+    ui.historyEndDate?.addEventListener("change", aplicarFiltrosHistorico);
+
+    ui.historyDiscipline?.addEventListener("change", aplicarFiltrosHistorico);
+
+    ui.historyStatus?.addEventListener("change", aplicarFiltrosHistorico);
+
+    ui.clearHistoryFilters?.addEventListener("click", () => {
+      if (ui.historySearch) ui.historySearch.value = "";
+      if (ui.historyStartDate) ui.historyStartDate.value = "";
+      if (ui.historyEndDate) ui.historyEndDate.value = "";
+      if (ui.historyDiscipline) ui.historyDiscipline.value = "";
+      if (ui.historyStatus) ui.historyStatus.value = "";
+
+      historicoFrequenciaExpandido = false;
+      renderHistorico();
+    });
+
+    ui.showMoreHistory?.addEventListener("click", () => {
+      historicoFrequenciaExpandido = true;
+      renderHistorico();
+    });
+
+    ui.showLessHistory?.addEventListener("click", () => {
+      historicoFrequenciaExpandido = false;
+      renderHistorico();
+
+      ui.historyPanel?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+
+    ui.backToHistoryTop?.addEventListener("click", () => {
+      ui.historyPanel?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
 
     function renderObservacoes(items) {
       const body = ui.observacoesBody;

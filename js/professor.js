@@ -1,5 +1,6 @@
 // EduWatch — painel do professor com dados das turmas atribuídas no banco.
 let dadosProfessor = { alunos: [], turmas: [] };
+let graficoFrequenciaProfessor = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const usuarioSessao = await exigirPerfil("professor");
@@ -111,6 +112,7 @@ async function carregarDadosProfessor() {
     };
     renderResumoProfessor(dadosProfessor.resumo);
     renderTurmas(dadosProfessor.turmas);
+    renderGraficoFrequenciaProfessor(dadosProfessor.turmas);
     popularFiltroTurmas(dadosProfessor.turmas);
     aplicarFiltrosAlunos();
     renderTabelaAtencao(dadosProfessor.alunos);
@@ -235,6 +237,198 @@ function renderTurmas(turmas) {
     card.addEventListener("click", () => irParaAlunosDaTurma(String(turma.id)));
     container.append(card);
   });
+}
+
+function renderGraficoFrequenciaProfessor(turmas) {
+  const canvas = document.getElementById("grafico-frequencia-professor");
+  const mensagem = document.getElementById(
+    "grafico-frequencia-professor-vazio",
+  );
+
+  if (!canvas) return;
+
+  function mostrarMensagem(texto) {
+    if (graficoFrequenciaProfessor) {
+      graficoFrequenciaProfessor.destroy();
+      graficoFrequenciaProfessor = null;
+    }
+
+    canvas.hidden = true;
+
+    if (mensagem) {
+      mensagem.textContent = texto;
+      mensagem.hidden = false;
+    }
+  }
+
+  if (typeof Chart === "undefined") {
+    mostrarMensagem("Não foi possível carregar o Chart.js.");
+    return;
+  }
+
+  const turmasValidas = (Array.isArray(turmas) ? turmas : [])
+    .filter(
+      (turma) =>
+        turma.frequencia !== null &&
+        turma.frequencia !== undefined &&
+        turma.frequencia !== "" &&
+        Number.isFinite(Number(turma.frequencia)),
+    )
+    .slice()
+    .sort((a, b) =>
+      String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR"),
+    );
+
+  if (turmasValidas.length === 0) {
+    mostrarMensagem(
+      "Ainda não há registros suficientes para calcular a frequência das suas turmas.",
+    );
+    return;
+  }
+
+  canvas.hidden = false;
+
+  if (mensagem) {
+    mensagem.hidden = true;
+  }
+
+  const rotulosPercentuais = {
+    id: "rotulosFrequenciaProfessor",
+
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      const elementos = chart.getDatasetMeta(0).data;
+      const valores = chart.data.datasets[0].data;
+
+      ctx.save();
+      ctx.font = "600 12px system-ui, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#176fc1";
+
+      elementos.forEach((elemento, indice) => {
+        const valor = Number(valores[indice]);
+
+        if (!Number.isFinite(valor)) return;
+
+        const texto =
+          valor.toLocaleString("pt-BR", {
+            maximumFractionDigits: 1,
+          }) + "%";
+
+        const larguraTexto = ctx.measureText(texto).width;
+
+        const x = Math.min(elemento.x + 8, chart.width - larguraTexto - 8);
+
+        ctx.fillText(texto, x, elemento.y);
+      });
+
+      ctx.restore();
+    },
+  };
+
+  const configuracao = {
+    type: "bar",
+
+    data: {
+      labels: turmasValidas.map((turma) => String(turma.nome || "Turma")),
+
+      datasets: [
+        {
+          label: "Frequência",
+          data: turmasValidas.map((turma) => Number(turma.frequencia)),
+
+          backgroundColor: "#176fc1",
+          hoverBackgroundColor: "#0b5fae",
+
+          borderRadius: {
+            topLeft: 0,
+            bottomLeft: 0,
+            topRight: 6,
+            bottomRight: 6,
+          },
+
+          borderSkipped: false,
+          maxBarThickness: 30,
+        },
+      ],
+    },
+
+    plugins: [rotulosPercentuais],
+
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+
+      layout: {
+        padding: {
+          right: 48,
+          top: 8,
+        },
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          callbacks: {
+            label(context) {
+              return (
+                " Frequência: " +
+                Number(context.raw).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                }) +
+                "%"
+              );
+            },
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          min: 0,
+          max: 100,
+
+          title: {
+            display: true,
+            text: "Frequência (%)",
+          },
+
+          ticks: {
+            stepSize: 20,
+            callback(valor) {
+              return valor + "%";
+            },
+          },
+
+          grid: {
+            color: "rgba(148, 163, 184, 0.22)",
+          },
+        },
+
+        y: {
+          ticks: {
+            color: "#47627d",
+          },
+
+          grid: {
+            display: false,
+          },
+        },
+      },
+    },
+  };
+
+  if (graficoFrequenciaProfessor) {
+    graficoFrequenciaProfessor.destroy();
+  }
+
+  graficoFrequenciaProfessor = new Chart(canvas.getContext("2d"), configuracao);
 }
 
 function irParaAlunosDaTurma(turmaId) {

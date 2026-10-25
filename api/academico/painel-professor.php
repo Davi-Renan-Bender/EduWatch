@@ -115,6 +115,7 @@ try {
     }
 
     $matriculasPorTurma = [];
+    $matriculaTurmaPorId = [];
     $alunosOut = [];
     foreach ($matriculas as $matricula) {
         $turmaId = (int) $matricula['turma_id'];
@@ -132,8 +133,97 @@ try {
             'situacao' => ew_professor_situacao($media),
         ];
         $matriculasPorTurma[$turmaId][] = $matriculaId;
+        $matriculaTurmaPorId[$matriculaId] = $turmaId;
     }
     usort($alunosOut, static fn(array $a, array $b): int => strcasecmp($a['nome'], $b['nome']));
+
+    // Frequência por turma: considera apenas aulas realizadas
+// e com a chamada fechada, nas disciplinas atribuídas ao professor.
+$atribuicaoIdsAtivas = array_values(array_filter(
+    $atribuicaoIds,
+    static function (int $id) use ($atribuicaoPorId, $turmasPorId): bool {
+        $atribuicao = $atribuicaoPorId[$id] ?? null;
+
+        return $atribuicao !== null
+            && isset($turmasPorId[(int) $atribuicao['turma_id']]);
+    }
+));
+
+$aulasDb = $atribuicaoIdsAtivas
+    ? ew_acad_rows(
+        '/rest/v1/aulas?select=id,turma_disciplina_id'
+        . '&turma_disciplina_id=' . ew_acad_in_filter($atribuicaoIdsAtivas)
+        . '&status=eq.realizada'
+        . '&frequencia_fechada=eq.true'
+        . '&order=id.asc',
+        'as aulas realizadas com frequência fechada'
+    )
+    : [];
+
+$aulaTurma = [];
+
+foreach ($aulasDb as $aula) {
+    $aulaId = (int) ($aula['id'] ?? 0);
+    $atribuicaoId = (int) ($aula['turma_disciplina_id'] ?? 0);
+
+    $atribuicao = $atribuicaoPorId[$atribuicaoId] ?? null;
+
+    if (!$atribuicao || $aulaId <= 0) {
+        continue;
+    }
+
+    $turmaId = (int) $atribuicao['turma_id'];
+
+    if (!isset($turmasPorId[$turmaId])) {
+        continue;
+    }
+
+    $aulaTurma[$aulaId] = $turmaId;
+}
+
+$frequenciaPorTurma = [];
+
+if ($aulaTurma && $matriculaTurmaPorId) {
+    $frequenciasDb = ew_acad_rows(
+        '/rest/v1/frequencias?select=aula_id,matricula_id,status'
+        . '&aula_id=' . ew_acad_in_filter(array_keys($aulaTurma))
+        . '&matricula_id=' . ew_acad_in_filter(array_keys($matriculaTurmaPorId))
+        . '&order=id.asc',
+        'as frequências das suas turmas'
+    );
+
+    foreach ($frequenciasDb as $frequencia) {
+        $aulaId = (int) ($frequencia['aula_id'] ?? 0);
+        $matriculaId = (int) ($frequencia['matricula_id'] ?? 0);
+
+        $turmaId = $aulaTurma[$aulaId] ?? 0;
+        $turmaDaMatricula = $matriculaTurmaPorId[$matriculaId] ?? 0;
+
+        // Não mistura frequências de alunos de outras turmas.
+        if ($turmaId <= 0 || $turmaDaMatricula !== $turmaId) {
+            continue;
+        }
+
+        if (!isset($frequenciaPorTurma[$turmaId])) {
+            $frequenciaPorTurma[$turmaId] = [
+                'total' => 0,
+                'presencas' => 0,
+            ];
+        }
+
+        $frequenciaPorTurma[$turmaId]['total']++;
+
+        // Atrasos contam como presença.
+        // Ausências justificadas permanecem no denominador.
+        if (in_array(
+            (string) ($frequencia['status'] ?? ''),
+            ['presente', 'atraso'],
+            true
+        )) {
+            $frequenciaPorTurma[$turmaId]['presencas']++;
+        }
+     }
+    }
 
     $turmasOut = [];
     foreach ($turmasPorId as $turmaId => $turma) {
@@ -143,7 +233,18 @@ try {
             'nome' => (string) $turma['nome'],
             'total_alunos' => count($matriculasPorTurma[$turmaId] ?? []),
             'media' => $media,
-            'situacao' => ew_professor_situacao($media),
+            'frequencia' => (
+        isset($frequenciaPorTurma[$turmaId])
+       && $frequenciaPorTurma[$turmaId]['total'] > 0
+    )
+    ? round(
+        100
+        * $frequenciaPorTurma[$turmaId]['presencas']
+        / $frequenciaPorTurma[$turmaId]['total'],
+        1
+    )
+    : null,
+    'situacao' => ew_professor_situacao($media),
             'avaliacoes_publicadas' => count(array_filter($avaliacoes, static function (array $avaliacao) use ($atribuicaoPorId, $turmaId): bool {
                 return (int) ($atribuicaoPorId[(int) $avaliacao['turma_disciplina_id']]['turma_id'] ?? 0) === $turmaId;
             })),
