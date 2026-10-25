@@ -8,6 +8,7 @@ let alunosFiltradosCoordenacao = [];
 let alunosCoordenacaoTodos = [];
 let graficoSituacaoEscola = null;
 let graficoEvolucaoEscola = null;
+let graficoFrequenciaTurmas = null;
 
 function escaparHTMLCoordenacao(valor) {
   return String(valor ?? "").replace(
@@ -142,6 +143,7 @@ async function carregarDadosCoordenacao() {
     renderSituacoesEscola(resumo, dados.alunos || []);
     renderMenoresMedias(dados.turmas || []);
     renderMenoresFrequencias(dados.turmas || []);
+    renderGraficoFrequenciaTurmas(dados.turmas || []);
     alunosCoordenacaoTodos = Array.isArray(dados.alunos) ? dados.alunos : [];
     alunosFiltradosCoordenacao = alunosCoordenacaoTodos.slice();
     const filtroTurma = document.getElementById("filtro-turma-coord");
@@ -1136,6 +1138,188 @@ function renderEvolucaoEscola(evolucao) {
   } else {
     graficoEvolucaoEscola = new Chart(canvas.getContext("2d"), configuracao);
   }
+}
+
+function renderGraficoFrequenciaTurmas(turmas) {
+  const canvas = document.getElementById("grafico-frequencia-turmas");
+  const mensagem = document.getElementById("grafico-frequencia-turmas-vazio");
+
+  if (!canvas) return;
+
+  if (typeof Chart === "undefined") {
+    mostrarEstadoGrafico(
+      canvas,
+      mensagem,
+      "Não foi possível carregar o Chart.js.",
+    );
+    return;
+  }
+
+  const turmasComFrequencia = (Array.isArray(turmas) ? turmas : [])
+    .filter(
+      (turma) =>
+        turma.frequencia !== null &&
+        turma.frequencia !== undefined &&
+        Number.isFinite(Number(turma.frequencia)),
+    )
+    .slice()
+    .sort((a, b) =>
+      String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR"),
+    );
+
+  if (turmasComFrequencia.length === 0) {
+    if (graficoFrequenciaTurmas) {
+      graficoFrequenciaTurmas.destroy();
+      graficoFrequenciaTurmas = null;
+    }
+
+    mostrarEstadoGrafico(
+      canvas,
+      mensagem,
+      "Ainda não há registros de frequência suficientes para comparar as turmas.",
+    );
+    return;
+  }
+
+  canvas.hidden = false;
+
+  if (mensagem) mensagem.hidden = true;
+
+  const rotulosPercentuais = {
+    id: "rotulosFrequenciaTurmas",
+
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      const elementos = chart.getDatasetMeta(0).data;
+      const valores = chart.data.datasets[0].data;
+
+      ctx.save();
+      ctx.font = "600 12px system-ui, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#14263d";
+
+      elementos.forEach((elemento, indice) => {
+        const valor = Number(valores[indice]);
+
+        if (!Number.isFinite(valor)) return;
+
+        const texto =
+          valor.toLocaleString("pt-BR", {
+            maximumFractionDigits: 1,
+          }) + "%";
+
+        const x = Math.min(
+          elemento.x + 8,
+          chart.width - ctx.measureText(texto).width - 6,
+        );
+
+        ctx.fillText(texto, x, elemento.y);
+      });
+
+      ctx.restore();
+    },
+  };
+
+  const configuracao = {
+    type: "bar",
+
+    data: {
+      labels: turmasComFrequencia.map((turma) => String(turma.nome || "Turma")),
+
+      datasets: [
+        {
+          label: "Frequência",
+          data: turmasComFrequencia.map((turma) => Number(turma.frequencia)),
+          backgroundColor: "#176fc1",
+          hoverBackgroundColor: "#0b5fae",
+          borderRadius: {
+            topLeft: 0,
+            bottomLeft: 0,
+            topRight: 6,
+            bottomRight: 6,
+          },
+          borderSkipped: false,
+          maxBarThickness: 30,
+        },
+      ],
+    },
+
+    plugins: [rotulosPercentuais],
+
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+
+      layout: {
+        padding: {
+          right: 48,
+          top: 8,
+        },
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          callbacks: {
+            label(context) {
+              return (
+                " Frequência: " +
+                Number(context.raw).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                }) +
+                "%"
+              );
+            },
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          min: 0,
+          max: 100,
+
+          title: {
+            display: true,
+            text: "Frequência (%)",
+          },
+
+          ticks: {
+            stepSize: 20,
+            callback(valor) {
+              return valor + "%";
+            },
+          },
+
+          grid: {
+            color: "rgba(120, 130, 145, 0.16)",
+          },
+        },
+
+        y: {
+          ticks: {
+            color: "#294762",
+          },
+
+          grid: {
+            display: false,
+          },
+        },
+      },
+    },
+  };
+
+  if (graficoFrequenciaTurmas) {
+    graficoFrequenciaTurmas.destroy();
+  }
+
+  graficoFrequenciaTurmas = new Chart(canvas.getContext("2d"), configuracao);
 }
 
 // --------------------------------------------------------------------------
