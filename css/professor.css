@@ -1113,3 +1113,281 @@
   white-space: nowrap;
   flex: 0 0 78px;
 }
+
+/* =========================================================
+   EDUWATCH — FILTROS E CONTROLES DAS AVALIAÇÕES CADASTRADAS
+   ========================================================= */
+
+#panel-avaliacoes-abertas .assessments-list-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin: 0 0 14px;
+  padding: 16px;
+
+  background: #f4f8fd;
+  border: 1px solid #dce7f3;
+  border-radius: 12px;
+}
+
+/* Campos de data */
+
+#panel-avaliacoes-abertas .assessment-date-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: 14px;
+
+  width: 100%;
+  max-width: 560px;
+}
+
+#panel-avaliacoes-abertas .assessment-date-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+
+  color: #294762;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#panel-avaliacoes-abertas .assessment-date-filters input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+
+  color: #14263d;
+  background: #ffffff;
+
+  border: 1px solid #cbd9e8;
+  border-radius: 9px;
+
+  font: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#panel-avaliacoes-abertas .assessment-date-filters input:hover {
+  border-color: #7fa9d3;
+}
+
+#panel-avaliacoes-abertas .assessment-date-filters input:focus-visible {
+  outline: none;
+  border-color: #176fc1;
+  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.15);
+}
+
+/* Botão de limpar filtros */
+
+#panel-avaliacoes-abertas #btn-limpar-filtros-avaliacoes {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  min-height: 42px;
+  padding: 10px 15px;
+
+  color: #245681;
+  background: #ffffff;
+  border: 1px solid #cbdced;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+#panel-avaliacoes-abertas #btn-limpar-filtros-avaliacoes:hover {
+  color: #ffffff;
+  background: #0b5fae;
+  border-color: #0b5fae;
+}
+
+/* Resumo da lista */
+
+#panel-avaliacoes-abertas .assessment-list-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 0 0 12px;
+  padding: 10px 13px;
+
+  color: #47627d;
+  background: #f8fbff;
+  border: 1px solid #e1ebf5;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+#panel-avaliacoes-abertas .assessment-list-summary::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+
+  background: #2682c9;
+  border-radius: 50%;
+}
+
+/* Tabela */
+
+#panel-avaliacoes-abertas .assessment-open-table-wrapper {
+  margin-top: 0;
+  border-radius: 11px;
+}
+
+#panel-avaliacoes-abertas .assessment-open-table-wrapper table {
+  margin: 0;
+}
+
+/* Botões para navegar pela lista */
+
+#panel-avaliacoes-abertas .assessment-list-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 14px;
+  padding-top: 14px;
+
+  border-top: 1px solid #e3edf7;
+}
+
+#panel-avaliacoes-abertas .assessment-list-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  min-height: 39px;
+  padding: 9px 15px;
+
+  color: #17558b;
+  background: #ffffff;
+  border: 1px solid #cbdced;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+/* Mostrar mais: ação principal */
+
+#panel-avaliacoes-abertas #btn-mostrar-mais-avaliacoes {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0b5fae, #176fc1);
+  border-color: #176fc1;
+
+  box-shadow: 0 3px 8px rgba(11, 95, 174, 0.16);
+}
+
+#panel-avaliacoes-abertas #btn-mostrar-mais-avaliacoes:hover {
+  background: #064b8c;
+  border-color: #064b8c;
+  box-shadow: 0 5px 12px rgba(11, 95, 174, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Mostrar menos e voltar ao início */
+
+#panel-avaliacoes-abertas #btn-mostrar-menos-avaliacoes:hover,
+#panel-avaliacoes-abertas #btn-voltar-topo-avaliacoes:hover {
+  color: #0b5fae;
+  background: #edf6ff;
+  border-color: #9ec7ec;
+  transform: translateY(-1px);
+}
+
+/* Foco acessível pelo teclado */
+
+#panel-avaliacoes-abertas .assessment-list-actions button:focus-visible,
+#panel-avaliacoes-abertas #btn-limpar-filtros-avaliacoes:focus-visible {
+  outline: 3px solid rgba(47, 128, 237, 0.3);
+  outline-offset: 3px;
+}
+
+/* IMPORTANTE: mantém ocultos os botões controlados pelo JavaScript */
+
+#panel-avaliacoes-abertas .assessment-list-actions button[hidden] {
+  display: none !important;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 700px) {
+  #panel-avaliacoes-abertas .assessments-list-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    padding: 13px;
+  }
+
+  #panel-avaliacoes-abertas .assessment-date-filters {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    max-width: none;
+  }
+
+  #panel-avaliacoes-abertas #btn-limpar-filtros-avaliacoes {
+    width: 100%;
+  }
+
+  #panel-avaliacoes-abertas .assessment-list-actions {
+    justify-content: stretch;
+  }
+
+  #panel-avaliacoes-abertas .assessment-list-actions button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 420px) {
+  #panel-avaliacoes-abertas .assessment-list-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #panel-avaliacoes-abertas .assessment-list-actions button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panel-avaliacoes-abertas .assessments-list-toolbar *,
+  #panel-avaliacoes-abertas .assessment-list-actions button {
+    transition: none;
+  }
+}
