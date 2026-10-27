@@ -30,6 +30,10 @@
       resumo: {},
     };
     let feedbackNode;
+    let alertFilterControls = null;
+    let alertasExpandidos = false;
+
+    const LIMITE_ALERTAS_INICIAL = 5;
 
     const el = (tag, className, text) => {
       const node = document.createElement(tag);
@@ -127,125 +131,266 @@
 
     function renderAlerts() {
       const tbody = root.querySelector("#edu-alertas-body");
+      if (!tbody) return;
+
       tbody.replaceChildren();
-      if (!state.alertas.length) {
+
+      const filtros = alertFilterControls;
+
+      const normalizar = (valor) =>
+        String(valor ?? "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .trim();
+
+      const busca = normalizar(filtros?.search.value);
+      const dataInicial = filtros?.dateStart.value || "";
+      const dataFinal = filtros?.dateEnd.value || "";
+      const statusSelecionado = filtros?.status.value || "";
+      const nivelSelecionado = filtros?.level.value || "";
+
+      const esconderBotoes = () => {
+        if (filtros?.showMore) filtros.showMore.hidden = true;
+        if (filtros?.showLess) filtros.showLess.hidden = true;
+        if (filtros?.backToTop) filtros.backToTop.hidden = true;
+      };
+
+      const mostrarMensagemTabela = (mensagem) => {
         const row = el("tr");
-        const cell = el(
-          "td",
-          "edu-followup-empty",
-          "Nenhum alerta registrado. Configure e ative as regras na área administrativa e clique em Gerar/atualizar alertas.",
-        );
+        const cell = el("td", "edu-followup-empty", mensagem);
         cell.colSpan = 8;
         row.append(cell);
         tbody.append(row);
-      }
-      const labels = {
-        aberto: "Aberto",
-        em_andamento: "Em andamento",
-        resolvido: "Resolvido",
-        descartado: "Descartado",
       };
-      state.alertas.forEach((alert) => {
-        const row = el("tr");
-        row.classList.add(`edu-followup-row--${alert.nivel}`);
-        row.append(el("td", "", alert.aluno));
-        row.append(el("td", "", alert.turma));
-        row.append(
-          el(
-            "td",
-            "",
-            `${alert.periodo}${alert.disciplina && alert.disciplina !== "Geral" ? ` · ${alert.disciplina}` : ""}`,
-          ),
-        );
-        row.append(el("td", "", alert.regra_nome));
-        const level = el(
-          "span",
-          `edu-followup-pill edu-followup-pill--${alert.nivel}`,
-          alert.nivel === "critico" ? "Crítico" : "Atenção",
-        );
-        const levelCell = el("td");
-        levelCell.append(level);
-        row.append(levelCell);
-        let observed = Number(alert.valor_observado);
-        let unit = "";
-        if (alert.codigo_regra === "frequencia_baixa") unit = "%";
-        else if (
-          alert.codigo_regra === "media_baixa" ||
-          alert.codigo_regra === "queda_desempenho"
-        )
-          unit = " pts";
-        else unit = " resultado(s)";
-        row.append(
-          el(
-            "td",
-            "",
-            `${Number.isFinite(observed) ? observed.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) : "—"}${unit}`,
-          ),
-        );
-        row.append(el("td", "edu-followup-justification", alert.justificativa));
 
-        const statusCell = el("td");
-        const statusSelect = el(
-          "select",
-          "edu-followup-select edu-followup-select--compact",
-        );
-        statusSelect.setAttribute(
-          "aria-label",
-          `Status do alerta para ${alert.aluno}`,
-        );
-        Object.entries(labels).forEach(([value, label]) =>
-          statusSelect.append(option(value, label)),
-        );
-        statusSelect.value = alert.status;
-        const save = button(
-          "Salvar",
-          "edu-followup-button edu-followup-button--small",
-        );
-        save.addEventListener("click", async () => {
-          save.disabled = true;
-          try {
-            const result = await formRequest("atualizar_alerta", {
-              alerta_id: Number(alert.id),
-              status: statusSelect.value,
-            });
-            setFeedback(result.mensagem, "success");
-            await loadData();
-          } catch (error) {
-            setFeedback(error.message, "error");
-          } finally {
-            save.disabled = false;
-          }
-        });
-        const control = el("div", "edu-followup-inline-controls");
-        control.append(statusSelect, save);
-        statusCell.append(control);
-        row.append(statusCell);
-        tbody.append(row);
+      if (dataInicial && dataFinal && dataInicial > dataFinal) {
+        if (filtros?.summary) {
+          filtros.summary.textContent =
+            "A data inicial não pode ser posterior à data final.";
+        }
+
+        mostrarMensagemTabela("Corrija o intervalo de datas.");
+        esconderBotoes();
+        return;
+      }
+
+      const filtrados = state.alertas.filter((alert) => {
+        const data = String(alert.created_at || "").slice(0, 10);
+
+        if (dataInicial && (!data || data < dataInicial)) return false;
+        if (dataFinal && (!data || data > dataFinal)) return false;
+
+        if (statusSelecionado && alert.status !== statusSelecionado) {
+          return false;
+        }
+
+        if (nivelSelecionado && alert.nivel !== nivelSelecionado) {
+          return false;
+        }
+
+        if (busca) {
+          const texto = normalizar(
+            [
+              alert.aluno,
+              alert.turma,
+              alert.regra_nome,
+              alert.justificativa,
+              alert.periodo,
+              alert.disciplina,
+            ].join(" "),
+          );
+
+          if (!texto.includes(busca)) return false;
+        }
+
+        return true;
       });
 
-      const selectAlert = root.querySelector("#edu-acao-alerta");
-      const previous = selectAlert.value;
-      selectAlert.replaceChildren(
-        option("", "Selecione um alerta aberto/em andamento"),
-      );
-      state.alertas
-        .filter((a) => ["aberto", "em_andamento"].includes(a.status))
-        .forEach((alert) => {
-          selectAlert.append(
-            option(
-              alert.id,
-              `${alert.aluno} · ${alert.regra_nome} · ${alert.periodo}`,
+      const total = filtrados.length;
+      const limite = LIMITE_ALERTAS_INICIAL;
+
+      const visiveis = alertasExpandidos
+        ? filtrados
+        : filtrados.slice(0, limite);
+
+      if (filtros?.summary) {
+        filtros.summary.textContent = total
+          ? `Exibindo ${visiveis.length} de ${total} alertas.`
+          : state.alertas.length
+            ? "Nenhum alerta corresponde aos filtros."
+            : "Nenhum alerta registrado.";
+      }
+
+      // Os botões só aparecem quando há mais de cinco resultados.
+      if (filtros?.showMore) {
+        filtros.showMore.hidden = total <= limite || alertasExpandidos;
+      }
+
+      if (filtros?.showLess) {
+        filtros.showLess.hidden = total <= limite || !alertasExpandidos;
+      }
+
+      if (filtros?.backToTop) {
+        filtros.backToTop.hidden = total <= limite || !alertasExpandidos;
+      }
+
+      if (total === 0) {
+        mostrarMensagemTabela(
+          state.alertas.length
+            ? "Nenhum alerta corresponde aos filtros selecionados."
+            : "Nenhum alerta registrado. Configure e ative as regras na área administrativa e clique em Gerar/atualizar alertas.",
+        );
+      } else {
+        const labels = {
+          aberto: "Aberto",
+          em_andamento: "Em andamento",
+          resolvido: "Resolvido",
+          descartado: "Descartado",
+        };
+
+        visiveis.forEach((alert) => {
+          const row = el("tr");
+          row.classList.add(`edu-followup-row--${alert.nivel}`);
+
+          row.append(el("td", "", alert.aluno));
+          row.append(el("td", "", alert.turma));
+
+          row.append(
+            el(
+              "td",
+              "",
+              `${alert.periodo}${
+                alert.disciplina && alert.disciplina !== "Geral"
+                  ? ` · ${alert.disciplina}`
+                  : ""
+              }`,
             ),
           );
+
+          row.append(el("td", "", alert.regra_nome));
+
+          const levelCell = el("td");
+          levelCell.append(
+            el(
+              "span",
+              `edu-followup-pill edu-followup-pill--${alert.nivel}`,
+              alert.nivel === "critico" ? "Crítico" : "Atenção",
+            ),
+          );
+          row.append(levelCell);
+
+          const observed = Number(alert.valor_observado);
+          const unit =
+            alert.codigo_regra === "frequencia_baixa"
+              ? "%"
+              : ["media_baixa", "queda_desempenho"].includes(alert.codigo_regra)
+                ? " pts"
+                : " resultado(s)";
+
+          row.append(
+            el(
+              "td",
+              "",
+              `${
+                Number.isFinite(observed)
+                  ? observed.toLocaleString("pt-BR", {
+                      maximumFractionDigits: 2,
+                    })
+                  : "—"
+              }${unit}`,
+            ),
+          );
+
+          row.append(
+            el("td", "edu-followup-justification", alert.justificativa),
+          );
+
+          const statusCell = el("td");
+          const statusSelect = el(
+            "select",
+            "edu-followup-select edu-followup-select--compact",
+          );
+
+          statusSelect.setAttribute(
+            "aria-label",
+            `Status do alerta para ${alert.aluno}`,
+          );
+
+          Object.entries(labels).forEach(([value, label]) => {
+            statusSelect.append(option(value, label));
+          });
+
+          statusSelect.value = alert.status;
+
+          const save = button(
+            "Salvar",
+            "edu-followup-button edu-followup-button--small",
+          );
+
+          save.addEventListener("click", async () => {
+            save.disabled = true;
+
+            try {
+              const result = await formRequest("atualizar_alerta", {
+                alerta_id: Number(alert.id),
+                status: statusSelect.value,
+              });
+
+              setFeedback(result.mensagem, "success");
+              await loadData();
+            } catch (error) {
+              setFeedback(error.message, "error");
+            } finally {
+              save.disabled = false;
+            }
+          });
+
+          const control = el("div", "edu-followup-inline-controls");
+          control.append(statusSelect, save);
+          statusCell.append(control);
+          row.append(statusCell);
+          tbody.append(row);
         });
-      if (Array.from(selectAlert.options).some((o) => o.value === previous))
-        selectAlert.value = previous;
-      selectAlert.disabled = selectAlert.options.length <= 1;
+      }
+
+      // Mantém o formulário de ações vinculado aos alertas ativos.
+      const selectAlert = root.querySelector("#edu-acao-alerta");
+
+      if (selectAlert) {
+        const previous = selectAlert.value;
+
+        selectAlert.replaceChildren(
+          option("", "Selecione um alerta aberto/em andamento"),
+        );
+
+        state.alertas
+          .filter((alert) => ["aberto", "em_andamento"].includes(alert.status))
+          .forEach((alert) => {
+            selectAlert.append(
+              option(
+                alert.id,
+                `${alert.aluno} · ${alert.regra_nome} · ${alert.periodo}`,
+              ),
+            );
+          });
+
+        if (
+          Array.from(selectAlert.options).some(
+            (item) => item.value === previous,
+          )
+        ) {
+          selectAlert.value = previous;
+        }
+
+        selectAlert.disabled = selectAlert.options.length <= 1;
+      }
     }
 
     function renderObservations() {
       const tbody = root.querySelector("#edu-observacoes-body");
       tbody.replaceChildren();
+
       if (!state.observacoes.length) {
         const row = el("tr");
         const cell = el(
@@ -253,11 +398,13 @@
           "edu-followup-empty",
           "Ainda não há observações pedagógicas registradas.",
         );
+
         cell.colSpan = 5;
         row.append(cell);
         tbody.append(row);
         return;
       }
+
       const categoryLabels = {
         dificuldade_conteudo: "Dificuldade no conteúdo",
         participacao: "Participação",
@@ -265,19 +412,24 @@
         comportamento: "Comportamento",
         outro: "Outro",
       };
+
       state.observacoes.forEach((obs) => {
         const row = el("tr");
+
         row.append(el("td", "", formatDate(obs.data_registro, true)));
         row.append(el("td", "", obs.aluno));
         row.append(el("td", "", obs.turma));
+
         row.append(
           el("td", "", categoryLabels[obs.categoria] || obs.categoria),
         );
+
         const description = el(
           "td",
           "edu-followup-justification",
           obs.descricao,
         );
+
         const visibility = el(
           "span",
           obs.visivel_aluno
@@ -285,6 +437,7 @@
             : "edu-followup-pill",
           obs.visivel_aluno ? "Visível ao aluno" : "Interna",
         );
+
         description.append(el("br"), visibility);
         row.append(description);
         tbody.append(row);
@@ -466,6 +619,79 @@
         "Alertas ativos e históricos",
         "Edite o status para indicar se um caso continua aberto, está em andamento, foi resolvido ou foi descartado. Os alertas sem ocorrência atual não são encerrados automaticamente.",
       );
+
+      // Área de filtros
+      const alertToolbar = el("div", "edu-followup-alert-filters");
+
+      // Busca por aluno, turma, regra ou justificativa
+      const alertSearch = el("input", "edu-followup-input");
+      alertSearch.type = "search";
+      alertSearch.placeholder = "Aluno, turma, regra ou justificativa";
+      alertSearch.setAttribute(
+        "aria-label",
+        "Buscar alertas por aluno, turma, regra ou justificativa",
+      );
+      addField(alertToolbar, "Buscar", alertSearch);
+
+      // Data inicial
+      const alertDateStart = el("input", "edu-followup-input");
+      alertDateStart.type = "date";
+      alertDateStart.setAttribute("aria-label", "Data inicial dos alertas");
+      addField(alertToolbar, "Data inicial", alertDateStart);
+
+      // Data final
+      const alertDateEnd = el("input", "edu-followup-input");
+      alertDateEnd.type = "date";
+      alertDateEnd.setAttribute("aria-label", "Data final dos alertas");
+      addField(alertToolbar, "Data final", alertDateEnd);
+
+      // Filtro de status
+      const alertStatusFilter = el("select", "edu-followup-select");
+
+      [
+        ["", "Todos os status"],
+        ["aberto", "Aberto"],
+        ["em_andamento", "Em andamento"],
+        ["resolvido", "Resolvido"],
+        ["descartado", "Descartado"],
+      ].forEach(([value, label]) => {
+        alertStatusFilter.append(option(value, label));
+      });
+
+      addField(alertToolbar, "Status", alertStatusFilter);
+
+      // Filtro de nível
+      const alertLevelFilter = el("select", "edu-followup-select");
+
+      [
+        ["", "Todos os níveis"],
+        ["atencao", "Atenção"],
+        ["critico", "Crítico"],
+      ].forEach(([value, label]) => {
+        alertLevelFilter.append(option(value, label));
+      });
+
+      addField(alertToolbar, "Nível", alertLevelFilter);
+
+      // Limpar filtros
+      const clearAlertFilters = button(
+        "Limpar filtros",
+        "edu-followup-button edu-followup-button--small",
+      );
+
+      alertToolbar.append(clearAlertFilters);
+
+      // Resumo dos registros encontrados
+      const alertSummary = el(
+        "p",
+        "edu-followup-alert-summary",
+        "Carregando alertas...",
+      );
+
+      alertSummary.setAttribute("role", "status");
+      alertSummary.setAttribute("aria-live", "polite");
+
+      // Tabela existente
       const alertTable = makeTable(
         [
           "Aluno",
@@ -479,8 +705,48 @@
         ],
         "Alertas pedagógicos",
       );
+
       alertTable.tbody.id = "edu-alertas-body";
-      alertPanel.append(alertTable.wrap);
+
+      // Botões de navegação da lista
+      const alertActions = el("div", "edu-followup-alert-actions");
+
+      const showMoreAlerts = button(
+        "Mostrar mais",
+        "edu-followup-button edu-followup-button--primary",
+      );
+
+      const showLessAlerts = button("Mostrar menos", "edu-followup-button");
+
+      const backToAlertTop = button("Voltar ao início", "edu-followup-button");
+
+      showMoreAlerts.hidden = true;
+      showLessAlerts.hidden = true;
+      backToAlertTop.hidden = true;
+
+      alertActions.append(showMoreAlerts, showLessAlerts, backToAlertTop);
+
+      // Guarda as referências para a próxima etapa
+      alertFilterControls = {
+        search: alertSearch,
+        dateStart: alertDateStart,
+        dateEnd: alertDateEnd,
+        status: alertStatusFilter,
+        level: alertLevelFilter,
+        clear: clearAlertFilters,
+        summary: alertSummary,
+        showMore: showMoreAlerts,
+        showLess: showLessAlerts,
+        backToTop: backToAlertTop,
+        panel: alertPanel,
+      };
+
+      alertPanel.append(
+        alertToolbar,
+        alertSummary,
+        alertTable.wrap,
+        alertActions,
+      );
 
       const observationPanel = panel(
         "Registrar observação pedagógica",
@@ -683,6 +949,55 @@
     }
 
     buildUi();
+    // Filtros: reinicia a lista recolhida ao mudar qualquer critério.
+    function aplicarFiltrosAlertas() {
+      alertasExpandidos = false;
+      renderAlerts();
+    }
+
+    alertFilterControls.search.addEventListener("input", aplicarFiltrosAlertas);
+
+    [
+      alertFilterControls.dateStart,
+      alertFilterControls.dateEnd,
+      alertFilterControls.status,
+      alertFilterControls.level,
+    ].forEach((controle) => {
+      controle.addEventListener("change", aplicarFiltrosAlertas);
+    });
+
+    alertFilterControls.clear.addEventListener("click", () => {
+      alertFilterControls.search.value = "";
+      alertFilterControls.dateStart.value = "";
+      alertFilterControls.dateEnd.value = "";
+      alertFilterControls.status.value = "";
+      alertFilterControls.level.value = "";
+
+      alertasExpandidos = false;
+      renderAlerts();
+    });
+
+    alertFilterControls.showMore.addEventListener("click", () => {
+      alertasExpandidos = true;
+      renderAlerts();
+    });
+
+    alertFilterControls.showLess.addEventListener("click", () => {
+      alertasExpandidos = false;
+      renderAlerts();
+
+      alertFilterControls.panel.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+
+    alertFilterControls.backToTop.addEventListener("click", () => {
+      alertFilterControls.panel.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
 
     if (somenteLeituraAdmin) {
       root.querySelectorAll("input, select, textarea").forEach((controle) => {

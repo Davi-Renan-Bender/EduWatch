@@ -1,20 +1,20 @@
 /* ==========================================================================
-   EduWatch — Login
-   Identidade visual: azul profundo + azul institucional
-   ==========================================================================
-*/
+   EDUWATCH — TELA INICIAL / LOGIN
+   Identidade visual: azul profundo + azul institucional.
+   Estilo sóbrio, acessível e responsivo.
+   ========================================================================== */
 
 :root {
   --login-bg: #001d4a;
   --login-primary: #0b4f9c;
-  --login-primary-hover: #176fc1;
-  --login-text: #13263d;
-  --login-muted: #596d83;
-  --login-border: #cbd9e8;
+  --login-primary-hover: #083f7c;
+  --login-text: #172b40;
+  --login-muted: #5c6e80;
+  --login-border: #d4dee8;
   --login-surface: #ffffff;
-  --login-surface-soft: #f4f8fc;
-  --login-focus: rgba(47, 128, 237, 0.18);
-  --login-shadow: 0 24px 60px rgba(0, 11, 35, 0.26);
+  --login-surface-soft: #f5f8fb;
+  --login-focus: rgba(11, 79, 156, 0.18);
+  --login-shadow: 0 18px 48px rgba(0, 10, 29, 0.22);
 }
 
 *,
@@ -25,24 +25,27 @@
 
 html {
   min-height: 100%;
+  background: var(--login-bg);
 }
 
 body {
   min-height: 100vh;
+  min-height: 100svh;
   margin: 0;
-  padding: clamp(28px, 5vw, 54px) 20px 40px;
+  padding: clamp(28px, 5vh, 48px) 20px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #ffffff;
   text-align: center;
-  background: var(--login-bg);
+  background: #001d4a;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Logo ---------- */
+/* ---------- Logo e identidade ---------- */
 
 .logo-login {
   display: flex;
@@ -52,55 +55,53 @@ body {
 }
 
 .logo-login img {
-  width: 86px;
-  height: 86px;
-  object-fit: contain;
   display: block;
+  width: 78px;
+  height: 78px;
   margin: 0 auto 12px;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.18));
+  object-fit: contain;
+  filter: none;
 }
 
 .logo-login h1 {
   margin: 0;
   color: #ffffff;
-  font-size: clamp(34px, 5vw, 44px);
+  font-size: clamp(34px, 5vw, 42px);
   font-weight: 750;
   letter-spacing: -0.04em;
-  line-height: 1;
+  line-height: 1.08;
 }
-
-/* ---------- Descrição ---------- */
 
 .descricao {
   max-width: 560px;
-  margin: 0 0 30px;
-  color: #d6e6f7;
-  font-size: 17px;
-  line-height: 1.55;
+  margin: 0 0 26px;
+  color: #d5e2ef;
+  font-size: 16px;
+  line-height: 1.6;
+  text-wrap: balance;
 }
 
-/* ---------- Formulário ---------- */
+/* ---------- Cartão de autenticação ---------- */
 
 .tabela-login {
-  width: min(100%, 720px);
+  width: min(100%, 440px);
   margin: 0 auto;
-  padding: clamp(28px, 5vw, 44px);
+  padding: clamp(26px, 4vw, 36px);
   color: var(--login-text);
   text-align: left;
-  background: rgba(255, 255, 255, 0.985);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 18px;
+  background: var(--login-surface);
+  border: 1px solid rgba(220, 231, 241, 0.9);
+  border-radius: 14px;
   box-shadow: var(--login-shadow);
-  backdrop-filter: blur(10px);
 }
 
 .tabela-login h2 {
-  margin: 0 0 28px;
+  margin: 0 0 25px;
   color: #163b63;
-  font-size: clamp(26px, 4vw, 31px);
+  font-size: clamp(25px, 4vw, 29px);
   font-weight: 700;
   letter-spacing: -0.025em;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 /* ---------- Labels ---------- */
@@ -108,43 +109,47 @@ body {
 .tabela-login label {
   display: block;
   margin: 0 0 8px;
-  color: #1a3859;
-  font-size: 16px;
-  font-weight: 700;
+  color: #243e57;
+  font-size: 14px;
+  font-weight: 650;
 }
 
-/* ---------- Inputs ---------- */
+/* ---------- Campos ---------- */
 
 .tabela-login input {
   width: 100%;
-  min-height: 50px;
+  min-height: 48px;
   margin: 0;
-  padding: 13px 15px;
+  padding: 12px 14px;
   color: var(--login-text);
   font: inherit;
-  font-size: 16px;
+  font-size: 15px;
   background: #ffffff;
   border: 1px solid var(--login-border);
-  border-radius: 9px;
+  border-radius: 8px;
   outline: none;
   transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    background-color 0.18s ease;
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .tabela-login input::placeholder {
-  color: var(--login-muted);
+  color: #788796;
+  opacity: 1;
 }
 
 .tabela-login input:hover {
-  border-color: #9eb5cc;
+  border-color: #aebdca;
 }
 
 .tabela-login input:focus {
   border-color: var(--login-primary);
   background: #ffffff;
-  box-shadow: 0 0 0 4px var(--login-focus);
+  box-shadow: 0 0 0 3px var(--login-focus);
+}
+
+.tabela-login input:focus-visible {
+  outline: 2px solid transparent;
 }
 
 /* ---------- Campo de senha ---------- */
@@ -163,142 +168,256 @@ body {
 #mostrar-senha {
   position: absolute;
   top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
-  padding: 0;
+  right: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #61758b;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: #637689;
   background: transparent;
-  border: 0;
-  border-radius: 8px;
+  border: 1px solid transparent;
+  border-radius: 7px;
   cursor: pointer;
+  transform: translateY(-50%);
   transition:
-    color 0.18s ease,
-    background-color 0.18s ease;
+    color 0.16s ease,
+    background-color 0.16s ease;
 }
 
 #mostrar-senha:hover {
   color: var(--login-primary);
-  background: #edf4fb;
+  background: #edf3f8;
 }
 
 #mostrar-senha:focus-visible {
-  outline: 3px solid #4da3ff;
+  outline: 2px solid #6f91b0;
   outline-offset: 2px;
 }
 
 .icone-olho {
-  width: 21px;
-  height: 21px;
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 /* ---------- Botão entrar ---------- */
 
 .btn-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  min-height: 52px;
-  margin-top: 28px;
-  padding: 13px 18px;
+  min-height: 49px;
+  margin-top: 24px;
+  padding: 12px 18px;
   color: #ffffff;
   font: inherit;
-  font-size: 17px;
-  font-weight: 700;
-  background: #001d4a;
-  border: 1px solid #001d4a;
-  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.4;
+  background: #0b4f9c;
+  border: 1px solid #0b4f9c;
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(11, 95, 174, 0.18);
+  box-shadow: none;
+  filter: none;
+  transform: none;
   transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    filter 0.18s ease;
+    background-color 0.16s ease,
+    border-color 0.16s ease;
 }
 
-.btn-login:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(11, 95, 174, 0.24);
+.btn-login:hover:not(:disabled) {
+  color: #ffffff;
+  background: #083f7c;
+  border-color: #083f7c;
+  box-shadow: none;
+  filter: none;
+  transform: none;
 }
 
-.btn-login:active {
-  transform: translateY(0);
-  box-shadow: 0 6px 14px rgba(11, 95, 174, 0.18);
+.btn-login:active:not(:disabled) {
+  background: #073664;
+  border-color: #073664;
+  transform: none;
 }
 
 .btn-login:focus-visible {
-  outline: 3px solid #4da3ff;
+  outline: 2px solid #6f91b0;
   outline-offset: 3px;
-}
-
-/* ---------- Mensagens do login ---------- */
-
-.mensagem-login {
-  margin: 18px 0 0;
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.mensagem-login[hidden] {
-  display: none;
-}
-
-.mensagem-login--erro {
-  color: #8f2020;
-  background: #fff0f0;
-  border: 1px solid #f2caca;
-}
-
-.mensagem-login--info {
-  color: #174b80;
-  background: #edf5ff;
-  border: 1px solid #c6def8;
 }
 
 .btn-login:disabled {
   cursor: wait;
-  opacity: 0.72;
+  opacity: 0.65;
+  box-shadow: none;
   transform: none;
 }
 
-/* ---------- Esqueci a senha ---------- */
+/* ---------- Mensagens ---------- */
+
+.mensagem-login {
+  margin: 16px 0 0;
+  padding: 11px 13px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.mensagem-login[hidden] {
+  display: none !important;
+}
+
+.mensagem-login--erro {
+  color: #873d3d;
+  background: #fbefef;
+  border-color: #e9cccc;
+}
+
+.mensagem-login--info {
+  color: #244e75;
+  background: #eef4f9;
+  border-color: #d3e1ee;
+}
+
+/* ---------- Recuperação de acesso ---------- */
 
 #esqueci_senha {
   display: inline-block;
-  margin: 20px auto 0;
-  color: #1765a8;
-  font-size: 15px;
+  margin: 18px 0 0;
+  color: #0b4f9c;
+  font-size: 14px;
   font-weight: 600;
+  line-height: 1.5;
   text-decoration: none;
+  text-underline-offset: 3px;
   transition:
-    color 0.18s ease,
-    text-decoration-color 0.18s ease;
+    color 0.16s ease,
+    text-decoration-color 0.16s ease;
 }
 
 #esqueci_senha:hover {
-  color: #0b4f9c;
+  color: #083f7c;
   text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 #esqueci_senha:focus-visible {
-  outline: 3px solid #4da3ff;
+  outline: 2px solid #6f91b0;
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-/* ---------- Acessibilidade ---------- */
+/* Evita realces de toque excessivos em dispositivos móveis. */
 
 button,
 input,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ---------- Responsividade ---------- */
+
+@media (max-width: 600px) {
+  body {
+    padding: 28px 14px 30px;
+  }
+
+  .logo-login img {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 10px;
+  }
+
+  .logo-login h1 {
+    font-size: clamp(32px, 9vw, 38px);
+  }
+
+  .descricao {
+    max-width: 420px;
+    margin-bottom: 22px;
+    font-size: 15px;
+  }
+
+  .tabela-login {
+    width: 100%;
+    max-width: 440px;
+    padding: 25px 20px;
+    border-radius: 12px;
+  }
+
+  .tabela-login h2 {
+    margin-bottom: 22px;
+    font-size: 25px;
+  }
+
+  .tabela-login label {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 22px 12px 24px;
+  }
+
+  .logo-login img {
+    width: 62px;
+    height: 62px;
+  }
+
+  .descricao {
+    margin-bottom: 18px;
+    font-size: 14px;
+  }
+
+  .tabela-login {
+    padding: 22px 16px;
+  }
+
+  .tabela-login input,
+  .btn-login {
+    min-height: 46px;
+    font-size: 14px;
+  }
+}
+
+/* Em notebooks baixos, evita que o formulário exija rolagem excessiva. */
+
+@media (max-height: 760px) and (min-width: 601px) {
+  body {
+    padding-top: 22px;
+    padding-bottom: 24px;
+  }
+
+  .logo-login img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+  }
+
+  .descricao {
+    margin-bottom: 18px;
+    font-size: 15px;
+  }
+
+  .tabela-login {
+    padding: 25px 30px;
+  }
+
+  .tabela-login h2 {
+    margin-bottom: 18px;
+  }
+
+  .btn-login {
+    margin-top: 18px;
+  }
+}
+
+/* Preferências de acessibilidade. */
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -308,49 +427,5 @@ a {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-  }
-}
-
-/* ---------- Responsivo ---------- */
-
-@media (max-width: 600px) {
-  body {
-    padding: 30px 14px 28px;
-  }
-
-  .logo-login img {
-    width: 74px;
-    height: 74px;
-    margin-bottom: 10px;
-  }
-
-  .descricao {
-    margin-bottom: 24px;
-    font-size: 16px;
-  }
-
-  .tabela-login {
-    padding: 26px 20px;
-    border-radius: 14px;
-  }
-
-  .tabela-login h2 {
-    margin-bottom: 24px;
-    font-size: 26px;
-  }
-
-  .tabela-login label {
-    font-size: 15.5px;
-  }
-}
-
-@media (max-width: 380px) {
-  .tabela-login {
-    padding: 22px 16px;
-  }
-
-  .btn-login,
-  .tabela-login input {
-    min-height: 48px;
   }
 }

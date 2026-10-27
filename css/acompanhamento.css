@@ -385,3 +385,244 @@
     min-width: 760px;
   }
 }
+
+/* Ajuste da tabela de acompanhamento */
+
+.edu-followup-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.edu-followup-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+/* Permite que justificativas longas quebrem em várias linhas */
+
+.edu-followup-justification {
+  min-width: 0;
+  max-width: none;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Impede os controles de ultrapassarem a célula */
+
+.edu-followup-inline-controls {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+/* Seletor de status limitado à coluna */
+
+.edu-followup-select--compact {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mantém o botão Salvar compacto */
+
+.edu-followup-inline-controls .edu-followup-button {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+/* =========================================================
+   EDUWATCH — FILTROS E NAVEGAÇÃO DOS ALERTAS
+   ========================================================= */
+
+.edu-followup-alert-filters {
+  display: grid;
+  grid-template-columns:
+    minmax(200px, 2fr)
+    repeat(2, minmax(135px, 1fr))
+    repeat(2, minmax(145px, 1fr))
+    auto;
+  align-items: end;
+  gap: 12px;
+
+  margin: 16px 0 12px;
+  padding: 16px;
+
+  background: #f4f7fb;
+  border: 1px solid #d4e0ec;
+  border-radius: 10px;
+}
+
+.edu-followup-alert-filters .edu-followup-field {
+  min-width: 0;
+}
+
+.edu-followup-alert-filters .edu-followup-field__label {
+  color: #354d64;
+  font-size: 12px;
+}
+
+.edu-followup-alert-filters .edu-followup-input,
+.edu-followup-alert-filters .edu-followup-select {
+  min-width: 0;
+  width: 100%;
+  min-height: 40px;
+  background: #fff;
+  border-color: #cbd9e8;
+  font-size: 13px;
+}
+
+.edu-followup-alert-filters .edu-followup-input:focus,
+.edu-followup-alert-filters .edu-followup-select:focus {
+  outline: 2px solid rgba(11, 79, 156, 0.15);
+  outline-offset: 1px;
+  border-color: #0b4f9c;
+  box-shadow: none;
+}
+
+.edu-followup-alert-filters > .edu-followup-button {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.edu-followup-alert-summary {
+  margin: 0 0 12px;
+  padding: 10px 13px;
+
+  color: #536b80;
+  background: #f8fafc;
+  border: 1px solid #e1e8ef;
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.edu-followup-alert-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e1e8ef;
+}
+
+.edu-followup-alert-actions .edu-followup-button {
+  min-height: 38px;
+  padding: 9px 14px;
+  font-size: 12px;
+}
+
+.edu-followup-alert-actions .edu-followup-button--primary {
+  color: #fff;
+  background: #0b4f9c;
+  border-color: #0b4f9c;
+  box-shadow: none;
+}
+
+.edu-followup-alert-actions .edu-followup-button--primary:hover {
+  background: #003b73;
+  border-color: #003b73;
+  filter: none;
+}
+
+/* Respeita o estado hidden definido pelo JavaScript. */
+.edu-followup-alert-actions button[hidden] {
+  display: none !important;
+}
+
+/* Reduz o excesso de largura em notebooks. */
+@media (min-width: 801px) and (max-width: 1440px) {
+  .edu-followup-alert-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .edu-followup-alert-filters > .edu-followup-button {
+    width: fit-content;
+  }
+
+  .edu-followup-table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .edu-followup-table th,
+  .edu-followup-table td {
+    padding: 9px 8px;
+    overflow-wrap: anywhere;
+  }
+
+  .edu-followup-justification {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .edu-followup-inline-controls {
+    min-width: 0;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edu-followup-select--compact {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .edu-followup-inline-controls .edu-followup-button {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 800px) {
+  .edu-followup-alert-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 12px;
+  }
+
+  .edu-followup-alert-filters .edu-followup-field:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .edu-followup-alert-actions {
+    justify-content: stretch;
+  }
+
+  .edu-followup-alert-actions .edu-followup-button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .edu-followup-alert-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .edu-followup-alert-filters .edu-followup-field:first-child {
+    grid-column: auto;
+  }
+
+  .edu-followup-alert-filters > .edu-followup-button,
+  .edu-followup-alert-actions .edu-followup-button {
+    width: 100%;
+  }
+
+  .edu-followup-alert-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

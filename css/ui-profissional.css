@@ -1,0 +1,1042 @@
+/* ==========================================================================
+   EDUWATCH — SISTEMA VISUAL PROFISSIONAL
+   Carregar depois de todos os outros CSS das áreas autenticadas.
+   Objetivo: interface sóbria, confortável, acessível e consistente.
+   ========================================================================== */
+
+/* 1. PALETA E TOKENS GLOBAIS */
+
+:root {
+  --primary: #375c76;
+  --primary-strong: #2d4e66;
+  --primary-deep: #20384b;
+  --secondary: #607b90;
+  --accent: #7894a7;
+
+  --background: #20384b;
+  --page-background: #f3f5f7;
+  --surface: #ffffff;
+  --surface-muted: #f7f9fb;
+  --surface-hover: #f0f4f7;
+
+  --color-bg: #f3f5f7;
+  --color-surface: #ffffff;
+
+  --text: #2b3948;
+  --text-strong: #1c2e3e;
+  --text-inverted: #ffffff;
+  --muted: #687887;
+  --text-muted: #687887;
+  --text-on-background: #ffffff;
+  --muted-on-background: #c2cdd6;
+
+  --color-text: #2b3948;
+  --color-text-muted: #687887;
+  --color-text-subtle: #687887;
+  --color-text-on-navy: #ffffff;
+  --color-text-on-navy-muted: #c2cdd6;
+
+  --border: #dce3e9;
+  --border-strong: #bdc9d3;
+  --color-border: #dce3e9;
+  --color-border-strong: #bdc9d3;
+
+  --success: #50745f;
+  --success-text: #365c45;
+  --success-bg: #edf4ef;
+  --success-border: #d0e1d5;
+
+  --warning: #8a7039;
+  --warning-text: #775e2d;
+  --warning-bg: #f7f2e8;
+  --warning-border: #e8ddc5;
+
+  --danger: #a15b59;
+  --danger-text: #8c4948;
+  --danger-bg: #f8eeee;
+  --danger-border: #e8cece;
+
+  --info: #526f87;
+  --info-bg: #eef3f7;
+  --info-border: #d7e2ea;
+
+  /* Mantém compatibilidade com nomes antigos. */
+  --navy-950: #172a3a;
+  --navy-900: #20384b;
+  --navy-850: #29465c;
+  --navy-800: #2d4e66;
+  --navy-700: #375c76;
+  --navy-600: #496b82;
+  --navy-500: #55758b;
+  --navy-400: #7894a7;
+  --navy-300: #a7b8c5;
+  --navy-200: #cfdae2;
+  --navy-100: #e8edf1;
+
+  --neutral-0: #ffffff;
+  --neutral-50: #f7f9fb;
+  --neutral-100: #f0f3f6;
+  --neutral-200: #e4e9ee;
+  --neutral-300: #d4dce3;
+  --neutral-500: #8a99a6;
+  --neutral-700: #526271;
+  --neutral-900: #263746;
+
+  --gold-400: #7894a7;
+  --gold-500: #55758b;
+
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-lg: 12px;
+  --radius-xl: 15px;
+
+  /* Sombras discretas, usadas apenas para separar superfícies. */
+  --shadow-xs: 0 1px 2px rgba(28, 46, 62, 0.035);
+  --shadow-sm: 0 2px 6px rgba(28, 46, 62, 0.045);
+  --shadow-md: 0 5px 14px rgba(28, 46, 62, 0.07);
+  --shadow-lg: 0 10px 26px rgba(28, 46, 62, 0.09);
+  --shadow-focus: 0 0 0 3px rgba(55, 92, 118, 0.16);
+  --ring-focus: 0 0 0 3px rgba(55, 92, 118, 0.16);
+
+  --transition-fast: 0.16s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.25s ease;
+}
+
+/* 2. BASE E LAYOUT */
+
+body.dashboard-body {
+  background: var(--page-background);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+}
+
+body.dashboard-body ::selection {
+  color: #ffffff;
+  background: #526f87;
+}
+
+body.dashboard-body a {
+  text-underline-offset: 3px;
+}
+
+body.dashboard-body .app-content {
+  background: var(--page-background);
+}
+
+body.dashboard-body .main-content {
+  padding-top: 24px;
+  padding-bottom: 32px;
+}
+
+body.dashboard-body .dashboard-section {
+  gap: 22px;
+}
+
+/* 3. MENU LATERAL */
+
+body.dashboard-body .sidebar {
+  background-color: #20384b;
+  background-image: none;
+  border-right: 1px solid #344b5d;
+  box-shadow: none;
+}
+
+body.dashboard-body .sidebar-brand {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dashboard-body .brand-name {
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+body.dashboard-body .sidebar-link {
+  color: #c4cfd8;
+  border-color: transparent;
+  border-radius: 8px;
+  transform: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+body.dashboard-body .sidebar-link:hover {
+  color: #ffffff;
+  background: #2c465b;
+  border-color: transparent;
+  transform: none;
+}
+
+body.dashboard-body .sidebar-link.is-active {
+  color: #ffffff;
+  background: #344e62;
+  border-color: #3d5669;
+  box-shadow: none;
+}
+
+body.dashboard-body .sidebar-link.is-active::before {
+  background: #a9bac7;
+}
+
+body.dashboard-body .sidebar-user {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dashboard-body .sidebar-footer {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dashboard-body .sidebar .btn-ghost {
+  color: #d0d9e0;
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: none;
+}
+
+body.dashboard-body .sidebar .btn-ghost:hover {
+  color: #ffffff;
+  background: #2c465b;
+  border-color: #496174;
+}
+
+/* 4. CABEÇALHO DA PÁGINA */
+
+body.dashboard-body .topbar {
+  background: #ffffff;
+  background-image: none;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(28, 46, 62, 0.025);
+  backdrop-filter: none;
+}
+
+body.dashboard-body .topbar-title h1 {
+  color: var(--text-strong);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+body.dashboard-body .topbar-subtitle {
+  color: var(--muted);
+}
+
+body.dashboard-body .btn-icon {
+  color: #566a7b;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+body.dashboard-body .btn-icon:hover {
+  color: var(--primary);
+  background: #f0f3f6;
+  border-color: var(--border);
+}
+
+/* 5. PAINÉIS E SUPERFÍCIES */
+
+body.dashboard-body .panel,
+body.dashboard-body .edu-followup-panel,
+body.dashboard-body .edu-rule-card {
+  background: #ffffff;
+  background-image: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+body.dashboard-body .panel-header {
+  border-color: var(--border);
+}
+
+body.dashboard-body .panel-header h2,
+body.dashboard-body .section-heading {
+  color: var(--text-strong);
+  font-weight: 650;
+  letter-spacing: -0.012em;
+}
+
+body.dashboard-body .panel-header p,
+body.dashboard-body .section-subheading,
+body.dashboard-body .academic-section-description {
+  color: var(--muted);
+}
+
+/* Remove o fundo decorativo brilhante do painel administrativo. */
+
+body.dashboard-body .admin-welcome {
+  background: #ffffff;
+  border-color: var(--border);
+  box-shadow: var(--shadow-xs);
+}
+
+body.dashboard-body .admin-welcome::after {
+  display: none;
+}
+
+/* 6. CARTÕES E INDICADORES */
+
+body.dashboard-body .kpi-card {
+  background: #ffffff;
+  background-image: none;
+  border-color: var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  transform: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+body.dashboard-body .kpi-card:hover {
+  background: #ffffff;
+  border-color: #c7d2db;
+  box-shadow: var(--shadow-sm);
+  transform: none;
+}
+
+body.dashboard-body .kpi-card::before {
+  background: var(--primary);
+}
+
+body.dashboard-body .kpi-card--warning::before {
+  background: #b5a071;
+}
+
+body.dashboard-body .kpi-card--danger::before {
+  background: #b47b78;
+}
+
+body.dashboard-body .class-card,
+body.dashboard-body .admin-area-card {
+  background: #ffffff;
+  background-image: none;
+  border-color: var(--border);
+  box-shadow: var(--shadow-xs);
+  transform: none;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+body.dashboard-body .class-card:hover,
+body.dashboard-body #grade-turmas-coord .class-card:hover,
+body.dashboard-body .admin-area-card:hover {
+  background: #fbfcfd;
+  border-color: #c4d0d9;
+  box-shadow: var(--shadow-sm);
+  transform: none;
+}
+
+body.dashboard-body .class-card:focus-visible,
+body.dashboard-body .admin-area-card:focus-visible {
+  outline: 2px solid #6c879c;
+  outline-offset: 2px;
+}
+
+body.dashboard-body .admin-area-icon {
+  color: #496b82;
+  background: #eef3f7;
+  border-color: #d7e2ea;
+}
+
+/* 7. BOTÕES */
+
+body.dashboard-body .btn {
+  color: #354a5b;
+  background: #ffffff;
+  background-image: none;
+  border: 1px solid #ccd6de;
+  border-radius: 8px;
+  box-shadow: none;
+  font-weight: 600;
+  transform: none;
+  filter: none;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+body.dashboard-body .btn:hover:not(:disabled) {
+  color: #253e51;
+  background: #f3f6f8;
+  background-image: none;
+  border-color: #b9c7d2;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+body.dashboard-body .btn:active:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+}
+
+body.dashboard-body .btn-primary,
+body.dashboard-body .btn.btn-primary {
+  color: #ffffff;
+  background: #375c76;
+  background-image: none;
+  border-color: #375c76;
+  box-shadow: none;
+}
+
+body.dashboard-body .btn-primary:hover:not(:disabled),
+body.dashboard-body .btn.btn-primary:hover:not(:disabled) {
+  color: #ffffff;
+  background: #2d4e66;
+  background-image: none;
+  border-color: #2d4e66;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+body.dashboard-body .btn-secondary {
+  color: #354a5b;
+  background: #edf1f4;
+  border-color: #d8e0e6;
+  box-shadow: none;
+}
+
+body.dashboard-body .btn-secondary:hover:not(:disabled) {
+  background: #e5ebef;
+  border-color: #c7d2db;
+}
+
+body.dashboard-body .btn-danger {
+  color: #8c4948;
+  background: #fbf3f3;
+  border-color: #e8d3d3;
+  box-shadow: none;
+}
+
+body.dashboard-body .btn-danger:hover:not(:disabled) {
+  color: #763d3c;
+  background: #f5e7e7;
+  border-color: #ddc2c2;
+  box-shadow: none;
+  transform: none;
+}
+
+body.dashboard-body .btn:disabled,
+body.dashboard-body button:disabled {
+  opacity: 0.58;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+body.dashboard-body .btn:focus-visible,
+body.dashboard-body .btn-icon:focus-visible {
+  outline: 2px solid #6c879c;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Botão específico de atribuição de professores. */
+
+body.dashboard-body #btn-salvar-atribuicao-professor {
+  color: #ffffff;
+  background: #375c76;
+  background-image: none;
+  border: 1px solid #375c76;
+  border-radius: 8px;
+  box-shadow: none;
+  transform: none;
+}
+
+body.dashboard-body #btn-salvar-atribuicao-professor:hover:not(:disabled) {
+  color: #ffffff;
+  background: #2d4e66;
+  background-image: none;
+  border-color: #2d4e66;
+  box-shadow: none;
+  transform: none;
+}
+
+body.dashboard-body #form-atribuicao-professor select:focus-visible {
+  outline: 2px solid #6c879c;
+  outline-offset: 2px;
+  border-color: #6c879c;
+  box-shadow: none;
+}
+
+/* 8. FORMULÁRIOS E FILTROS */
+
+body.dashboard-body
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+    [type="submit"]
+  ):not([type="button"]):not([type="hidden"]),
+body.dashboard-body select,
+body.dashboard-body textarea {
+  color: var(--text);
+  background-color: #ffffff;
+  border-color: #cbd5de;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+body.dashboard-body
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+    [type="submit"]
+  ):not([type="button"]):not([type="hidden"]):hover,
+body.dashboard-body select:hover,
+body.dashboard-body textarea:hover {
+  border-color: #a9b9c6;
+}
+
+body.dashboard-body
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+    [type="submit"]
+  ):not([type="button"]):not([type="hidden"]):focus,
+body.dashboard-body select:focus,
+body.dashboard-body textarea:focus {
+  border-color: #6c879c;
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+
+body.dashboard-body input::placeholder,
+body.dashboard-body textarea::placeholder {
+  color: #8593a0;
+  opacity: 1;
+}
+
+body.dashboard-body input[type="checkbox"],
+body.dashboard-body input[type="radio"] {
+  accent-color: var(--primary);
+}
+
+/* 9. TABELAS */
+
+body.dashboard-body .table-wrapper,
+body.dashboard-body .edu-followup-table-wrap {
+  background: #ffffff;
+  border-color: var(--border);
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+body.dashboard-body .data-table,
+body.dashboard-body .edu-followup-table {
+  color: var(--text);
+}
+
+body.dashboard-body .data-table thead th {
+  color: #4c5f6f;
+  background: #f2f5f7;
+  border-bottom: 1px solid var(--border);
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+body.dashboard-body .data-table tbody td {
+  color: #354656;
+  border-bottom-color: #e9eef2;
+}
+
+body.dashboard-body .data-table tbody tr:hover {
+  background: #f8fafb;
+}
+
+body.dashboard-body .data-table tbody tr:hover td {
+  background-color: #f8fafb;
+}
+
+/* A tabela de atribuições tinha cabeçalho azul escuro próprio. */
+
+body.dashboard-body #painel-atribuicoes-professor .data-table thead th {
+  color: #4c5f6f;
+  background: #f2f5f7;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* 10. TABELA DE AVALIAÇÕES DO PROFESSOR */
+
+body.dashboard-body #panel-avaliacoes-abertas {
+  background: #ffffff;
+  background-image: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+body.dashboard-body #panel-avaliacoes-abertas::before {
+  display: none;
+}
+
+body.dashboard-body #panel-avaliacoes-abertas:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-xs);
+}
+
+body.dashboard-body #panel-avaliacoes-abertas tbody tr:nth-child(even) td {
+  background: #fafbfc;
+}
+
+body.dashboard-body #panel-avaliacoes-abertas tbody tr:hover td {
+  background: #f3f6f8;
+}
+
+body.dashboard-body #panel-avaliacoes-abertas td:last-child .btn-primary {
+  color: #ffffff;
+  background: #375c76;
+  background-image: none;
+  border-color: #375c76;
+  box-shadow: none;
+}
+
+body.dashboard-body
+  #panel-avaliacoes-abertas
+  td:last-child
+  .btn-primary:hover:not(:disabled) {
+  color: #ffffff;
+  background: #2d4e66;
+  border-color: #2d4e66;
+  box-shadow: none;
+  transform: none;
+}
+
+body.dashboard-body
+  #panel-avaliacoes-abertas
+  td:last-child
+  .btn-danger:hover:not(:disabled) {
+  color: #763d3c;
+  background: #f5e7e7;
+  border-color: #ddc2c2;
+  box-shadow: none;
+  transform: none;
+}
+
+body.dashboard-body #panel-avaliacoes-abertas button:focus-visible {
+  outline: 2px solid #6c879c;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* 11. GRÁFICOS E ESTADOS */
+
+body.dashboard-body .mini-chart-fill {
+  background: #7894a7;
+  background-image: none;
+  box-shadow: none;
+  filter: none;
+}
+
+body.dashboard-body .mini-chart-fill--normal {
+  background: #799486;
+  background-image: none;
+}
+
+body.dashboard-body .mini-chart-fill--atencao {
+  background: #b7a16f;
+  background-image: none;
+}
+
+body.dashboard-body .mini-chart-fill--critico {
+  background: #b47d79;
+  background-image: none;
+}
+
+body.dashboard-body .mini-chart-bar:hover .mini-chart-fill {
+  filter: none;
+  transform: none;
+}
+
+body.dashboard-body .modal-header {
+  background: #f8fafb;
+  background-image: none;
+  border-bottom-color: var(--border);
+}
+
+/* 12. ESTADOS DE ACOMPANHAMENTO */
+
+body.dashboard-body .status-badge--normal,
+body.dashboard-body .badge-normal,
+body.dashboard-body .edu-followup-pill--visible {
+  color: var(--success-text);
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+body.dashboard-body .status-badge--atencao,
+body.dashboard-body .badge-atencao,
+body.dashboard-body .edu-followup-pill--atencao {
+  color: var(--warning-text);
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+
+body.dashboard-body .status-badge--critico,
+body.dashboard-body .badge-critico,
+body.dashboard-body .edu-followup-pill--critico {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+body.dashboard-body .state-block {
+  color: var(--muted);
+  background: #f7f9fb;
+  border-color: var(--border);
+}
+
+body.dashboard-body .state-block--error {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+/* 13. MOVIMENTO DISCRETO */
+
+@media (hover: hover) {
+  body.dashboard-body .btn,
+  body.dashboard-body .class-card,
+  body.dashboard-body .admin-area-card,
+  body.dashboard-body .kpi-card {
+    transition-duration: 0.16s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.dashboard-body *,
+  body.dashboard-body *::before,
+  body.dashboard-body *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 14. TELAS MENORES */
+
+@media (max-width: 700px) {
+  body.dashboard-body .main-content {
+    padding: 16px;
+  }
+
+  body.dashboard-body .dashboard-section {
+    gap: 16px;
+  }
+
+  body.dashboard-body .panel {
+    border-radius: 10px;
+  }
+}
+/* ==========================================================================
+   EDUWATCH — AJUSTE DA IDENTIDADE VISUAL E DAS CORES
+   Sobrescreve a proposta anterior de ui-profissional.css.
+   ========================================================================== */
+
+:root {
+  /* Identidade institucional */
+  --primary: #0b4f9c;
+  --primary-strong: #003b73;
+  --primary-deep: #001d4a;
+  --secondary: #245b86;
+  --accent: #6486a4;
+
+  /* Navegação e fundos */
+  --background: #001d4a;
+  --page-background: #f4f7fb;
+  --surface: #ffffff;
+  --surface-muted: #edf4fb;
+  --surface-hover: #f0f6fc;
+
+  /* Texto */
+  --text: #14263d;
+  --text-strong: #0f2742;
+  --muted: #596d83;
+  --text-muted: #596d83;
+
+  /* Bordas */
+  --border: #d4e0ec;
+  --border-strong: #9eb3c8;
+
+  /* Foco discreto */
+  --ring-focus: 0 0 0 3px rgba(11, 79, 156, 0.15);
+  --shadow-focus: 0 0 0 3px rgba(11, 79, 156, 0.15);
+
+  /* Escala institucional */
+  --navy-950: #000d22;
+  --navy-900: #001d4a;
+  --navy-850: #002653;
+  --navy-800: #00345f;
+  --navy-700: #004a82;
+  --navy-600: #0060a8;
+  --navy-500: #0b4f9c;
+  --navy-400: #2878c7;
+  --navy-300: #65a7df;
+  --navy-200: #a8cff2;
+  --navy-100: #dcecf9;
+
+  /* Destaques auxiliares mais discretos */
+  --gold-400: #7c94aa;
+  --gold-500: #536e85;
+}
+
+/* Navegação: azul-escuro original do EduWatch */
+
+body.dashboard-body .sidebar {
+  background: #001d4a;
+  background-image: none;
+  border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dashboard-body .sidebar-link {
+  color: #c4d3e2;
+}
+
+body.dashboard-body .sidebar-link:hover {
+  color: #ffffff;
+  background: #002653;
+  border-color: transparent;
+}
+
+body.dashboard-body .sidebar-link.is-active {
+  color: #ffffff;
+  background: #00345f;
+  border-color: #174a76;
+  box-shadow: none;
+}
+
+/* Botões: azul institucional, sem neon ou gradientes */
+
+body.dashboard-body .btn-primary,
+body.dashboard-body .btn.btn-primary,
+body.dashboard-body #btn-salvar-atribuicao-professor {
+  color: #ffffff;
+  background: #0b4f9c;
+  background-image: none;
+  border-color: #0b4f9c;
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+body.dashboard-body .btn-primary:hover:not(:disabled),
+body.dashboard-body .btn.btn-primary:hover:not(:disabled),
+body.dashboard-body #btn-salvar-atribuicao-professor:hover:not(:disabled) {
+  color: #ffffff;
+  background: #003b73;
+  background-image: none;
+  border-color: #003b73;
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+body.dashboard-body .btn:focus-visible,
+body.dashboard-body .btn-icon:focus-visible,
+body.dashboard-body input:focus-visible,
+body.dashboard-body select:focus-visible,
+body.dashboard-body textarea:focus-visible {
+  outline: 2px solid #6486a4;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Botão de mostrar mais avaliações */
+
+body.dashboard-body #btn-mostrar-mais-avaliacoes {
+  color: #ffffff;
+  background: #0b4f9c;
+  background-image: none;
+  border-color: #0b4f9c;
+  box-shadow: none;
+}
+
+body.dashboard-body #btn-mostrar-mais-avaliacoes:hover:not(:disabled) {
+  background: #003b73;
+  border-color: #003b73;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Cabeçalhos de tabela uniformes */
+
+body.dashboard-body .data-table thead th,
+body.dashboard-body #painel-atribuicoes-professor .data-table thead th {
+  color: #354d64;
+  background: #edf2f7;
+  border-bottom: 1px solid #d4e0ec;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+body.dashboard-body .data-table tbody tr:hover,
+body.dashboard-body .data-table tbody tr:hover td {
+  background: #f4f7fb;
+}
+
+/* Estados de acompanhamento: cores suaves, significado preservado */
+
+body.dashboard-body .status-badge--normal,
+body.dashboard-body .badge-normal {
+  color: #365c45;
+  background: #edf4ef;
+  border-color: #d0e1d5;
+}
+
+body.dashboard-body .status-badge--atencao,
+body.dashboard-body .badge-atencao {
+  color: #775e2d;
+  background: #f7f2e8;
+  border-color: #e8ddc5;
+}
+
+body.dashboard-body .status-badge--critico,
+body.dashboard-body .badge-critico {
+  color: #8c4948;
+  background: #f8eeee;
+  border-color: #e8cece;
+}
+/* ==========================================================================
+   EDUWATCH — TABELAS RESPONSIVAS PARA NOTEBOOKS
+   Prioriza leitura sem rolagem horizontal nas tabelas comuns.
+   ========================================================================== */
+
+/* Impede que painéis e contêineres alarguem toda a página. */
+
+body.dashboard-body .main-content,
+body.dashboard-body .dashboard-section,
+body.dashboard-body .panel,
+body.dashboard-body .section-block,
+body.dashboard-body .table-wrapper {
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.dashboard-body .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+/* Tabelas compactas para a largura útil de notebooks. */
+
+@media (min-width: 961px) and (max-width: 1440px) {
+  body.dashboard-body .data-table,
+  body.dashboard-body .edu-followup-table,
+  body.dashboard-body #section-desempenho .data-table {
+    width: 100%;
+    min-width: 0 !important;
+    max-width: 100%;
+    table-layout: fixed;
+  }
+
+  body.dashboard-body .data-table thead th,
+  body.dashboard-body .data-table tbody td,
+  body.dashboard-body .edu-followup-table th,
+  body.dashboard-body .edu-followup-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    vertical-align: middle;
+  }
+
+  body.dashboard-body .data-table thead th {
+    font-size: 11px;
+    font-weight: 650;
+  }
+
+  /* Não deixa os controles ultrapassarem a largura das células. */
+
+  body.dashboard-body .data-table td button,
+  body.dashboard-body .data-table td .btn,
+  body.dashboard-body .data-table td select,
+  body.dashboard-body .data-table td input {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  body.dashboard-body .data-table td button,
+  body.dashboard-body .data-table td .btn {
+    padding: 6px 8px;
+    font-size: 11px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* Filtros não devem forçar a largura do painel. */
+
+  body.dashboard-body .filters-bar,
+  body.dashboard-body .assessment-date-filters,
+  body.dashboard-body .assessments-list-toolbar {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  body.dashboard-body .filters-bar > *,
+  body.dashboard-body .assessment-date-filters > *,
+  body.dashboard-body .assessments-list-toolbar > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* A tabela de avaliações ganha espaçamento mais econômico. */
+
+  body.dashboard-body #panel-avaliacoes-abertas .data-table th,
+  body.dashboard-body #panel-avaliacoes-abertas .data-table td {
+    padding: 9px 7px;
+    font-size: 11.5px;
+  }
+
+  /* Ações podem quebrar em linhas dentro da própria célula. */
+
+  body.dashboard-body #panel-avaliacoes-abertas td:last-child {
+    white-space: normal;
+  }
+
+  body.dashboard-body #panel-avaliacoes-abertas td:last-child .btn {
+    display: inline-flex;
+    margin: 2px;
+  }
+}
+
+/* Em telas menores, mantém a rolagem apenas quando necessária. */
+
+@media (max-width: 960px) {
+  body.dashboard-body .table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  body.dashboard-body .data-table,
+  body.dashboard-body .edu-followup-table {
+    max-width: 100%;
+  }
+}
+
+/* Texto longo nunca deve criar uma página mais larga que a tela. */
+
+body.dashboard-body .data-table td,
+body.dashboard-body .data-table th,
+body.dashboard-body .edu-followup-table td,
+body.dashboard-body .edu-followup-table th {
+  overflow-wrap: anywhere;
+}
+
+/* Campos e botões não devem empurrar o layout para fora da viewport. */
+
+body.dashboard-body .table-wrapper *,
+body.dashboard-body .filters-bar *,
+body.dashboard-body .assessment-date-filters * {
+  box-sizing: border-box;
+}
