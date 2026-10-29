@@ -6,6 +6,16 @@ require_once __DIR__ . '/comum.php';
 eduwatch_exigir_metodo('GET');
 $usuario = ew_acad_require_role(['professor']);
 
+$forcarAtualizacao = isset($_GET['refresh']) && $_GET['refresh'] === '1';
+$cacheKey = 'painel_professor_' . $usuario['id'];
+if (!$forcarAtualizacao) {
+    $cached = ew_acad_obter_cache($cacheKey, 60);
+    if ($cached !== null) {
+        header('X-EduWatch-Cache: HIT');
+        ew_acad_json(200, $cached);
+    }
+}
+
 function ew_professor_media(array $notas): ?float
 {
     $somaPonderada = 0.0;
@@ -32,8 +42,9 @@ function ew_professor_situacao(?float $media): string
 }
 
 try {
+    // Busca atribuições com turmas embutidas em 1 única requisição
     $atribuicoes = ew_acad_rows(
-        '/rest/v1/turma_disciplinas?select=id,turma_id&professor_id=eq.' . rawurlencode($usuario['id']) . '&order=id.asc',
+        '/rest/v1/turma_disciplinas?select=id,turma_id,disciplina_id,turmas(id,nome,status)&professor_id=eq.' . rawurlencode($usuario['id']) . '&order=id.asc',
         'suas atribuições de turma e disciplina'
     );
     if (!$atribuicoes) {
@@ -47,21 +58,17 @@ try {
 
     $atribuicaoPorId = [];
     $atribuicaoIds = [];
-    $turmaIds = [];
+    $turmasPorId = [];
     foreach ($atribuicoes as $atribuicao) {
         $atribuicaoId = (int) $atribuicao['id'];
+        $turma = $atribuicao['turmas'] ?? [];
+        $turmaId = (int) ($atribuicao['turma_id'] ?? 0);
         $atribuicaoPorId[$atribuicaoId] = $atribuicao;
         $atribuicaoIds[] = $atribuicaoId;
-        $turmaIds[] = (int) $atribuicao['turma_id'];
+        if ($turmaId > 0 && ($turma['status'] ?? '') === 'ativa') {
+            $turmasPorId[$turmaId] = $turma;
+        }
     }
-    $turmaIds = array_values(array_unique($turmaIds));
-
-    $turmasDb = ew_acad_rows(
-        '/rest/v1/turmas?select=id,nome,status&id=' . ew_acad_in_filter($turmaIds) . '&status=eq.ativa&order=nome.asc',
-        'suas turmas ativas'
-    );
-    $turmasPorId = [];
-    foreach ($turmasDb as $turma) $turmasPorId[(int) $turma['id']] = $turma;
     $turmaIdsAtivas = array_keys($turmasPorId);
 
     if (!$turmaIdsAtivas) {
@@ -73,19 +80,17 @@ try {
         ]);
     }
 
+    // Busca matrículas com dados do aluno embutidos diretamente em 1 única chamada
     $matriculas = ew_acad_rows(
-        '/rest/v1/matriculas?select=id,aluno_id,turma_id&turma_id=' . ew_acad_in_filter($turmaIdsAtivas) . '&status=eq.ativa&order=id.asc',
+        '/rest/v1/matriculas?select=id,aluno_id,turma_id,aluno:usuarios(id,nome_completo)&turma_id=' . ew_acad_in_filter($turmaIdsAtivas) . '&status=eq.ativa&order=id.asc',
         'os alunos das suas turmas'
     );
-    $alunoIds = array_values(array_unique(array_map(static fn(array $matricula): string => (string) $matricula['aluno_id'], $matriculas)));
-    $tipoAluno = ew_acad_one('/rest/v1/tipos_usuario?select=id&codigo=eq.aluno', 'o tipo de usuário aluno');
-    if (!$tipoAluno) throw new RuntimeException('O tipo de usuário aluno não foi encontrado.');
-    $usuarios = $alunoIds ? ew_acad_rows(
-        '/rest/v1/usuarios?select=id,nome_completo&ativo=eq.true&tipo_usuario_id=eq.' . (int) $tipoAluno['id'] . '&id=' . ew_acad_in_filter($alunoIds) . '&order=nome_completo.asc',
-        'os perfis dos alunos'
-    ) : [];
     $usuarioPorId = [];
-    foreach ($usuarios as $aluno) $usuarioPorId[(string) $aluno['id']] = $aluno;
+    foreach ($matriculas as $m) {
+        if (!empty($m['aluno']['nome_completo'])) {
+            $usuarioPorId[(string) $m['aluno_id']] = $m['aluno'];
+        }
+    }
 
     $avaliacoes = ew_acad_rows(
         '/rest/v1/avaliacoes?select=id,turma_disciplina_id,nota_maxima,peso&turma_disciplina_id=' . ew_acad_in_filter($atribuicaoIds) . '&status=eq.publicada&order=id.asc',
@@ -255,7 +260,7 @@ if ($aulaTurma && $matriculaTurmaPorId) {
     $mediaGeral = ew_professor_media(array_merge(...array_values($notasPorTurma ?: [[]])));
     $alunosAtencao = count(array_filter($alunosOut, static fn(array $aluno): bool => in_array($aluno['situacao'], ['atencao', 'critico'], true)));
 
-    ew_acad_json(200, [
+    $responsePayload = [
         'sucesso' => true,
         'resumo' => [
             'total_alunos' => count($alunosOut),
@@ -266,7 +271,10 @@ if ($aulaTurma && $matriculaTurmaPorId) {
         ],
         'turmas' => $turmasOut,
         'alunos' => $alunosOut,
-    ]);
+    ];
+    ew_acad_salvar_cache($cacheKey, $responsePayload);
+    header('X-EduWatch-Cache: MISS');
+    ew_acad_json(200, $responsePayload);
 } catch (Throwable $error) {
     error_log('EduWatch teacher dashboard error: ' . $error->getMessage());
     ew_acad_json(500, ['sucesso' => false, 'mensagem' => 'Não foi possível carregar o painel das suas turmas.']);

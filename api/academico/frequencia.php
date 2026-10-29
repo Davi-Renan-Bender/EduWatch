@@ -97,6 +97,7 @@ try {
             $rows[] = ['aula_id'=>(int)$lessonId,'matricula_id'=>(int)$enrollmentId,'status'=>$status,'observacao'=>$obs !== '' ? (function_exists('mb_substr') ? mb_substr($obs, 0, 500) : substr($obs, 0, 500)) : null,'registrado_por'=>$usuario['id']];
         }
         ew_acad_write('POST', '/rest/v1/frequencias?on_conflict=aula_id,matricula_id', $rows, 'a chamada', 'resolution=merge-duplicates,return=representation');
+        ew_acad_invalidar_cache();
         ew_acad_json(200, ['sucesso'=>true,'mensagem'=>'Chamada salva. Você ainda pode revisar os registros antes de fechar a frequência.','quantidade'=>count($rows)]);
     }
     if ($acao === 'fechar_chamada') {
@@ -104,6 +105,7 @@ try {
         $ids = array_unique(array_map(static fn($f)=>(int)$f['matricula_id'], $existing));
         if (!$roster || count($ids) !== count($roster) || count(array_intersect(array_keys($valid), $ids)) !== count($roster)) ew_acad_json(409, ['sucesso'=>false,'mensagem'=>'Salve a chamada completa antes de fechar a frequência.']);
         ew_acad_write('PATCH', '/rest/v1/aulas?id=eq.' . (int)$lessonId, ['status'=>'realizada','frequencia_fechada'=>true], 'o fechamento da frequência', 'return=minimal');
+        ew_acad_invalidar_cache();
         ew_acad_json(200, ['sucesso'=>true,'mensagem'=>'Frequência fechada. A aula foi marcada como realizada.']);
     }
     ew_acad_json(422, ['sucesso'=>false,'mensagem'=>'Ação de frequência desconhecida.']);

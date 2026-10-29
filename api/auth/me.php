@@ -12,6 +12,20 @@ if (empty($_SESSION['usuario']['id']) || !eduwatch_renovar_token_se_necessario()
 
 $config = eduwatch_config();
 $usuarioSessao = $_SESSION['usuario'];
+
+// Se a sessão já foi validada nos últimos 5 minutos, responde imediatamente sem requisições de rede
+$agora = time();
+$validadoEm = (int) ($usuarioSessao['validado_em'] ?? 0);
+if ($agora - $validadoEm < 300 && !empty($usuarioSessao['nome']) && !empty($usuarioSessao['tipoUsuario'])) {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
+    eduwatch_json(200, [
+        'autenticado' => true,
+        'usuario' => $usuarioSessao,
+    ]);
+}
+
 $id = rawurlencode((string) $usuarioSessao['id']);
 $token = (string) $_SESSION['supabase']['access_token'];
 
@@ -55,7 +69,12 @@ try {
         'nivel' => eduwatch_nivel_frontend($codigoTipo),
         'tipoUsuario' => $codigoTipo,
         'tipoUsuarioId' => $tipoId,
+        'validado_em' => time(),
     ];
+
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
 
     eduwatch_json(200, [
         'autenticado' => true,

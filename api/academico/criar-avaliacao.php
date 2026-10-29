@@ -53,6 +53,7 @@ try {
     if (!isset($created[0]['id'])) {
         throw new RuntimeException('O banco não retornou o identificador da avaliação criada.');
     }
+    ew_acad_invalidar_cache();
     ew_acad_json(201, ['sucesso' => true, 'mensagem' => 'Avaliação criada. Agora você pode lançar as notas.', 'avaliacao' => $created[0]]);
 } catch (Throwable $error) {
     error_log('EduWatch create assessment error: ' . $error->getMessage());

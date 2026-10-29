@@ -5,25 +5,33 @@
 // Os endpoints que acessam dados também devem validar a sessão no servidor.
 // =====================================================================
 
-async function obterUsuarioLogado() {
-  try {
-    const resposta = await fetch("api/auth/me.php", {
-      method: "GET",
-      credentials: "same-origin",
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-    });
+let promessaUsuarioLogado = null;
 
-    if (!resposta.ok) return null;
-    const resultado = await resposta.json();
-    return resultado.autenticado === true ? resultado.usuario : null;
-  } catch (erro) {
-    console.error(
-      "EduWatch: não foi possível validar a sessão no servidor.",
-      erro,
-    );
-    return null;
+async function obterUsuarioLogado() {
+  if (promessaUsuarioLogado) {
+    return promessaUsuarioLogado;
   }
+  promessaUsuarioLogado = (async () => {
+    try {
+      const resposta = await fetch("api/auth/me.php", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+
+      if (!resposta.ok) return null;
+      const resultado = await resposta.json();
+      return resultado.autenticado === true ? resultado.usuario : null;
+    } catch (erro) {
+      console.error(
+        "EduWatch: não foi possível validar a sessão no servidor.",
+        erro,
+      );
+      return null;
+    }
+  })();
+  return promessaUsuarioLogado;
 }
 
 async function exigirPerfil(perfilEsperado) {

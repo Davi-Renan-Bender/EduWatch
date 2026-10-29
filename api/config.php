@@ -177,6 +177,29 @@ function eduwatch_ler_json(): array
 }
 
 /** Faz uma requisição HTTP à API do Supabase e devolve status + JSON. */
+function eduwatch_configurar_curl_ssl($curl): void
+{
+    $ini = (string) ini_get('curl.cainfo');
+    if ($ini !== '' && is_file($ini)) {
+        return;
+    }
+
+    $candidatos = [
+        getenv('CURL_CAINFO') ?: '',
+        getenv('SSL_CERT_FILE') ?: '',
+        'C:\Program Files\Git\mingw64\etc\ssl\certs\ca-bundle.crt',
+        'C:\Program Files\Git\usr\ssl\certs\ca-bundle.crt',
+        'C:\Program Files\MySQL\MySQL Workbench 8.0 CE\swb\shell\lib\Python3.13\Lib\site-packages\certifi\cacert.pem',
+    ];
+
+    foreach ($candidatos as $caminho) {
+        if ($caminho !== '' && is_file($caminho)) {
+            curl_setopt($curl, CURLOPT_CAINFO, $caminho);
+            return;
+        }
+    }
+}
+
 function eduwatch_supabase_request(
     string $metodo,
     string $caminho,
@@ -216,11 +239,13 @@ function eduwatch_supabase_request(
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST => strtoupper($metodo),
         CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_USERAGENT => 'EduWatch-Backend/1.0',
         CURLOPT_CONNECTTIMEOUT => 8,
         CURLOPT_TIMEOUT => 20,
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => 2,
     ]);
+    eduwatch_configurar_curl_ssl($curl);
 
     if ($corpo !== null) {
         $json = json_encode($corpo, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

@@ -129,6 +129,7 @@ try {
         $respostaSalvarNotas['aviso_notificacoes'] = $avisoNotificacoes;
         $respostaSalvarNotas['mensagem'] .= ' Atenção: as notificações não puderam ser geradas.';
     }
+    ew_acad_invalidar_cache();
     ew_acad_json(200, $respostaSalvarNotas);
 
 } catch (Throwable $error) {

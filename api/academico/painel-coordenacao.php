@@ -6,6 +6,15 @@ require_once __DIR__ . '/comum.php';
 eduwatch_exigir_metodo('GET');
 $usuario = ew_acad_require_role(['coordenacao', 'administrador']);
 
+$forcarAtualizacao = isset($_GET['refresh']) && $_GET['refresh'] === '1';
+if (!$forcarAtualizacao) {
+    $cached = ew_acad_obter_cache('painel_coordenacao', 60);
+    if ($cached !== null) {
+        header('X-EduWatch-Cache: HIT');
+        ew_acad_json(200, $cached);
+    }
+}
+
 function ew_coord_media(array $notas): ?float
 {
     $soma = 0.0;
@@ -30,29 +39,25 @@ function ew_coord_situacao(?float $media): string
 }
 
 try {
-    // Dados institucionais são consultados apenas após validar a sessão e o perfil.
-    $usuarios = ew_acad_rows('/rest/v1/usuarios?select=id,nome_completo,ativo,tipo_usuario_id&ativo=eq.true&limit=1000', 'os usuários ativos');
-    $tipos = ew_acad_rows('/rest/v1/tipos_usuario?select=id,codigo&limit=100', 'os tipos de usuário');
-    $tipoPorId = [];
-    foreach ($tipos as $tipo) $tipoPorId[(int) $tipo['id']] = (string) $tipo['codigo'];
-    $usuarioPorId = [];
-    $alunosUsuarios = [];
-    $professoresUsuarios = [];
-    foreach ($usuarios as $item) {
-        $id = (string) ($item['id'] ?? '');
-        if ($id === '') continue;
-        $registro = ['id' => $id, 'nome' => (string) ($item['nome_completo'] ?? 'Usuário')];
-        $usuarioPorId[$id] = $registro;
-        $papel = $tipoPorId[(int) ($item['tipo_usuario_id'] ?? 0)] ?? '';
-        if ($papel === 'aluno') $alunosUsuarios[$id] = $registro;
-        if ($papel === 'professor') $professoresUsuarios[$id] = $registro;
+    // 1. Tenta buscar diretamente via RPC SQL no PostgreSQL (execução em ~30ms no banco, sem transferir milhares de linhas)
+    $rpc = ew_acad_db('POST', '/rest/v1/rpc/obter_painel_coordenacao', []);
+    if ($rpc['status'] === 200 && is_array($rpc['data']) && !empty($rpc['data']['sucesso'])) {
+        $responsePayload = $rpc['data'];
+        ew_acad_salvar_cache('painel_coordenacao', $responsePayload);
+        header('X-EduWatch-Cache: MISS-RPC');
+        ew_acad_json(200, $responsePayload);
     }
 
+    // Fallback: Busca turmas ativas caso a RPC ainda não esteja instalada no Supabase
     $turmasDb = ew_acad_rows('/rest/v1/turmas?select=id,nome,status&status=eq.ativa&order=nome.asc&limit=1000', 'as turmas ativas');
     $turmasPorId = [];
     foreach ($turmasDb as $turma) $turmasPorId[(int) $turma['id']] = ['id' => (int) $turma['id'], 'nome' => (string) $turma['nome']];
 
-    $matriculas = ew_acad_rows('/rest/v1/matriculas?select=id,aluno_id,turma_id,status&status=eq.ativa&order=id.asc&limit=5000', 'as matrículas ativas');
+    // Busca matrículas ativas já trazendo dados do aluno e da turma embutidos em 1 única requisição
+    $matriculas = ew_acad_rows(
+        '/rest/v1/matriculas?select=id,aluno_id,turma_id,status,aluno:usuarios(id,nome_completo,ativo)&status=eq.ativa&order=id.asc&limit=5000',
+        'as matrículas ativas'
+    );
     $matriculasPorId = [];
     $matriculasPorTurma = [];
     $matriculaIds = [];
@@ -61,28 +66,47 @@ try {
         $matriculaId = (int) ($matricula['id'] ?? 0);
         $alunoId = (string) ($matricula['aluno_id'] ?? '');
         $turmaId = (int) ($matricula['turma_id'] ?? 0);
-        if ($matriculaId <= 0 || !isset($alunosUsuarios[$alunoId], $turmasPorId[$turmaId])) continue;
-        $registro = ['id' => $matriculaId, 'aluno_id' => $alunoId, 'turma_id' => $turmaId, 'nome' => $alunosUsuarios[$alunoId]['nome'], 'turma' => $turmasPorId[$turmaId]['nome']];
+        $alunoData = $matricula['aluno'] ?? null;
+        if ($matriculaId <= 0 || !$alunoData || ($alunoData['ativo'] ?? false) !== true || !isset($turmasPorId[$turmaId])) continue;
+        $nomeAluno = (string) ($alunoData['nome_completo'] ?? 'Aluno');
+        $registro = ['id' => $matriculaId, 'aluno_id' => $alunoId, 'turma_id' => $turmaId, 'nome' => $nomeAluno, 'turma' => $turmasPorId[$turmaId]['nome']];
         $matriculasPorId[$matriculaId] = $registro;
         $matriculasPorTurma[$turmaId][] = $matriculaId;
         $matriculaIds[] = $matriculaId;
     }
 
-    $atribuicoes = ew_acad_rows('/rest/v1/turma_disciplinas?select=id,turma_id,disciplina_id,professor_id&limit=5000', 'as atribuições de turma e disciplina');
+    // Busca atribuições já trazendo professor embutido em 1 única requisição
+    $atribuicoes = ew_acad_rows(
+        '/rest/v1/turma_disciplinas?select=id,turma_id,disciplina_id,professor_id,professor:usuarios(id,nome_completo)&limit=5000',
+        'as atribuições de turma e disciplina'
+    );
     $atribuicaoPorId = [];
     $atribuicoesPorProfessor = [];
+    $professoresUsuarios = [];
     foreach ($atribuicoes as $atribuicao) {
         $id = (int) ($atribuicao['id'] ?? 0);
         $turmaId = (int) ($atribuicao['turma_id'] ?? 0);
         $professorId = (string) ($atribuicao['professor_id'] ?? '');
         if ($id <= 0 || !isset($turmasPorId[$turmaId])) continue;
         $atribuicaoPorId[$id] = ['id' => $id, 'turma_id' => $turmaId, 'disciplina_id' => (int) ($atribuicao['disciplina_id'] ?? 0), 'professor_id' => $professorId];
-        if ($professorId !== '') $atribuicoesPorProfessor[$professorId][] = $id;
+        if ($professorId !== '') {
+            $atribuicoesPorProfessor[$professorId][] = $id;
+            if (!isset($professoresUsuarios[$professorId]) && !empty($atribuicao['professor']['nome_completo'])) {
+                $professoresUsuarios[$professorId] = [
+                    'id' => $professorId,
+                    'nome' => (string) $atribuicao['professor']['nome_completo'],
+                ];
+            }
+        }
     }
 
-    $avaliacoes = ew_acad_rows('/rest/v1/avaliacoes?select=id,titulo,data_aplicacao,nota_maxima,peso,periodo_letivo_id,turma_disciplina_id,status&status=eq.publicada&limit=5000', 'as avaliações publicadas');
+    // Busca avaliações já trazendo o período letivo embutido
+    $avaliacoes = ew_acad_rows(
+        '/rest/v1/avaliacoes?select=id,titulo,data_aplicacao,nota_maxima,peso,periodo_letivo_id,turma_disciplina_id,status,periodos_letivos(id,nome,ordem)&status=eq.publicada&limit=5000',
+        'as avaliações publicadas'
+    );
     $avaliacoesPorId = [];
-    $periodoIds = [];
+    $periodosPorId = [];
     foreach ($avaliacoes as $avaliacao) {
         $avaliacaoId = (int) ($avaliacao['id'] ?? 0);
         $atribuicaoId = (int) ($avaliacao['turma_disciplina_id'] ?? 0);
@@ -92,12 +116,15 @@ try {
         $avaliacao['nota_maxima'] = (float) ($avaliacao['nota_maxima'] ?? 0);
         $avaliacao['peso'] = (float) ($avaliacao['peso'] ?? 1);
         $avaliacoesPorId[$avaliacaoId] = $avaliacao;
-        $periodoIds[] = (int) ($avaliacao['periodo_letivo_id'] ?? 0);
+        $periodoId = (int) ($avaliacao['periodo_letivo_id'] ?? 0);
+        if ($periodoId > 0 && !isset($periodosPorId[$periodoId]) && !empty($avaliacao['periodos_letivos'])) {
+            $periodosPorId[$periodoId] = $avaliacao['periodos_letivos'];
+        }
     }
 
     $notas = [];
     if ($matriculaIds && $avaliacoesPorId) {
-        $notasDb = ew_acad_rows('/rest/v1/notas?select=id,avaliacao_id,matricula_id,nota_obtida,situacao,feedback&matricula_id=' . ew_acad_in_filter($matriculaIds) . '&situacao=eq.lancada&limit=10000', 'as notas lançadas');
+        $notasDb = ew_acad_rows('/rest/v1/notas?select=avaliacao_id,matricula_id,nota_obtida&situacao=eq.lancada&limit=10000', 'as notas lançadas');
         foreach ($notasDb as $nota) {
             $avaliacao = $avaliacoesPorId[(int) ($nota['avaliacao_id'] ?? 0)] ?? null;
             $matricula = $matriculasPorId[(int) ($nota['matricula_id'] ?? 0)] ?? null;
@@ -119,39 +146,24 @@ try {
         if ((int) $nota['periodo_letivo_id'] > 0) $notasPorPeriodo[(int) $nota['periodo_letivo_id']][] = $nota;
     }
 
-    $periodosPorId = [];
-    if ($periodoIds) {
-        $periodos = ew_acad_rows('/rest/v1/periodos_letivos?select=id,nome,ordem&id=' . ew_acad_in_filter(array_values(array_unique($periodoIds))) . '&order=ordem.asc', 'os períodos letivos');
-        foreach ($periodos as $periodo) $periodosPorId[(int) $periodo['id']] = $periodo;
-    }
-
-    // Frequência: considera apenas aulas realizadas e com chamada fechada.
+    // Frequência: considera apenas aulas realizadas e com chamada fechada via inner join direto.
     // Atrasos contam como presença; ausências justificadas permanecem no denominador.
     $frequenciaPorMatricula = [];
     $frequenciaPorTurma = [];
-    $aulasComChamada = ew_acad_rows('/rest/v1/aulas?select=id,turma_disciplina_id&status=eq.realizada&frequencia_fechada=eq.true&limit=10000', 'as aulas com frequência fechada');
-    $aulaTurma = [];
-    foreach ($aulasComChamada as $aula) {
-        $atribuicao = $atribuicaoPorId[(int)($aula['turma_disciplina_id'] ?? 0)] ?? null;
-        if (!$atribuicao) continue;
-        $aulaId = (int)($aula['id'] ?? 0);
-        if ($aulaId > 0) $aulaTurma[$aulaId] = (int)$atribuicao['turma_id'];
-    }
-    if ($aulaTurma && $matriculaIds) {
-               $frequenciasDb = ew_acad_rows(
-            '/rest/v1/frequencias?select=aula_id,matricula_id,status&aula_id='
-            . ew_acad_in_filter(array_keys($aulaTurma))
-            . '&matricula_id='
-            . ew_acad_in_filter($matriculaIds)
-            . '&limit=50000',
+    if ($matriculaIds) {
+        $frequenciasDb = ew_acad_rows(
+            '/rest/v1/frequencias?select=matricula_id,status,aula:aulas!inner(turma_disciplina_id)&aula.status=eq.realizada&aula.frequencia_fechada=eq.true&limit=50000',
             'as frequências'
         );
 
         foreach ($frequenciasDb as $freq) {
             $matriculaId = (int)($freq['matricula_id'] ?? 0);
-            $aulaId = (int)($freq['aula_id'] ?? 0);
             $matricula = $matriculasPorId[$matriculaId] ?? null;
-            if (!$matricula || !isset($aulaTurma[$aulaId]) || (int)$matricula['turma_id'] !== $aulaTurma[$aulaId]) continue;
+            if (!$matricula) continue;
+            $atribuicaoId = (int)($freq['aula']['turma_disciplina_id'] ?? 0);
+            $atribuicao = $atribuicaoPorId[$atribuicaoId] ?? null;
+            if (!$atribuicao || (int)$matricula['turma_id'] !== (int)$atribuicao['turma_id']) continue;
+
             $frequenciaPorMatricula[$matriculaId]['total'] = ($frequenciaPorMatricula[$matriculaId]['total'] ?? 0) + 1;
             if (in_array((string)($freq['status'] ?? ''), ['presente', 'atraso'], true)) {
                 $frequenciaPorMatricula[$matriculaId]['presencas'] = ($frequenciaPorMatricula[$matriculaId]['presencas'] ?? 0) + 1;
@@ -244,7 +256,7 @@ try {
     }
     usort($evolucao, static fn(array $a, array $b): int => $a['ordem'] <=> $b['ordem']);
 
-    ew_acad_json(200, [
+    $responsePayload = [
         'sucesso' => true,
         'resumo' => [
             'totalAlunos' => count(array_unique(array_column($alunosOut, 'usuarioId'))),
@@ -260,7 +272,10 @@ try {
         'professores' => $professoresOut,
         'turmas' => $turmasOut,
         'evolucao' => $evolucao,
-    ]);
+    ];
+    ew_acad_salvar_cache('painel_coordenacao', $responsePayload);
+    header('X-EduWatch-Cache: MISS');
+    ew_acad_json(200, $responsePayload);
 } catch (Throwable $error) {
     error_log('EduWatch coordination dashboard error: ' . $error->getMessage());
     ew_acad_json(500, ['sucesso' => false, 'mensagem' => 'Não foi possível carregar os dados da coordenação. Confira a configuração do banco e tente novamente.']);

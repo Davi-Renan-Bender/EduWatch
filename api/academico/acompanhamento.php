@@ -486,6 +486,46 @@ function ew_acomp_gerar_alertas(array $usuario): never
     $criados = 0;
     $atualizados = 0;
     $alertsProcessed = 0;
+
+    // Carrega em 1 ÚNICA chamada todos os alertas ativos atuais para eliminar consultas N+1
+    $existingAlertsList = ew_acad_rows(
+        '/rest/v1/alertas_acompanhamento?select=id,matricula_id,periodo_letivo_id,codigo_regra,turma_disciplina_id,nivel,valor_observado,limite_aplicado,justificativa,status&status=in.(aberto,em_andamento)',
+        'os alertas ativos existentes'
+    );
+    $activeAlertsByKey = [];
+    foreach ($existingAlertsList as $ea) {
+        $key = (int)$ea['matricula_id'] . ':' . (int)$ea['periodo_letivo_id'] . ':' . (string)$ea['codigo_regra'] . ':' . ((int)($ea['turma_disciplina_id'] ?? 0));
+        $activeAlertsByKey[$key] = $ea;
+    }
+
+    $toCreate = [];
+    $toUpdate = [];
+
+    $queueAlert = static function (array $payload) use (&$activeAlertsByKey, &$toCreate, &$toUpdate, &$alertsProcessed): void {
+        $alertsProcessed++;
+        $key = (int)$payload['matricula_id'] . ':' . (int)$payload['periodo_letivo_id'] . ':' . (string)$payload['codigo_regra'] . ':' . ((int)($payload['turma_disciplina_id'] ?? 0));
+        if (isset($activeAlertsByKey[$key])) {
+            $existing = $activeAlertsByKey[$key];
+            if ($existing['nivel'] !== $payload['nivel']
+                || (float)$existing['valor_observado'] != (float)$payload['valor_observado']
+                || (float)$existing['limite_aplicado'] != (float)$payload['limite_aplicado']
+                || $existing['justificativa'] !== $payload['justificativa']) {
+                $toUpdate[] = [
+                    'id' => (int)$existing['id'],
+                    'patch' => [
+                        'nivel' => $payload['nivel'],
+                        'valor_observado' => $payload['valor_observado'],
+                        'limite_aplicado' => $payload['limite_aplicado'],
+                        'justificativa' => $payload['justificativa'],
+                    ],
+                ];
+            }
+        } else {
+            $toCreate[] = $payload;
+            $activeAlertsByKey[$key] = $payload;
+        }
+    };
+
     foreach ($students as $matriculaId => $student) {
         $yearId = (int) $student['ano_letivo_id'];
         $currentPeriod = $currentPeriodByYear[$yearId] ?? null;
@@ -505,9 +545,7 @@ function ew_acomp_gerar_alertas(array $usuario): never
                 if ($level) {
                     $limit = $level === 'critico' ? $rule['valor_critico_num'] : $rule['valor_atencao_num'];
                     $payload = ['matricula_id' => (int) $matriculaId, 'periodo_letivo_id' => $periodId, 'turma_disciplina_id' => null, 'codigo_regra' => 'media_baixa', 'nivel' => $level, 'valor_observado' => $average['media'], 'limite_aplicado' => $limit, 'justificativa' => 'Média ponderada normalizada de ' . number_format((float) $average['media'], 2, ',', '') . '/10, calculada com ' . $average['quantidade'] . ' avaliação(ões) publicada(s).'];
-                    $alertsProcessed++;
-                    $outcome = ew_acomp_salvar_alerta($payload);
-                    if ($outcome === 'criado') $criados++; elseif ($outcome === 'atualizado') $atualizados++;
+                    $queueAlert($payload);
                 }
             }
         }
@@ -519,9 +557,7 @@ function ew_acomp_gerar_alertas(array $usuario): never
                 if ($level) {
                     $limit = $level === 'critico' ? $rule['valor_critico_num'] : $rule['valor_atencao_num'];
                     $payload = ['matricula_id' => (int) $matriculaId, 'periodo_letivo_id' => $periodId, 'turma_disciplina_id' => null, 'codigo_regra' => 'frequencia_baixa', 'nivel' => $level, 'valor_observado' => $frequencyPercent, 'limite_aplicado' => $limit, 'justificativa' => 'Frequência de ' . number_format((float) $frequencyPercent, 1, ',', '') . '% em ' . $freq['total'] . ' chamada(s) fechada(s); atrasos contam como presença.'];
-                    $alertsProcessed++;
-                    $outcome = ew_acomp_salvar_alerta($payload);
-                    if ($outcome === 'criado') $criados++; elseif ($outcome === 'atualizado') $atualizados++;
+                    $queueAlert($payload);
                 }
             }
         }
@@ -538,9 +574,7 @@ function ew_acomp_gerar_alertas(array $usuario): never
                     if ($level) {
                         $limit = $level === 'critico' ? $rule['valor_critico_num'] : $rule['valor_atencao_num'];
                         $payload = ['matricula_id' => (int) $matriculaId, 'periodo_letivo_id' => $periodId, 'turma_disciplina_id' => null, 'codigo_regra' => 'queda_desempenho', 'nivel' => $level, 'valor_observado' => $drop, 'limite_aplicado' => $limit, 'justificativa' => 'A média caiu de ' . number_format((float) $previous['media'], 2, ',', '') . ' para ' . number_format((float) $average['media'], 2, ',', '') . ' entre ' . $previousPeriod['nome'] . ' e ' . $currentPeriod['nome'] . '.'];
-                        $alertsProcessed++;
-                        $outcome = ew_acomp_salvar_alerta($payload);
-                        if ($outcome === 'criado') $criados++; elseif ($outcome === 'atualizado') $atualizados++;
+                        $queueAlert($payload);
                     }
                 }
             }
@@ -574,10 +608,24 @@ function ew_acomp_gerar_alertas(array $usuario): never
                 $limit = $level === 'critico' ? $rule['valor_critico_num'] : $rule['valor_atencao_num'];
                 $assignmentName = 'disciplina ' . (int) $assignment['disciplina_id'];
                 $payload = ['matricula_id' => (int) $matriculaId, 'periodo_letivo_id' => $periodId, 'turma_disciplina_id' => (int) $assignmentId, 'codigo_regra' => 'resultados_consecutivos_baixos', 'nivel' => $level, 'valor_observado' => $consecutive, 'limite_aplicado' => $limit, 'justificativa' => $consecutive . ' resultado(s) consecutivo(s) abaixo de ' . number_format($gradeLimit, 1, ',', '') . '/10 em ' . $assignmentName . '.'];
-                $alertsProcessed++;
-                $outcome = ew_acomp_salvar_alerta($payload);
-                if ($outcome === 'criado') $criados++; elseif ($outcome === 'atualizado') $atualizados++;
+                $queueAlert($payload);
             }
+        }
+    }
+
+    // Processa criações em lote
+    if (!empty($toCreate)) {
+        foreach (array_chunk($toCreate, 100) as $chunk) {
+            ew_acad_write('POST', '/rest/v1/alertas_acompanhamento', $chunk, 'o lote de novos alertas', 'return=minimal');
+            $criados += count($chunk);
+        }
+    }
+
+    // Processa atualizações necessárias
+    if (!empty($toUpdate)) {
+        foreach ($toUpdate as $item) {
+            ew_acad_write('PATCH', '/rest/v1/alertas_acompanhamento?id=eq.' . $item['id'], $item['patch'], 'a atualização do alerta', 'return=minimal');
+            $atualizados++;
         }
     }
 
@@ -594,41 +642,57 @@ function ew_acomp_gerar_alertas(array $usuario): never
 try {
     if ($metodo === 'GET') {
         $onlyRules = (string) ($_GET['apenas'] ?? '') === 'regras';
+        $forcarAtualizacao = isset($_GET['refresh']) && $_GET['refresh'] === '1';
+        if (!$onlyRules && !$forcarAtualizacao) {
+            $cached = ew_acad_obter_cache('painel_acompanhamento', 60);
+            if ($cached !== null) {
+                header('X-EduWatch-Cache: HIT');
+                ew_acad_json(200, $cached);
+            }
+        }
         $regras = ew_acomp_configuracoes();
         if ($onlyRules) ew_acad_json(200, ['sucesso' => true, 'regras' => $regras]);
 
-        $matriculas = ew_acad_rows('/rest/v1/matriculas?select=id,aluno_id,turma_id,status&status=eq.ativa&order=id.asc&limit=10000', 'as matrículas ativas');
-        $turmaIds = array_values(array_unique(array_map(static fn($m) => (int) $m['turma_id'], $matriculas)));
-        $alunoIds = array_values(array_unique(array_map(static fn($m) => (string) $m['aluno_id'], $matriculas)));
-        $turmas = $turmaIds ? ew_acad_rows('/rest/v1/turmas?select=id,nome,ano_letivo_id,status&id=' . ew_acad_in_filter($turmaIds) . '&order=nome.asc', 'as turmas dos alunos') : [];
+        $matriculas = ew_acad_rows(
+            '/rest/v1/matriculas?select=id,aluno_id,turma_id,status,aluno:usuarios(id,nome_completo,ativo),turma:turmas(id,nome,ano_letivo_id)&status=eq.ativa&order=id.asc&limit=10000',
+            'as matrículas ativas'
+        );
         $turmaMap = [];
-        foreach ($turmas as $turma) $turmaMap[(int) $turma['id']] = $turma;
-        $usuarios = $alunoIds ? ew_acad_rows('/rest/v1/usuarios?select=id,nome_completo,ativo&id=' . ew_acad_in_filter($alunoIds) . '&ativo=eq.true&order=nome_completo.asc', 'os nomes dos alunos') : [];
-        $nomePorUsuario = [];
-        foreach ($usuarios as $student) $nomePorUsuario[(string) $student['id']] = (string) $student['nome_completo'];
         $matriculaMap = [];
+        $turmaIds = [];
         foreach ($matriculas as $matricula) {
             $turmaId = (int) $matricula['turma_id'];
             $alunoId = (string) $matricula['aluno_id'];
+            $alunoObj = $matricula['aluno'] ?? [];
+            $turmaObj = $matricula['turma'] ?? [];
+            if (!isset($turmaMap[$turmaId]) && !empty($turmaObj['nome'])) {
+                $turmaMap[$turmaId] = $turmaObj;
+                $turmaIds[] = $turmaId;
+            }
             $matriculaMap[(int) $matricula['id']] = [
                 'matricula_id' => (int) $matricula['id'],
                 'aluno_id' => $alunoId,
-                'nome' => $nomePorUsuario[$alunoId] ?? 'Aluno sem nome',
+                'nome' => (string) ($alunoObj['nome_completo'] ?? 'Aluno sem nome'),
                 'turma_id' => $turmaId,
-                'turma' => (string) ($turmaMap[$turmaId]['nome'] ?? 'Turma'),
-                'ano_letivo_id' => (int) ($turmaMap[$turmaId]['ano_letivo_id'] ?? 0),
+                'turma' => (string) ($turmaObj['nome'] ?? 'Turma'),
+                'ano_letivo_id' => (int) ($turmaObj['ano_letivo_id'] ?? 0),
             ];
         }
-        $assignmentsRows = $turmaIds ? ew_acad_rows('/rest/v1/turma_disciplinas?select=id,turma_id,disciplina_id&turma_id=' . ew_acad_in_filter($turmaIds), 'as atribuições de disciplinas') : [];
+        $turmaIds = array_values(array_unique($turmaIds));
+
+        $assignmentsRows = $turmaIds ? ew_acad_rows(
+            '/rest/v1/turma_disciplinas?select=id,turma_id,disciplina_id,disciplina:disciplinas(id,nome)&turma_id=' . ew_acad_in_filter($turmaIds),
+            'as atribuições de disciplinas'
+        ) : [];
         $assignmentMap = [];
-        $disciplineIds = [];
-        foreach ($assignmentsRows as $assignment) {
-            $assignmentMap[(int) $assignment['id']] = ['turma_id' => (int) $assignment['turma_id'], 'disciplina_id' => (int) $assignment['disciplina_id']];
-            $disciplineIds[] = (int) $assignment['disciplina_id'];
-        }
-        $disciplineRows = $disciplineIds ? ew_acad_rows('/rest/v1/disciplinas?select=id,nome&id=' . ew_acad_in_filter(array_values(array_unique($disciplineIds))), 'os nomes das disciplinas') : [];
         $disciplineNameMap = [];
-        foreach ($disciplineRows as $discipline) $disciplineNameMap[(int) $discipline['id']] = (string) $discipline['nome'];
+        foreach ($assignmentsRows as $assignment) {
+            $disciplinaId = (int) $assignment['disciplina_id'];
+            $assignmentMap[(int) $assignment['id']] = ['turma_id' => (int) $assignment['turma_id'], 'disciplina_id' => $disciplinaId];
+            if (!empty($assignment['disciplina']['nome'])) {
+                $disciplineNameMap[$disciplinaId] = (string) $assignment['disciplina']['nome'];
+            }
+        }
         $periods = ew_acad_rows('/rest/v1/periodos_letivos?select=id,nome,ordem,ano_letivo_id,data_inicio,data_fim&order=ano_letivo_id.asc,ordem.asc', 'os períodos letivos');
         $periodNameMap = [];
         foreach ($periods as $period) $periodNameMap[(int) $period['id']] = $period;
@@ -686,7 +750,7 @@ try {
         }
         usort($atribuicoes, static fn($a, $b) => [$a['turma'], $a['disciplina']] <=> [$b['turma'], $b['disciplina']]);
         $openCount = count(array_filter($alerts, static fn($row) => in_array((string) $row['status'], ['aberto', 'em_andamento'], true)));
-        ew_acad_json(200, [
+        $responsePayload = [
             'sucesso' => true,
             'regras' => $regras,
             'alunos' => $alunos,
@@ -696,9 +760,15 @@ try {
             'acoes' => $actions,
             'periodos' => $periods,
             'resumo' => ['alertas_abertos' => $openCount, 'observacoes' => count($observations), 'acoes' => count($actions)],
-        ]);
+        ];
+        if (!$onlyRules) {
+            ew_acad_salvar_cache('painel_acompanhamento', $responsePayload);
+        }
+        header('X-EduWatch-Cache: MISS');
+        ew_acad_json(200, $responsePayload);
     }
 
+    ew_acad_invalidar_cache();
     $input = eduwatch_ler_json();
     $acao = (string) ($input['acao'] ?? '');
     if ($acao === 'gerar_alertas') ew_acomp_gerar_alertas($usuario);

@@ -63,10 +63,13 @@ function ew_multi_require_gestao(string $method): array
         ew_multi_fail(403, ['sucesso' => false, 'mensagem' => 'Somente coordenação e administração podem gerenciar atribuições de professores.']);
     }
     if ($method === 'POST' && $typeCode !== 'coordenacao') {
-    ew_multi_fail(403, [
-        'sucesso' => false,
-        'mensagem' => 'Somente a coordenação pode modificar as atribuições de professores.'
-    ]);
+        ew_multi_fail(403, [
+            'sucesso' => false,
+            'mensagem' => 'Somente a coordenação pode modificar as atribuições de professores.'
+        ]);
+    }
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
     }
 
     return $config;

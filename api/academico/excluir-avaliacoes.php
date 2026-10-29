@@ -127,6 +127,8 @@ try {
         'a avaliação'
     );
 
+    ew_acad_invalidar_cache();
+
     ew_acad_json(200, [
         'sucesso' => true,
         'mensagem' => 'Avaliação excluída com sucesso.',

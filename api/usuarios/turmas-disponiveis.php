@@ -25,6 +25,9 @@ if (empty($_SESSION['usuario']['id']) || !eduwatch_renovar_token_se_necessario()
 
 try {
     $atorId = (string) $_SESSION['usuario']['id'];
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
     $atorResposta = eduwatch_supabase_request(
         'GET',
         '/rest/v1/usuarios?select=id,ativo,tipo_usuario_id&id=eq.' . rawurlencode($atorId) . '&limit=1',
