@@ -38,7 +38,15 @@ try {
         null,
         $token
     );
-    $perfis = $perfilResposta['dados'];
+    $perfis = $perfilResposta['dados'] ?? [];
+    if (empty($perfis) && $perfilResposta['status'] === 200) {
+        $perfilResposta = eduwatch_supabase_request(
+            'GET',
+            '/rest/v1/usuarios?select=id,email,nome_completo,cpf,tipo_usuario_id,ativo&id=eq.' . $id . '&limit=1',
+            $config['secret_key']
+        );
+        $perfis = $perfilResposta['dados'] ?? [];
+    }
 
     if ($perfilResposta['status'] < 200 || $perfilResposta['status'] >= 300 || !is_array($perfis) || !isset($perfis[0]) || ($perfis[0]['ativo'] ?? false) !== true) {
         eduwatch_limpar_sessao();
@@ -54,7 +62,15 @@ try {
         null,
         $token
     );
-    $tipos = $tipoResposta['dados'];
+    $tipos = $tipoResposta['dados'] ?? [];
+    if (empty($tipos) && $tipoResposta['status'] === 200) {
+        $tipoResposta = eduwatch_supabase_request(
+            'GET',
+            '/rest/v1/tipos_usuario?select=id,codigo&id=eq.' . $tipoId . '&limit=1',
+            $config['secret_key']
+        );
+        $tipos = $tipoResposta['dados'] ?? [];
+    }
     if ($tipoResposta['status'] < 200 || $tipoResposta['status'] >= 300 || !is_array($tipos) || !isset($tipos[0]['codigo'])) {
         eduwatch_limpar_sessao();
         eduwatch_json(401, ['autenticado' => false, 'mensagem' => 'Não foi possível validar o perfil.']);

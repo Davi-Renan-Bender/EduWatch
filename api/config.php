@@ -90,8 +90,8 @@ if (is_readable($envPath)) {
     }
 }
 
-    $url = rtrim((string) (getenv('SUPABASE_URL') ?: ''), '/');
-    $publicKey = (string) (getenv('SUPABASE_PUBLISHABLE_KEY') ?: getenv('SUPABASE_ANON_KEY') ?: '');
+    $url = rtrim((string) (getenv('SUPABASE_URL') ?: getenv('VITE_SUPABASE_URL') ?: ''), '/');
+    $publicKey = (string) (getenv('SUPABASE_PUBLISHABLE_KEY') ?: getenv('SUPABASE_ANON_KEY') ?: getenv('VITE_SUPABASE_ANON_KEY') ?: '');
     $secretKey = (string) (getenv('SUPABASE_SECRET_KEY') ?: getenv('SUPABASE_SERVICE_ROLE_KEY') ?: '');
 
     $config = [

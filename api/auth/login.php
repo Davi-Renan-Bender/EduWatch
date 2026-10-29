@@ -88,6 +88,7 @@ try {
         'nivel' => $nivelFrontend,
         'tipoUsuario' => $codigoTipo,
         'tipoUsuarioId' => $tipoId,
+        'validado_em' => time(),
     ];
     $_SESSION['supabase'] = [
         'access_token' => (string) $auth['access_token'],
